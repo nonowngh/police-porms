@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IF_DTD_004">
+    <insert id="INSERT" parameterType="hashmap">
+        INSERT INTO IF_DTD_004_T(        ESB_SEQ
+                                        ,ESB_STATUS_CD
+                                        ,ESB_TRANSACTION_ID
+                                        ,ESB_RECV_DT
+                                        ,ESB_INTERFACE_ID
+                                        ,CAR_MODEL
+                                        ,CAR_YEAR
+                                        ,CAR_BRAND
+                                        ,CAR_VIN )
+        values ( 
+                 SEQ_IF_DTD_004_T.NEXTVAL ,
+                 'N',
+                 #{transactionId     ,jdbcType=VARCHAR},
+                 #{receiverMsgRecvDt     ,jdbcType=VARCHAR},
+                 #{interfaceId     ,jdbcType=VARCHAR},
+                 #{CAR_MODEL     ,jdbcType=VARCHAR},
+                 #{CAR_YEAR     ,jdbcType=VARCHAR},
+                 #{CAR_BRAND     ,jdbcType=VARCHAR},
+                 #{CAR_VIN     ,jdbcType=VARCHAR}
+                 )
+    </insert>
+  
+    <insert id="INSERT_CHILD" parameterType="hashmap">
+        INSERT INTO IF_DTD_004_T_CHILD( CAR_SEQ
+                                      , CAR_MODEL
+                                      , AUDIO
+                                      , COLOR
+                                      , TIRES)
+        values (#{CAR_SEQ     ,jdbcType=INTEGER},
+                #{CAR_MODEL     ,jdbcType=VARCHAR},
+                #{AUDIO     ,jdbcType=VARCHAR},
+                #{COLOR     ,jdbcType=VARCHAR},
+                #{TIRES     ,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="CALL" statementType="CALLABLE">{CALL SP_IF_DTD_004_T(#{transactionId ,jdbcType=VARCHAR})}</update>
+</mapper>

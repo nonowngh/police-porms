@@ -1,0 +1,29 @@
+atb:
+  if-config:
+    id: "FTF_RECEIVER_01"
+    description: "(FILE SENDER) + JMS and Socket + (FILE RECEIVER)"
+    prefix: FTF
+    auto-config: false
+    iftp:
+      enabled: true
+      data-packet-size: 8192
+      retry-data-cnt: 2000
+      view-count: 1000
+      transfer-sleep: 0
+      encrypt: false
+      remote-hosts:
+        - clupine.duckdns.org:24052
+    context:
+      - interface-id: IF_FTF_001
+        action-type: RECEIVER
+        strategy: StandardFTFStrategy
+        file-recv-path: "/atb/recv/IF_FTF_001"
+        file-temp-path: "/atb/recv/IF_FTF_001/temp"
+        file-retry-count: 3
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<context id="context1">
+		<jdbcConnection driverClass="org.apache.derby.jdbc.ClientDriver"
+			connectionURL="jdbc:derby://localhost:1527/indigoesb" userId="indigo"
+			password="indigo" />
+ 
+		<javaModelGenerator targetPackage="com.mb.mci.common.db.newtable.model"
+			targetProject="mci-commons2" />
+
+
+<!-- 		<sqlMapGenerator targetPackage="com.mb.mci.common.db.table.xml" -->
+<!-- 			targetProject="mci-commons" > -->
+<!-- 			<property name="trimStrings" value="true" /> -->
+<!-- 		</sqlMapGenerator> -->
+
+		<javaClientGenerator targetPackage="com.mb.mci.common.db.newtable.mapper"
+			targetProject="mci-commons2" type="ANNOTATEDMAPPER">
+		</javaClientGenerator>
+
+		<table tableName="MCI_FIELD_INFO" />
+  		<table tableName="MCI_MESSAGE_INFO" />
+		<table tableName="MCI_MESSAGE_MAPPING_INFO" />
+
+
+	</context>
+</generatorConfiguration>

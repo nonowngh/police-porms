@@ -1,0 +1,21 @@
+atb:
+  if-config:
+    id: DTD_RECEIVER_01
+    description: "(DB SENDER) + JMS + (DB RECEIVER)"
+    prefix: DTD
+    auto-config: false
+    context:
+      - interface-id: IF_DTD_001
+        action-type: RECEIVER
+        strategy: StandardDTDStrategy
+        procedure-call: true
+      - interface-id: IF_DTD_003
+        action-type: RECEIVER
+        strategy: StandardDTDStrategy
+        procedure-call: true
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+mybatis:
+  config-location: classpath:mybatis-config.xml

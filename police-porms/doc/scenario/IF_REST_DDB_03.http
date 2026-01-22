@@ -1,0 +1,12 @@
+### UPDATE
+POST http://clupine.duckdns.org:24219/atb-api/IF_REST_DB_03
+Content-Type: application/json
+
+{
+  "dataList": [
+    {
+      "id": "8000",
+      "name": "test"
+    }
+  ]
+}

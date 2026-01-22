@@ -1,0 +1,34 @@
+atb:
+  if-config:
+    id: DTD_SENDER_01
+    description: "(DB SENDER) + JMS + (DB RECEIVER)"
+    prefix: DTD
+    auto-config: false
+    context:
+      - interface-id: IF_DTD_001
+        action-type: SENDER
+        strategy: StandardDTDStrategy
+        cron-expression:
+            - 0 4 * * * ?
+            - 0 8 * * * ?
+        on-signal-loop: false
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: DTD_RECEIVER_01
+      - interface-id: IF_DTD_003
+        action-type: SENDER
+        strategy: StandardDTDStrategy
+        cron-expression: 0/20 * * * * ?
+        on-signal-loop: false
+        detail-data: true
+        detail-names: CHILD
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: DTD_RECEIVER_01
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath*:SQL_*.xml

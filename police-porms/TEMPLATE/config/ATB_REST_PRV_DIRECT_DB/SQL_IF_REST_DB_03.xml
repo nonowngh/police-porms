@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IF_REST_DB_03">
+   	<update id="UPDATE" parameterType="hashmap">
+		UPDATE COMPANY_DATA
+		SET
+        <trim suffixOverrides=",">
+           <if test="companyName != null and companyName != ''" >COMPANY_NAME =  #{companyName,jdbcType=VARCHAR} ,</if>
+           <if test="appName != null and appName != ''" >APP_NAME = #{appName,jdbcType=VARCHAR}, </if>
+           <if test="domainName != null and domainName != ''" >DOMAIN_NAME = #{domainName,jdbcType=VARCHAR}, </if>
+           <if test="name != null and name != ''" >NAME = #{name,jdbcType=VARCHAR}, </if>
+        </trim>
+        WHERE ID = #{id}
+	</update>
+</mapper>

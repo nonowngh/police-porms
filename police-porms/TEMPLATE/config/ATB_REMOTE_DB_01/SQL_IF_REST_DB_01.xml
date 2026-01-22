@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IF_REST_DB_01">
+   <insert id="INSERT" parameterType="hashmap">
+        INSERT INTO COMPANY_DATA(ID, NAME, COMPANY_NAME, APP_NAME, DOMAIN_NAME)
+        values ( 
+                 SEQ_COMPANY_DATA.NEXTVAL ,
+                 #{name     ,jdbcType=VARCHAR},
+                 #{companyName     ,jdbcType=VARCHAR},
+                 #{appName     ,jdbcType=VARCHAR},
+                 #{domainName     ,jdbcType=VARCHAR}
+                 )
+    </insert>
+</mapper>

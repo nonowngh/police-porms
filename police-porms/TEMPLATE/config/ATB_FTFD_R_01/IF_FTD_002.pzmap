@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- DTD can be pulled from the Jar or over the web-->
+<!DOCTYPE PZMAP SYSTEM	"flatpack.dtd" >
+<!--<!DOCTYPE PZMAP SYSTEM	"http://flatpack.sourceforge.net/flatpack.dtd" >-->
+<PZMAP>
+	<COLUMN name="Variable" />
+	<COLUMN name="Breakdown" />
+	<COLUMN name="Breakdown_category" />
+	<COLUMN name="Year" />
+	<COLUMN name="RD_Value" />
+    <COLUMN name="Status" />
+	<COLUMN name="Footnotes" />
+  	<COLUMN name="Unit_for_TSM_and_CSV" />
+</PZMAP>

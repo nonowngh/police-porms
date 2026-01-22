@@ -1,0 +1,8 @@
+### SELECT LIKE
+POST http://clupine.duckdns.org:24219/atb-api/IF_REST_DB_02
+Content-Type: application/json
+
+{
+  "name": "Alyss"
+}
+

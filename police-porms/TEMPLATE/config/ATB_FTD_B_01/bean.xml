@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" id="propertyConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:ATB_FTD_B_01.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean class="com.mb.indigo2.springsupport.AdaptorConfigBean" id="adaptorBean">
+        <property name="adaptorName" value="ATB_FTD_B_01"/>
+        <property name="port" value="21033"/>
+        <property name="heartBeatInterval" value="60"/>
+        <property name="socketTimeOut" value="60"/>
+        <property name="heartbeatMsgType" value="xml"/>
+        <property name="netChkList">
+            <list/>
+        </property>
+    </bean>
+    <import resource="classpath:commons_configure.xml"/>
+    <bean class="org.springframework.jms.core.JmsTemplate" id="jmsTemplate">
+        <description/>
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="deliveryMode" value="1"/>
+        <property name="priority" value="1"/>
+        <property name="timeToLive" value="0"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <property name="sessionTransacted" value="false"/>
+    </bean>
+</beans>

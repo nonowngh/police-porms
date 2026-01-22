@@ -1,0 +1,16 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri May 29 13:49:14 KST 2020
+file\://C\:\\work\\frameworkTeam\\NetworkAdaptor_origin/productJar/.error=
+file\://C\:\\work\\frameworkTeam\\MCI-NetworkAdaptor/productJar/.lastUpdated=1590727737287
+file\://C\:\\work\\frameworkTeam\\NetworkAdaptor_origin/productJar/.lastUpdated=1590723562558
+file\://C\:\\work\\frameworkTeam\\NetworkAdaptor/productJar/.error=
+file\://C\:\\work\\frameworkTeam\\NetworkAdaptor/productJar/.lastUpdated=1584599131334
+file\://C\:\\work\\frameworkTeam\\mci-NetworkAdaptor/productJar/.error=
+file\://C\:\\work\\frameworkTeam\\MCI-NetworkAdaptor/productJar/.error=
+file\://C\:\\work\\frameworkTeam\\NetworkAdaptor_KERIS/productJar/.lastUpdated=1590727205174
+file\://C\:\\work\\frameworkTeam\\mci-NetworkAdaptor/productJar/.lastUpdated=1590727754136
+https\://repo.maven.apache.org/maven2/.lastUpdated=1582614232936
+http\://oss.jfrog.org/artifactory/oss-snapshot-local/.error=Could not transfer artifact indigoesb\:adaptor\:jar\:sources\:2.5.3 from/to jcenter-snapshots (http\://oss.jfrog.org/artifactory/oss-snapshot-local/)\: Failed to transfer http\://oss.jfrog.org/artifactory/oss-snapshot-local/indigoesb/adaptor/2.5.3/adaptor-2.5.3-sources.jar. Error code 409, 
+https\://repo.maven.apache.org/maven2/.error=
+file\://C\:\\work\\frameworkTeam\\NetworkAdaptor_KERIS/productJar/.error=
+@default-jcenter-snapshots-http\://oss.jfrog.org/artifactory/oss-snapshot-local/.lastUpdated=1583905476073

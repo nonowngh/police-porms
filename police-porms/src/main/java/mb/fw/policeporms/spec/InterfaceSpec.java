@@ -1,0 +1,18 @@
+package mb.fw.policeporms.spec;
+
+import lombok.Data;
+
+@Data
+public class InterfaceSpec {
+
+	//인터페이스 아이디
+	private String interfaceId;
+	//인터페이스 명
+	private String interfaceDescription;
+	//open-api 메소드
+	private String apiMethod;
+	//open-api url
+	private String apiPath;
+	//open-api 요청 타임아웃(초)
+	private int apiRequestTimeoutSeconds = 30;
+}

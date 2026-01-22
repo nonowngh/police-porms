@@ -1,0 +1,156 @@
+@startuml
+
+class mb.fw.atb.config.sub.IFContext {
+~ String strategy
+~ String dataClass
+~ ActionType actionType
+~ String contextPath
+~ String singleAddress
+~ String shareBodyRootName
+~ String interfaceId
+~ String cronExpression
+~ String fileSendPath
+~ String fileTempPath
+~ String fileErrorPath
+~ String fileCompletePath
+~ String fileSuccessPath
+~ String fileRecvPath
+~ String fileGlobPattern
+~ String fileType
+~ String gpkiTargetServerId
+~ boolean actFirst
+~ int actFirstIntervalSec
+~ String mapperGroupId
+~ String parserId
+~ String inMapperType
+~ String outMapperType
+~ String outBoundMapperMessageId
+~ String inBoundMapperMessageId
+~ String inboundCallUrl
+~ boolean procedureCall
+~ boolean lengthFieldInject
+~ int lengthFieldPosition
+~ int lengthFieldLength
+~ int lengthFieldAddition
+~ String tcpMode
+~ boolean fileErrorSkip
+~ boolean onSignalLoop
+~ boolean fileFirstHeader
+~ char fileDelimiter
+~ char fileDelimiterQualifier
+~ String sendSystemCode
+~ String receiveSystemCode
+~ String[] receiverIds
+~ int fileRetryCount
+~ int fileSendCount
+~ boolean fileDelete
+~ boolean hubFileDelete
+~ String clientId
+~ String clientClass
+~ String targetUrl
++ Map createContextMap()
+}
+
+
+class mb.fw.atb.config.sub.Iftp {
+~ boolean enabled
+~ String[] remoteHosts
+~ int dataPacketSize
+~ int retryDataCnt
+~ int viewCount
+~ int transferSleep
+~ boolean encrypt
+~ String password
+}
+
+class mb.fw.atb.config.sub.EmbeddedNetworkAdaptor {
+~ String type
+~ TCPMode tcpMode
+~ String[] remoteHosts
+~ int[] remotePorts
+~ int[] bindPorts
+~ String pollingImplClass
+~ int connectTimeoutSec
+~ int reconnectSec
+~ int recvTaskCount
+~ boolean hexMode
+~ String callType
+~ int[] messageId
+~ int[] messageIdLen
+~ int[] workCode
+~ int[] workCodeLen
+~ int maxFrameLength
+~ int lengthFieldOffset
+~ int lengthFieldLength
+~ int lengthAdjustment
+~ int initialBytesToStrip
+~ boolean stringValueUse
+~ String hexDelimiters
+~ String addLastHexDelimiter
+~ int frameLength
+~ String groupId
+~ String srcOrg
+~ String trgOrg
+~ String loggingType
+}
+
+class mb.fw.atb.config.sub.RemoteNetworkAdaptor {
+~ Map<String,String> remoteQueueMap
+~ String inboundQueue
+~ long receiveTimeout
+}
+
+class mb.fw.atb.config.IFConfig {
+- JmsTemplate jmsTemplate
+~ String id
+~ String description
+~ String address
+~ String serverIp
+~ String prefix
+~ String seedOpMode
+~ String encryptionKey
+~ String initVector
+~ String dataReceiverId
+~ boolean resultLogging
+~ boolean sendLogging
+~ IFResult IfResult
+~ List<IFContext> context
+~ boolean includeContext
+~ String mapperRemoteQueue
+~ long mapperReceiveTimeout
+~ EmbeddedNetworkAdaptor embeddedNetworkAdaptor
+~ RemoteNetworkAdaptor remoteNetworkAdaptor
+~ Iftp iftp
+~ Gpki gpki
+~ FTIInfo ftiInfo
+~ String senderConcurrency
+~ String receiverConcurrency
+~ String routeType
++ void init()
++ IFContext findContext(String,ActionType)
++ IFContext findContext(String)
+}
+
+
+class mb.fw.atb.config.sub.Gpki {
+~ String myServerId
+~ String certFilePath
+~ String envCertFilePathName
+~ String envPrivateKeyFilePathName
+~ String envPrivateKeyPasswd
+~ String sigCertFilePathName
+~ String sigPrivateKeyFilePathName
+~ String sigPrivateKeyPasswd
+~ String licensePath
+~ String cryptoKey
+~ String gpkiTargetServerIds
+~ String ldapAddress
+}
+
+  IFContext                 -up-> IFConfig
+  Iftp                      -up-> IFConfig
+  Gpki                      -up-> IFConfig
+  RemoteNetworkAdaptor      -up-> IFConfig
+  EmbeddedNetworkAdaptor    -up-> IFConfig
+
+@enduml

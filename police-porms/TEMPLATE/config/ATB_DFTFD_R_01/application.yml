@@ -1,0 +1,50 @@
+atb:
+  if-config:
+    id: DFTFD_RECEIVER_01
+    description: "(DB + FILE SENDER) + JMS + (FILE + DB RECEIVER)"
+    prefix: DFTFD
+    auto-config: false
+    iftp:
+      enabled: true
+      data-packet-size: 4096
+      retry-data-cnt: 100
+      view-count: 1000
+      transfer-sleep: 0
+      encrypt: false
+      remote-hosts:
+        - clupine.duckdns.org:24052
+    context:
+      - interface-id: IF_DTD_002
+        action-type: RECEIVER
+        strategy: StandardDFTFDStrategy
+        procedure-call: true
+        file-recv-path: "/atb/recv/IF_DTD_002"
+        file-temp-path: "/atb/recv/IF_DTD_002/temp"
+        file-success-path: "/atb/recv/IF_DTD_002/success"
+        file-error-path: "/atb/recv/IF_DTD_002/error"
+        file-retry-count: 3
+        file-type: DELIMITER
+        file-delimiter: ','
+        file-delimiter-qualifier: '"'
+        file-first-header: true
+        file-error-skip: false
+      - interface-id: IF_DTD_004
+        action-type: RECEIVER
+        strategy: StandardDFTFDStrategy
+        procedure-call: true
+        file-recv-path: "/atb/recv/IF_DTD_004"
+        file-temp-path: "/atb/recv/IF_DTD_004/temp"
+        file-success-path: "/atb/recv/IF_DTD_004/success"
+        file-error-path: "/atb/recv/IF_DTD_004/error"
+        file-retry-count: 3
+        file-type: DELIMITER
+        file-delimiter: ','
+        file-delimiter-qualifier: '"'
+        file-first-header: true
+        file-error-skip: false
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+mybatis:
+  config-location: classpath:mybatis-config.xml

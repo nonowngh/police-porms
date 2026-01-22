@@ -1,0 +1,17 @@
+### UPDATE
+POST http://172.28.7.204:24219/atb-api/IF_REST_DB_03
+Content-Type: application/json
+Authorization: Basic metabuild meta1234!@#$
+
+{
+  "dataList": [
+    {
+      "id": "12",
+      "name": "test"
+    },
+    {
+      "id": "13",
+      "name": "test2"
+    }
+  ]
+}

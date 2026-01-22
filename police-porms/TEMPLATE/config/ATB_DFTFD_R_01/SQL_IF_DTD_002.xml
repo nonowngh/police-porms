@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IF_DTD_002">
+    <insert id="INSERT" parameterType="hashmap">
+        INSERT INTO IF_DTD_002_T( ESB_SEQ
+                                , ESB_STATUS_CD
+                                , ESB_TRANSACTION_ID
+                                , ESB_RECV_DT
+                                , ESB_INTERFACE_ID
+                                , FIRST_NAME
+                                , LAST_NAME
+                                , EMAIL
+                                , PHONE
+                                , CUSTOMER_ID
+                                , CREATE_DT)
+        values (SEQ_IF_DTD_002_T.NEXTVAL,
+                'N',
+                #{transactionId     ,jdbcType=VARCHAR},
+                #{receiverMsgRecvDt     ,jdbcType=VARCHAR},
+                #{interfaceId     ,jdbcType=VARCHAR},
+                #{FIRST_NAME     ,jdbcType=VARCHAR},
+                #{LAST_NAME     ,jdbcType=VARCHAR},
+                #{EMAIL     ,jdbcType=VARCHAR},
+                #{PHONE     ,jdbcType=VARCHAR},
+                #{CUSTOMER_ID     ,jdbcType=INTEGER},
+                #{CREATE_DT     ,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="CALL" statementType="CALLABLE">{CALL SP_IF_DTD_002_T(#{transactionId ,jdbcType=VARCHAR})}</update>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource">
+        <description><![CDATA[$dbcp.description]]></description>
+        <property name="url" value="jdbc:oracle:thin:@172.28.7.133:41521/xe"/>
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="username" value="tester"/>
+        <property name="password" value="tester"/>
+        <property name="defaultAutoCommit" value="false"/>
+        <property name="maxWait" value="0"/>
+        <property name="initialSize" value="8"/>
+        <property name="maxActive" value="8"/>
+        <property name="minIdle" value="0"/>
+        <property name="maxIdle" value="8"/>
+        <property name="validationQuery" value="SELECT 1 FROM DUAL"/>
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="true"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="0"/>
+        <property name="minEvictableIdleTimeMillis" value="2000000"/>
+        <property name="numTestsPerEvictionRun" value="3"/>
+    </bean>
+
+    <bean class="com.indigo.indigomq.pool.PooledConnectionFactory"
+          destroy-method="stop" id="jmsConnectionFactory">
+        <description/>
+        <property name="connectionFactory">
+            <bean class="com.indigo.indigomq.IndigoMQConnectionFactory">
+                <property name="brokerURL">
+                    <value><![CDATA[failover:(tcp://172.28.7.133:24211)?initialReconnectDelay=10&maxReconnectDelay=30000&maxReconnectAttempts=0&randomize=true]]></value>
+                </property>
+            </bean>
+        </property>
+        <property name="maxConnections" value="10"/>
+        <property name="idleTimeout" value="30000"/>
+        <property name="maximumActive" value="500"/>
+    </bean>
+</beans>

@@ -1,0 +1,51 @@
+atb:
+  if-config:
+    id: RSTNA_E
+    description: "REST SERVER/CLIENT CONVERSION DUPLEX NETWORK ADAPTOR(EMBEDDED)"
+    embedded-network-adaptor:
+        type: LENGTH
+        tcp-mode: SYNC
+        remote-hosts:
+          - 127.0.0.1
+        remote-ports:
+          - 8004
+        max-frame-length: 4096
+        length-field-offset: 0
+        length-field-length: 4
+        length-adjustment: 0
+        initial-bytes-to-strip: 0
+        string-value-use: true
+        message-id: 39
+        message-id-len: 20
+        work-code: 24
+        work-code-len: 7
+        connect-timeout-sec: 30
+        reconnect-sec: 30
+        recv-task-count: 10
+        hex-mode: false
+        call-type: JMS
+        src-org: SHE
+        trg-org: SCI
+    if-result:
+        inject: true
+        tcp-plain-data: true
+    auto-config: false
+    context:
+      - interfaceId: IF_TCP_S_001
+        actionType: CUSTOMIZE
+        strategy: StandardNetworkAdaptorStrategy
+        tcpMode: SYNC
+        out-mapper-type: PARSER
+        in-mapper-type: PARSER
+        parser-id: SHineSCIParser
+        send-system-code: A01
+        receive-system-code: SCI
+        receiver-ids: SGI_TCP
+server:
+  port: 24220
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  main:
+    allow-bean-definition-overriding: true

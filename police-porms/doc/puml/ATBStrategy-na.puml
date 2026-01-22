@@ -1,0 +1,51 @@
+@startuml
+abstract class mb.fw.atb.strategy.ATBStrategy {
+# IFConfig config
+# AdaptorConfigBean adaptorConfigBean
+# IFTPClient client
+# ObjectMapper objectMapper
+# XmlMapper xmlMapper
+# JmsTemplate jmsTemplate
++ {abstract}Specifications specifications()
++ {abstract}OnSignalInfo onSignal(IFContext,String,String)
++ {abstract}OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ {abstract}Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ {abstract}void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
++ void startLogging(IFContext,String,String,String,long)
++ void endLogging(IFContext,String,long,String,String,String)
+}
+
+
+class mb.fw.atb.strategy.na.StandardNetworkAdaptorStrategy {
+- ObjectMapper mapper
+~ IFConfig ifConfig
+# ApplicationContext appContext
+~ MapEngine mapEngine
+~ AsciiEngine asciiEngine
++ HashMap<String,MessageFormBox> myMessageFormBox
+~ AdaptorConfigBean bean
+~ EmbeddedNAInboundService embeddedNAInboundService
+~ JmsTemplate jmsTemplate
++ NetworkAdaptorAPI embeddedNetworkAdaptorAPI
+~ Environment env
++ EmbeddedNetworkAdaptor embeddedNA
+~ NetworkAdaptor adaptor
+~ Base64.Encoder base64Encoder
+~ Base64.Decoder base64Decoder
+~ ApplicationContext applicationContext
++ void destroy()
++ void init()
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void retGenMessage(IFContext,String,String,String,String,Map<String,Object>,String,String,String)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+- WebClient getWebClient(IFConfig,HttpClient)
+}
+
+
+
+
+StandardNetworkAdaptorStrategy -up-> ATBStrategy
+@enduml

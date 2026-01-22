@@ -1,0 +1,31 @@
+network:
+  simulator:
+    tcp-message:
+      length:
+        enabled: true
+        tcp-mode: sync
+        bind-ports:
+          - 8004
+        extractor:
+           message-id: 39
+           message-id-len: 20
+           work-code: 24
+           work-code-len: 7
+        connect-timeout-sec: 30
+        hex-mode: false
+        initial-bytes-to-strip: 0
+        length-adjustment: 0
+        length-field-length: 4
+        length-field-offset: 0
+        max-frame-length: 4096
+        reconnect-sec: 30
+        recv-task-count: 2
+        string-value-use: true
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server:
+  port: 24057
+"0200295": "[0340HEHY001 SHDI0020000002102950000001C00000000000000000000123456789012345678901234567890123456789012345678901234567890123411234567890123456789012345678901234567890123456789012345678901234567890123456789012345678123456789012345678901234567890123456789012345678901234567890123456789012345678901234567812345678901234567890123456789012345678901234]"

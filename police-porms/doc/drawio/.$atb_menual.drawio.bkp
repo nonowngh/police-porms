@@ -1,0 +1,58 @@
+<mxfile modified="2024-01-26T02:02:54.630Z" host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.21 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="YbBry6jLce7BQPo9m8V8" version="22.1.21" type="device">
+  <diagram id="C2fSY1v2SiZeoUbDoYyL" name="Page-1">
+    <mxGraphModel dx="1114" dy="656" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-5" style="orthogonalLoop=1;jettySize=auto;html=1;curved=1;sourcePerimeterSpacing=5;targetPerimeterSpacing=5;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;shadow=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.625;entryY=0.981;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="jgGvg-VBIUTAdVNzycbC-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="432.5" y="130" />
+            </Array>
+            <mxPoint x="320" y="176" as="sourcePoint" />
+            <mxPoint x="485.951" y="137" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3ne1QswCM8ZiEu4GHsYG-31" value="Publiser(게시자)와 Subscriber(구독자)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=20;fontColor=#4D4D4D;" parent="1" vertex="1">
+          <mxGeometry x="189.5" y="50" width="790" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3ne1QswCM8ZiEu4GHsYG-32" value="" style="line;strokeWidth=2;html=1;fontSize=20;fontColor=#4D4D4D;" parent="1" vertex="1">
+          <mxGeometry x="103.5" y="80" width="960" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-2" value="Message Queue" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="520" y="70" width="60" height="129" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-6" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Adaptor&lt;/span&gt;" style="shape=cross;whiteSpace=wrap;html=1;size=0.6285714285714286;" vertex="1" parent="1">
+          <mxGeometry x="230" y="153" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-4" value="" style="shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.2d.letter;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="130" width="46.4" height="34.8" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-13" value="" style="line;strokeWidth=2;html=1;fontSize=20;fontColor=#4D4D4D;" vertex="1" parent="1">
+          <mxGeometry x="103.5" y="40" width="960" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-16" value="Adaptor" style="shape=cross;whiteSpace=wrap;html=1;size=0.6285714285714286;" vertex="1" parent="1">
+          <mxGeometry x="830" y="153" width="80" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-17" style="orthogonalLoop=1;jettySize=auto;html=1;curved=1;sourcePerimeterSpacing=5;targetPerimeterSpacing=5;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;shadow=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="jgGvg-VBIUTAdVNzycbC-2" target="jgGvg-VBIUTAdVNzycbC-16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="742.5" y="111.5" />
+            </Array>
+            <mxPoint x="630" y="157.5" as="sourcePoint" />
+            <mxPoint x="795.951" y="118.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-18" value="" style="shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.2d.letter;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="118.19999999999999" width="46.4" height="34.8" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-19" value="&lt;span style=&quot;color: rgb(77, 77, 77); font-family: Helvetica; font-size: 20px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 700; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Publiser&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="230" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="jgGvg-VBIUTAdVNzycbC-21" value="&lt;span style=&quot;color: rgb(77, 77, 77); font-family: Helvetica; font-size: 20px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 700; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Subscriber&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="815" y="230" width="110" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

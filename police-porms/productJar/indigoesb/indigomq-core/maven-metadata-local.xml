@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>indigoesb</groupId>
+  <artifactId>indigomq-core</artifactId>
+  <versioning>
+    <release>1.5.5_C</release>
+    <versions>
+      <version>1.5.5_C</version>
+    </versions>
+    <lastUpdated>20220329055339</lastUpdated>
+  </versioning>
+</metadata>

@@ -1,0 +1,34 @@
+atb:
+  if-config:
+    id: "FTD_BATCH_01"
+    description: "FILE to DB Batch"
+    prefix: FTD
+    auto-config: false
+    context:
+      - interface-id: IF_FTD_003
+        action-type: SENDER
+        strategy: StandardFTDBatch
+        cron-expression: 0/20 * * * * ?
+        on-signal-loop: false
+        procedure-call: true
+        file-send-path: "/atb/send/IF_FTD_003"
+        file-temp-path: "/atb/send/IF_FTD_003/temp"
+        file-complete-path: "/atb/send/IF_FTD_003/complete"
+        file-success-path: "/atb/send/IF_FTD_003/success"
+        file-error-path: "/atb/send/IF_FTD_003/error"
+        file-send-count: 1
+        file-delete: true
+        file-glob-pattern: "*.{csv,doc,xml,xlsx,zip,hwp,exe}"
+        file-type: DELIMITER
+        file-delimiter: ','
+        file-delimiter-qualifier: '"'
+        file-error-skip: false
+        file-first-header: true
+        send-system-code: A01
+        receive-system-code: B01
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+mybatis:
+  config-location: classpath:mybatis-config.xml

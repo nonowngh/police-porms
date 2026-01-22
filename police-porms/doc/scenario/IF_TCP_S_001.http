@@ -1,0 +1,17 @@
+### 메시지 변환 예제
+POST http://clupine.duckdns.org:24220/na-api/IF_TCP_S_001
+Content-Type: application/json
+
+{
+  "ambleLen": "0143",
+  "memberId": "HEHY001 ",
+  "cpCode": "SHDI00200000",
+  "jpCode": "0200",
+  "wkCode": "295",
+  "resCode": "000",
+  "keyNum": "0001",
+  "ciYn": "C",
+  "seq": "00000000000000000000",
+  "residentNo": "7701201234567",
+  "hash": "5g3fEkxe4INT1vrI0x5JjYlGPBV/mtNdcquT0XCGeOY\u003d"
+}

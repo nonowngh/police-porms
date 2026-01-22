@@ -1,0 +1,29 @@
+atb:
+  if-config:
+    id: RSTNA_R
+    description: "REST SERVER/CLIENT CONVERSION DUPLEX NETWORK ADAPTOR(REMOTE)"
+    remote-network-adaptor:
+        remote-queue-map:
+          SGI_TCP: OUT.SGI_TCP
+        inbound-queue: IN.SGI_TCP
+        receive-timeout: 12000
+    auto-config: false
+    context:
+      - interfaceId: IF_TCP_S_001
+        actionType: CUSTOMIZE
+        strategy: StandardNetworkAdaptorStrategy
+        tcpMode: SYNC
+        out-mapper-type: PARSER
+        in-mapper-type: PARSER
+        parser-id: SHineSCIParser
+        send-system-code: A01
+        receive-system-code: SCI
+        receiver-ids: SGI_TCP
+server:
+  port: 24220
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  main:
+    allow-bean-definition-overriding: true

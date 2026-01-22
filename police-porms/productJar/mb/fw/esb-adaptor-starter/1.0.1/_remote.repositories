@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Oct 21 12:35:20 KST 2022
+esb-adaptor-starter-1.0.1.jar>local-repository=
+esb-adaptor-starter-1.0.1.pom>local-repository=
+esb-adaptor-starter-1.0.1.jar>=
+esb-adaptor-starter-1.0.1.pom>=

@@ -1,0 +1,82 @@
+@startuml
+abstract class mb.fw.atb.strategy.ATBStrategy {
+# IFConfig config
+# AdaptorConfigBean adaptorConfigBean
+# IFTPClient client
+# ObjectMapper objectMapper
+# XmlMapper xmlMapper
+# JmsTemplate jmsTemplate
++ {abstract}Specifications specifications()
++ {abstract}OnSignalInfo onSignal(IFContext,String,String)
++ {abstract}OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ {abstract}Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ {abstract}void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
++ void startLogging(IFContext,String,String,String,long)
++ void endLogging(IFContext,String,long,String,String,String)
+}
+
+
+class mb.fw.atb.strategy.provider.StandardRSTRCPOSTStrategy {
+- ObjectMapper mapper
+~ IFConfig ifConfig
+~ HttpClient httpClient
+~ WebClient client
+~ LRUMap<String,HttpStatus> responseMap
+- AdaptorConfigBean adaptorConfigBean
+- JmsTemplate jmsTemplate
++ void init()
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+- WebClient getWebClient(IFConfig,HttpClient)
+}
+
+
+class mb.fw.atb.strategy.provider.StandardDBDeleteStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+}
+
+
+class mb.fw.atb.strategy.provider.StandardDBInsertStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+}
+
+
+class mb.fw.atb.strategy.provider.StandardDBSelectStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+}
+
+
+class mb.fw.atb.strategy.provider.StandardDBUpdateStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+}
+
+ StandardRSTRCPOSTStrategy -up->   ATBStrategy
+ StandardDBDeleteStrategy  -up->   ATBStrategy
+ StandardDBInsertStrategy  -up->   ATBStrategy
+ StandardDBSelectStrategy  -up->   ATBStrategy
+ StandardDBUpdateStrategy  -up->   ATBStrategy
+
+@enduml

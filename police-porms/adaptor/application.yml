@@ -1,0 +1,28 @@
+atb:
+  if-config:
+    id: ATB_OAUTH2_TOKEN
+    description: "REST_TEMPLATE BASE OAUTH2 CLIENT_CREDENTIALS TEST"
+    oauth2:
+      client-id: atbClient
+      client-secret: RvKPKbdb4Kipv8SwfiQ36FwThYTanpvc
+      access-token-uri: "http://clupine.duckdns.org:7080/realms/master/protocol/openid-connect/token"
+    auto-config: true
+#    context:
+#      - interfaceId: IF_CLIENT_CREDENTIALS
+#        actionType: CUSTOMIZE
+#        cron-expression: "0/30 * * * * ?"
+#        strategy: OAuth2Token
+#      - interfaceId: MyInterfaceContext
+#        actionType: CUSTOMIZE
+#        cron-expression: "0/30 * * * * ?"
+#        strategy: MyInterfaceContext
+server:
+  port: 24220
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  main:
+    allow-bean-definition-overriding: true
+  jmx:
+    enabled: true

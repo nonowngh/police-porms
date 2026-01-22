@@ -1,0 +1,670 @@
+{
+  "patternInfo" : {
+    "na" : "TCP/IP 연동",
+    "provider" : "프로 바이더",
+    "batch" : "배치",
+    "pubsub" : "PUB/SUB"
+  },
+  "strategyMap" : {
+    "pubsub.StandardDFTFDStrategy" : {
+      "name" : "Large DB TO DB",
+      "nameKor" : "대용량 DB TO DB",
+      "version" : "1.0",
+      "description" : "대용량 DB 데이터를 연계하기위한 방법으로 파일TO파일 방식으로 연계한후 DB로 전송하는 방법입니다. , \n Master-Detail 테이블 구조를 지원합니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_DTD_004\",\n  \"actionType\": \"SENDER\",\n  \"strategy\": \"StandardDFTFDStrategy\",\n  \"cronExpression\": [\n    \"0/20 * * * * ?\"\n  ],\n  \"actFirst\": false,\n  \"onSignalLoop\": false,\n  \"fileSendPath\": \"/atb/send/IF_DTD_004\",\n  \"fileTempPath\": \"/atb/send/IF_DTD_004/temp\",\n  \"fileCompletePath\": \"/atb/send/IF_DTD_004/complete\",\n  \"fileErrorPath\": \"/atb/send/IF_DTD_004/error\",\n  \"fileSuccessPath\": \"/atb/send/IF_DTD_004/success\",\n  \"fileRetryCount\": 3,\n  \"fileDelete\": false,\n  \"fileType\": \"DELIMITER\",\n  \"fileDelimiter\": \",\",\n  \"fileDelimiterQualifier\": \"\\\"\",\n  \"detailData\": false,\n  \"detailNames\": [\"CHILD\"],\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\"DFTFD_RECEIVER_01\"]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_DTD_004\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardDFTFDStrategy\",\n  \"procedureCall\": true,\n  \"fileRecvPath\": \"/atb/recv/IF_DTD_004\",\n  \"fileTempPath\": \"/atb/recv/IF_DTD_004/temp\",\n  \"fileSuccessPath\": \"/atb/recv/IF_DTD_004/success\",\n  \"fileErrorPath\": \"/atb/recv/IF_DTD_004/error\",\n  \"fileRetryCount\": 3,\n  \"fileType\": \"DELIMITER\",\n  \"fileDelimiter\": \",\",\n  \"fileDelimiterQualifier\": \"\\\"\",\n  \"fileFirstHeader\": true,\n  \"fileErrorSkip\": false\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "file-error-path", "receiverIds", "file-complete-path", "cronExpression", "actionType", "file-temp-path", "interfaceId", "file-success-path", "strategy", "sendSystemCode", "receiveSystemCode", "file-send-path" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "detailNames" : "디테일 식별자 (예: CHILD,CHILD2)",
+          "fileCompletePath" : "파일 전송 완료 경로",
+          "fileDelimiter" : "파일 구분자",
+          "onSignalLoop" : "스케줄 실행후 데이터가 발생하면 한번더 수행 여부(true, false)",
+          "fileDelimiterQualifier" : "데이터를 감싸는 파일 구분자",
+          "receiverIds" : "수신 어댑터에 부여된 id",
+          "actFirst" : "최초에 한번만 실행, 이때 크론 표현식은 무시(true, false)",
+          "detailData" : "디테일 테이블 사용 여부 (true, false)",
+          "fileSendPath" : "파일 전송 경로",
+          "fileErrorPath" : "파일 전송 에러",
+          "fileTempPath" : "파일 임시 경로",
+          "cronExpression" : "스케줄링을 위한 크론 표현식",
+          "actionType" : "액션 타입 (SENDER, RECEIVER)",
+          "fileDelete" : "파일 전송 완료시 삭제 여부(true, false)",
+          "fileRetryCount" : "파일 재전송 횟수",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "fileSuccessPath" : "파일 전송 성공(최종) ",
+          "sendSystemCode" : "송신 시스템 코드(이력용)",
+          "receiveSystemCode" : "수신 시스템 코드(이력용)",
+          "fileType" : "파일 타입 (DELIMITER, FIXED)"
+        },
+        "defaultValue" : {
+          "detailNames" : "empty",
+          "fileCompletePath" : "empty",
+          "fileDelimiter" : ",",
+          "onSignalLoop" : "false",
+          "fileDelimiterQualifier" : "\"",
+          "receiverIds" : "empty",
+          "actFirst" : "false",
+          "detailData" : "false",
+          "fileSendPath" : "empty",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "cronExpression" : "empty",
+          "actionType" : "empty",
+          "fileDelete" : "false",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "fileErrorPath", "strategy", "fileTempPath", "fileSuccessPath", "fileRecvPath" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "fileDelimiter" : "파일 구분자",
+          "fileDelimiterQualifier" : "파일 구분자 한정자",
+          "fileErrorPath" : "파일 수신 에러 경로",
+          "fileTempPath" : "파일 임시 경로",
+          "actionType" : "액션 타입(SENDER, RECEIVER)",
+          "procedureCall" : "프로시저 호출 여부(true, false)",
+          "fileFirstHeader" : "파일 헤더 포함 여부(true, false)",
+          "fileErrorSkip" : "파일 에러시 건너뛰기 여부(true, false)",
+          "fileRetryCount" : "파일 재전송 횟수",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "fileSuccessPath" : "파일 수신 성공 경로",
+          "fileRecvPath" : "파일 수신 경로",
+          "fileType" : "파일 타입 (DELIMITER, FIXED)"
+        },
+        "defaultValue" : {
+          "fileDelimiter" : ",",
+          "fileDelimiterQualifier" : "\"",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "actionType" : "empty",
+          "procedureCall" : "false",
+          "fileFirstHeader" : "true",
+          "fileErrorSkip" : "false",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "fileRecvPath" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      }
+    },
+    "provider.StandardDBSelectStrategy" : {
+      "name" : "DB Select",
+      "nameKor" : "DB 조회",
+      "version" : "1.0",
+      "description" : "DB에 데이터를 조회하는 전략입니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_REST_DB_02\",\n  \"actionType\": \"CUSTOMIZE\",\n  \"strategy\": \"StandardDBSelectStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\n    \"DTD_RECEIVER_01\"\n  ]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_REST_DB_02\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardDBSelectStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\"\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      }
+    },
+    "batch.StandardDTFBatch" : {
+      "name" : "DB TO FILE BATCH",
+      "nameKor" : "DB TO 파일 배치",
+      "version" : "1.0",
+      "description" : "DB 데이터를 FILE 로 생성합니다. DELIMITER, XML , JSON을 지원 , \n Master-Detail 테이블 구조를 지원합니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_DTF_001\",\n  \"actionType\": \"CUSTOM\",\n  \"strategy\": \"StandardDTFBatch\",\n  \"cronExpression\": [\n    \"0/20 * * * * ?\"\n  ],\n  \"actFirst\": false,\n  \"onSignalLoop\": false,\n  \"fileTempPath\": \"/atb/recv/IF_DTF_001/temp\",\n  \"fileErrorPath\": \"/atb/recv/IF_DTF_001/error\",\n  \"fileRecvPath\": \"/atb/recv/IF_DTF_001/success\",\n  \"fileType\": \"DELIMITER\",\n  \"fileDelimiter\": \",\",\n  \"detailData\": false,\n  \"detailNames\": [\"CHILD\"],\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n}",
+      "receiver" : null,
+      "senderSchema" : {
+        "requiredFields" : [ "cronExpression", "actionType", "interfaceId", "fileErrorPath", "strategy", "fileRecvPath", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "detailNames" : "디테일 식별자 (예: CHILD,CHILD2)",
+          "fileCompletePath" : "파일 전송 완료 경로",
+          "fileDelimiter" : "파일 구분자",
+          "onSignalLoop" : "스케줄 실행후 데이터가 발생하면 한번더 수행 여부(true, false)",
+          "receiverIds" : "수신 어댑터에 부여된 id",
+          "actFirst" : "최초에 한번만 실행, 이때 크론 표현식은 무시(true, false)",
+          "detailData" : "디테일 테이블 사용 여부 (true, false)",
+          "fileSendPath" : "파일 전송 경로",
+          "fileErrorPath" : "파일 전송 에러",
+          "fileTempPath" : "파일 임시 경로",
+          "cronExpression" : "스케줄링을 위한 크론 표현식",
+          "actionType" : "액션 타입 (SENDER, RECEIVER , CUSTOM)",
+          "fileDelete" : "파일 전송 완료시 삭제 여부(true, false)",
+          "fileRetryCount" : "파일 재전송 횟수",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "fileSuccessPath" : "파일 전송 성공(최종) ",
+          "sendSystemCode" : "송신 시스템 코드(이력용)",
+          "receiveSystemCode" : "수신 시스템 코드(이력용)",
+          "fileType" : "파일 타입 (DELIMITER, FIXED)"
+        },
+        "defaultValue" : {
+          "detailNames" : "empty",
+          "fileCompletePath" : "empty",
+          "fileDelimiter" : ",",
+          "onSignalLoop" : "false",
+          "fileDelimiterQualifier" : "\"",
+          "receiverIds" : "empty",
+          "actFirst" : "false",
+          "detailData" : "false",
+          "fileSendPath" : "empty",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "cronExpression" : "empty",
+          "actionType" : "empty",
+          "fileDelete" : "false",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      },
+      "receiverSchema" : null
+    },
+    "provider.StandardDBDeleteStrategy" : {
+      "name" : "DB Delete",
+      "nameKor" : "DB 삭제",
+      "version" : "1.0",
+      "description" : "DB에 데이터를 삭제하는 전략입니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_REST_DB_04\",\n  \"actionType\": \"CUSTOMIZE\",\n  \"strategy\": \"StandardDBDeleteStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\n    \"DTD_RECEIVER_01\"\n  ]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_REST_DB_04\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardDBDeleteStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\"\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      }
+    },
+    "pubsub.StandardDTDStrategy" : {
+      "name" : "Normal DB TO DB",
+      "nameKor" : "일반 DB TO DB",
+      "version" : "1.0",
+      "description" : "송신 DB에서 수신 DB로 JMS(Java Message Service)를 이용한 데이터를 전송하는 전략입니다.\n Master-Detail 테이블 구조를 지원합니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_DTD_003\",\n  \"actionType\": \"SENDER\",\n  \"strategy\": \"StandardDTDStrategy\",\n  \"cronExpression\": [\n    \"0/20 * * * * ?\"\n  ],\n  \"actFirst\": false,\n  \"onSignalLoop\": false,\n  \"detailData\": false,\n  \"detailNames\": [\n    \"CHILD\"\n  ],\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\n    \"DTD_RECEIVER_01\"\n  ]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_DTD_001\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardDTDStrategy\",\n  \"procedureCall\": true\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "cronExpression", "actionType", "receiverIds", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "cronExpression" : "스케줄링을 위한 크론 표현식",
+          "actionType" : "액션 타입 (SENDER, RECEIVER)",
+          "detailNames" : "디테일 식별자 (예: CHILD,CHILD2)",
+          "onSignalLoop" : "스케줄 실행후 데이터가 발생하면 한번더 수행 여부(true, false)",
+          "receiverIds" : "수신 어댑터에 부여된 id",
+          "actFirst" : "최초에 한번만 실행, 이때 크론 표현식은 무시(true, false)",
+          "detailData" : "디테일 테이블 사용 여부 (true, false)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드(이력용)",
+          "receiveSystemCode" : "수신 시스템 코드(이력용)"
+        },
+        "defaultValue" : {
+          "cronExpression" : "empty",
+          "actionType" : "empty",
+          "detailNames" : "empty",
+          "onSignalLoop" : "false",
+          "receiverIds" : "empty",
+          "actFirst" : "false",
+          "detailData" : "false",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (SENDER, RECEIVER)",
+          "procedureCall" : "프로시저 호출 여부(true, false)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "procedureCall" : "false",
+          "interfaceId" : "empty",
+          "strategy" : "empty"
+        }
+      }
+    },
+    "provider.StandardDBInsertStrategy" : {
+      "name" : "DB Insert",
+      "nameKor" : "DB 삽입",
+      "version" : "1.0",
+      "description" : "DB에 데이터를 삽입하는 전략입니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_REST_DB_01\",\n  \"actionType\": \"CUSTOMIZE\",\n  \"strategy\": \"StandardDBInsertStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\n    \"DTD_RECEIVER_01\"\n  ]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_REST_DB_01\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardDBInsertStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\"\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      }
+    },
+    "pubsub.StandardFTFDStrategy" : {
+      "name" : "File TO DB",
+      "nameKor" : "파일 TO DB",
+      "version" : "1.0",
+      "description" : "파일을 송신지에서 수신지로 전송후 DB로 전송하는 전략입니다. \nMaster-Detail 테이블 구조를 지원하지만 파일 규격을 준수해야합니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_FTD_002\",\n  \"actionType\": \"SENDER\",\n  \"strategy\": \"StandardFTFDStrategy\",\n  \"cronExpression\": [\n    \"0/20 * * * * ?\"\n  ],\n  \"onSignalLoop\": false,\n  \"fileSendPath\": \"/atb/send/IF_FTD_002\",\n  \"fileTempPath\": \"/atb/send/IF_FTD_002/temp\",\n  \"fileCompletePath\": \"/atb/send/IF_FTD_002/complete\",\n  \"fileErrorPath\": \"/atb/send/IF_FTD_002/error\",\n  \"fileSuccessPath\": \"/atb/send/IF_FTD_002/success\",\n  \"fileSendCount\": 10,\n  \"fileRetryCount\": 3,\n  \"fileDelete\": true,\n  \"fileGlobPattern\": \"*.{csv,doc,xml,xlsx,zip,hwp,exe}\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\"FTFD_RECEIVER_01\"]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_FTD_002\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardFTFDStrategy\",\n  \"procedureCall\": true,\n  \"fileRecvPath\": \"/atb/recv/IF_FTD_002/\",\n  \"fileTempPath\": \"/atb/recv/IF_FTD_002/temp\",\n  \"fileSuccessPath\": \"/atb/recv/IF_FTD_002/success\",\n  \"fileErrorPath\": \"/atb/recv/IF_FTD_002/error\",\n  \"fileRetryCount\": 3,\n  \"fileType\": \"DELIMITER\",\n  \"fileDelimiter\": \",\",\n  \"fileDelimiterQualifier\": \"\\\"\",\n  \"fileFirstHeader\": false,\n  \"fileErrorSkip\": true\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "fileCompletePath", "receiverIds", "fileSendPath", "fileErrorPath", "fileTempPath", "cronExpression", "actionType", "interfaceId", "strategy", "fileSuccessPath", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "detailNames" : "디테일 식별자 (예: CHILD,CHILD2)",
+          "fileCompletePath" : "파일 완료 경로",
+          "fileDelimiter" : "파일 구분자",
+          "onSignalLoop" : "OnSignal 루프",
+          "fileDelimiterQualifier" : "파일 구분자 한정자",
+          "receiverIds" : "수신자 ID",
+          "actFirst" : "ActFirst",
+          "fileGlobPattern" : "파일 Glob 패턴",
+          "detailData" : "디테일 테이블 사용 여부 (true, false)",
+          "fileSendPath" : "파일 송신 경로",
+          "fileErrorPath" : "파일 에러 경로",
+          "fileTempPath" : "파일 임시 경로",
+          "cronExpression" : "크론 표현식",
+          "actionType" : "동작 유형",
+          "fileDelete" : "파일 삭제",
+          "fileRetryCount" : "파일 재시도 횟수",
+          "interfaceId" : "인터페이스 ID",
+          "strategy" : "전략",
+          "fileSuccessPath" : "파일 성공 경로",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드",
+          "fileType" : "파일 유형"
+        },
+        "defaultValue" : {
+          "detailNames" : "empty",
+          "fileCompletePath" : "empty",
+          "fileDelimiter" : ",",
+          "onSignalLoop" : "false",
+          "fileDelimiterQualifier" : "\"",
+          "receiverIds" : "empty",
+          "actFirst" : "false",
+          "fileGlobPattern" : "*",
+          "detailData" : "false",
+          "fileSendPath" : "empty",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "cronExpression" : "empty",
+          "actionType" : "empty",
+          "fileDelete" : "false",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "fileErrorPath", "strategy", "fileTempPath", "fileSuccessPath", "fileRecvPath" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "fileDelimiter" : "파일 구분자",
+          "fileDelimiterQualifier" : "파일 구분자 한정자",
+          "fileErrorPath" : "파일 에러 경로",
+          "fileTempPath" : "파일 임시 경로",
+          "actionType" : "동작 유형",
+          "procedureCall" : "프로시저 호출 여부(true, false)",
+          "fileFirstHeader" : "파일 헤더 존재 여부",
+          "fileErrorSkip" : "파일 에러 스킵 여부",
+          "fileRetryCount" : "파일 재시도 횟수",
+          "interfaceId" : "인터페이스 ID",
+          "strategy" : "전략",
+          "fileSuccessPath" : "파일 성공 경로",
+          "fileRecvPath" : "파일 수신 경로",
+          "fileType" : "파일 유형"
+        },
+        "defaultValue" : {
+          "fileDelimiter" : ",",
+          "fileDelimiterQualifier" : "\"",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "actionType" : "empty",
+          "procedureCall" : "false",
+          "fileFirstHeader" : "true",
+          "fileErrorSkip" : "false",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "fileRecvPath" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      }
+    },
+    "na.StandardNetworkAdaptorStrategy" : {
+      "name" : "TCP/IP Pattern (Provider to TCP/IP)",
+      "nameKor" : "TCP/IP 패턴 (Provider to TCP/IP)",
+      "version" : "1.0",
+      "description" : "Rest Provider 통하여 Json 데이터를 TCP/IP로 송신하는 전략입니다. 수신은 Http Rest API로 호출합니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_TCP_S_001\",\n  \"actionType\": \"CUSTOMIZE\",\n  \"strategy\": \"StandardNetworkAdaptorStrategy\",\n  \"processMode\": \"SYNC\",\n  \"outMapperType\": \"PARSER\",\n  \"inMapperType\": \"PARSER\",\n  \"parserId\": \"SHineSCIParser\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"SCI\",\n  \"receiverIds\": [\"SGI_TCP\"]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_TCP_S_001\",\n  \"actionType\": \"CUSTOMIZE\",\n  \"strategy\": \"StandardNetworkAdaptorStrategy\",\n  \"processMode\": \"SYNC\",\n  \"outMapperType\": \"PARSER\",\n  \"inMapperType\": \"PARSER\",\n  \"parserId\": \"SHineSCIParser\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"SCI\",\n  \"receiverIds\": [\"SGI_TCP\"]\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "receiverIds", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "동작 유형 (CUSTOMIZE)",
+          "outMapperType" : "송신 맵핑 유형",
+          "receiverIds" : "수신자 ID 목록",
+          "parserId" : "파서 콤퍼넌트 ID",
+          "interfaceId" : "인터페이스 ID",
+          "strategy" : "전략(패턴)",
+          "processMode" : "처리 방식 (SYNC, ASYNC)",
+          "inMapperType" : "수신 맵핑 유형",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "outMapperType" : "empty",
+          "receiverIds" : "empty",
+          "parserId" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "processMode" : "empty",
+          "inMapperType" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      },
+      "receiverSchema" : null
+    },
+    "provider.StandardDBUpdateStrategy" : {
+      "name" : "DB Update",
+      "nameKor" : "DB 수정",
+      "version" : "1.0",
+      "description" : "DB에 데이터를 업데이트하는 전략입니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_REST_DB_03\",\n  \"actionType\": \"CUSTOMIZE\",\n  \"strategy\": \"StandardDBUpdateStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\n    \"DTD_RECEIVER_01\"\n  ]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_REST_DB_03\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardDBUpdateStrategy\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\"\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "actionType" : "액션 타입 (CUSTOMIZE)",
+          "interfaceId" : "인터페이스 아이디",
+          "strategy" : "전략(패턴)",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty"
+        }
+      }
+    },
+    "pubsub.StandardFTFStrategy" : {
+      "name" : "File TO File",
+      "nameKor" : "파일 TO 파일",
+      "version" : "1.0",
+      "description" : "파일을 송신지에서 수신지로 전송하는 전략입니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_FTF_001\",\n  \"actionType\": \"SENDER\",\n  \"strategy\": \"StandardFTFStrategy\",\n  \"cronExpression\": [\n    \"0/20 * * * * ?\"\n  ],\n  \"onSignalLoop\": true,\n  \"fileSendPath\": \"/atb/send/IF_FTF_001\",\n  \"fileTempPath\": \"/atb/send/IF_FTF_001/temp\",\n  \"fileCompletePath\": \"/atb/send/IF_FTF_001/complete\",\n  \"fileErrorPath\": \"/atb/send/IF_FTF_001/error\",\n  \"fileSuccessPath\": \"/atb/send/IF_FTF_001/success\",\n  \"fileSendCount\": 1,\n  \"fileRetryCount\": 3,\n  \"fileDelete\": false,\n  \"fileGlobPattern\": \"*.{csv,doc,xml,xlsx,zip,hwp,exe,tar}\",\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\",\n  \"receiverIds\": [\n    \"FTF_RECEIVER_01\"\n  ]\n}",
+      "receiver" : " {\n  \"interfaceId\": \"IF_FTF_001\",\n  \"actionType\": \"RECEIVER\",\n  \"strategy\": \"StandardFTFStrategy\",\n  \"fileRecvPath\": \"/atb/recv/IF_FTF_001\",\n  \"fileTempPath\": \"/atb/recv/IF_FTF_001/temp\",\n  \"fileRetryCount\": 3\n}",
+      "senderSchema" : {
+        "requiredFields" : [ "fileCompletePath", "receiverIds", "fileSendPath", "fileErrorPath", "fileTempPath", "cronExpression", "actionType", "interfaceId", "strategy", "fileSuccessPath", "sendSystemCode", "receiveSystemCode" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "detailNames" : "상세 이름",
+          "fileCompletePath" : "파일 완료 경로",
+          "fileDelimiter" : "파일 구분자",
+          "onSignalLoop" : "스케줄 실행후 데이터가 발생하면 한번더 수행 여부(true, false)",
+          "fileDelimiterQualifier" : "파일 구분자 한정자",
+          "receiverIds" : "수신자 ID",
+          "actFirst" : "최초에 한번만 실행, 이때 크론 표현식은 무시(true, false)",
+          "fileGlobPattern" : "파일 Glob 패턴",
+          "detailData" : "상세 데이터",
+          "fileSendPath" : "파일 송신 경로",
+          "fileErrorPath" : "파일 에러 경로",
+          "fileTempPath" : "파일 임시 경로",
+          "cronExpression" : "스케줄링을 위한 크론 표현식",
+          "actionType" : "동작 유형 (SENDER, RECEIVER)",
+          "fileDelete" : "파일 삭제",
+          "fileRetryCount" : "파일 재시도 횟수",
+          "interfaceId" : "인터페이스 ID",
+          "strategy" : "전략(패턴)",
+          "fileSuccessPath" : "파일 성공 경로",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드",
+          "fileType" : "파일 유형"
+        },
+        "defaultValue" : {
+          "detailNames" : "empty",
+          "fileCompletePath" : "empty",
+          "fileDelimiter" : ",",
+          "onSignalLoop" : "false",
+          "fileDelimiterQualifier" : "\"",
+          "receiverIds" : "empty",
+          "actFirst" : "false",
+          "fileGlobPattern" : "*",
+          "detailData" : "false",
+          "fileSendPath" : "empty",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "cronExpression" : "empty",
+          "actionType" : "empty",
+          "fileDelete" : "false",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      },
+      "receiverSchema" : {
+        "requiredFields" : [ "actionType", "interfaceId", "strategy", "fileTempPath", "fileRecvPath" ],
+        "fixedValueFields" : [ "strategy", "actionType" ],
+        "fieldComment" : {
+          "actionType" : "동작 유형 (SENDER, RECEIVER)",
+          "interfaceId" : "인터페이스 ID",
+          "strategy" : "전략(패턴)",
+          "fileTempPath" : "파일 임시 경로",
+          "fileRecvPath" : "파일 수신 경로"
+        },
+        "defaultValue" : {
+          "actionType" : "empty",
+          "fileRetryCount" : "3",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileTempPath" : "empty",
+          "fileRecvPath" : "empty"
+        }
+      }
+    },
+    "batch.StandardFTDBatch" : {
+      "name" : "File TO DB Batch",
+      "nameKor" : "파일 TO DB 배치",
+      "version" : "1.0",
+      "description" : "파일을 읽어 DB에 데이터를 삽입하는 배치입니다.",
+      "sender" : " {\n  \"interfaceId\": \"IF_FTD_003\",\n  \"actionType\": \"SENDER\",\n  \"strategy\": \"StandardFTDBatch\",\n  \"cronExpression\": [\n    \"0/20 * * * * ?\"\n  ],\n  \"onSignalLoop\": false,\n  \"procedureCall\": true,\n  \"fileSendPath\": \"/atb/send/IF_FTD_003\",\n  \"fileTempPath\": \"/atb/send/IF_FTD_003/temp\",\n  \"fileCompletePath\": \"/atb/send/IF_FTD_003/complete\",\n  \"fileSuccessPath\": \"/atb/send/IF_FTD_003/success\",\n  \"fileErrorPath\": \"/atb/send/IF_FTD_003/error\",\n  \"fileSendCount\": 1,\n  \"fileDelete\": true,\n  \"fileGlobPattern\": \"*.{csv,doc,xml,xlsx,zip,hwp,exe}\",\n  \"fileType\": \"DELIMITER\",\n  \"fileDelimiter\": \",\",\n  \"fileDelimiterQualifier\": \"\\\"\",\n  \"fileErrorSkip\": false,\n  \"fileFirstHeader\": true,\n  \"sendSystemCode\": \"A01\",\n  \"receiveSystemCode\": \"B01\"\n}",
+      "receiver" : null,
+      "senderSchema" : {
+        "requiredFields" : [ "send-system-code", "file-error-path", "receive-system-code", "file-send-count", "file-complete-path", "cronExpression", "actionType", "file-temp-path", "interfaceId", "file-success-path", "strategy", "file-send-path" ],
+        "fixedValueFields" : [ "actionType" ],
+        "fieldComment" : {
+          "fileCompletePath" : "파일 완료 경로",
+          "fileDelimiter" : "파일 구분자",
+          "onSignalLoop" : "OnSignal 반복 여부",
+          "fileDelimiterQualifier" : "파일 구분자 한정자",
+          "fileGlobPattern" : "파일 패턴",
+          "fileSendCount" : "파일 송신 횟수",
+          "fileSendPath" : "파일 송신 경로",
+          "fileErrorPath" : "파일 에러 경로",
+          "fileTempPath" : "파일 임시 경로",
+          "cronExpression" : "배치 실행 주기",
+          "actionType" : "동작 유형 (SENDER, RECEIVER)",
+          "fileDelete" : "파일 삭제 여부",
+          "procedureCall" : "프로시저 호출 여부",
+          "fileErrorSkip" : "파일 에러 스킵 여부",
+          "fileFirstHeader" : "파일 헤더 여부",
+          "interfaceId" : "인터페이스 ID",
+          "strategy" : "전략(패턴)",
+          "fileSuccessPath" : "파일 성공 경로",
+          "sendSystemCode" : "송신 시스템 코드",
+          "receiveSystemCode" : "수신 시스템 코드",
+          "fileType" : "파일 타입"
+        },
+        "defaultValue" : {
+          "fileCompletePath" : "empty",
+          "fileDelimiter" : ",",
+          "onSignalLoop" : "false",
+          "fileDelimiterQualifier" : "\"",
+          "fileGlobPattern" : "*",
+          "fileSendCount" : "10",
+          "fileSendPath" : "empty",
+          "fileErrorPath" : "empty",
+          "fileTempPath" : "empty",
+          "cronExpression" : "empty",
+          "actionType" : "empty",
+          "fileDelete" : "false",
+          "procedureCall" : "false",
+          "fileErrorSkip" : "false",
+          "fileFirstHeader" : "true",
+          "interfaceId" : "empty",
+          "strategy" : "empty",
+          "fileSuccessPath" : "empty",
+          "sendSystemCode" : "empty",
+          "receiveSystemCode" : "empty",
+          "fileType" : "DELIMITER"
+        }
+      },
+      "receiverSchema" : null
+    }
+  },
+  "patternSubClassName" : {
+    "na" : [ "mb.fw.atb.strategy.na.StandardNetworkAdaptorStrategy" ],
+    "test" : [ "mb.fw.atb.strategy.test.MyInterfaceContext", "mb.fw.atb.strategy.test.OAuth2Token", "mb.fw.atb.strategy.test.SpringBootHealthCheck" ],
+    "provider" : [ "mb.fw.atb.strategy.provider.PoliceIssuingStrategy", "mb.fw.atb.strategy.provider.StandardDBDeleteStrategy", "mb.fw.atb.strategy.provider.StandardDBInsertStrategy", "mb.fw.atb.strategy.provider.StandardDBSelectStrategy", "mb.fw.atb.strategy.provider.StandardDBUpdateStrategy", "mb.fw.atb.strategy.provider.StandardRSTRCPOSTStrategy" ],
+    "batch" : [ "mb.fw.atb.strategy.batch.FileMoveStrategy", "mb.fw.atb.strategy.batch.FTIDBKeyGenManagerStrategy", "mb.fw.atb.strategy.batch.FTIGC00SendStrategy", "mb.fw.atb.strategy.batch.FTIGC01RecvStrategy", "mb.fw.atb.strategy.batch.StandardDTFBatch", "mb.fw.atb.strategy.batch.StandardFTDBatch" ],
+    "pubsub" : [ "mb.fw.atb.strategy.pubsub.StandardDFTFDStrategy", "mb.fw.atb.strategy.pubsub.StandardDTDStrategy", "mb.fw.atb.strategy.pubsub.StandardFTFDStrategy", "mb.fw.atb.strategy.pubsub.StandardFTFStrategy" ]
+  }
+}

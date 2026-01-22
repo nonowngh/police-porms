@@ -1,0 +1,44 @@
+atb:
+  if-config:
+    id: "FTF_SENDER_01"
+    description: "(FILE SENDER) + JMS and Socket + (FILE RECEIVER)"
+    prefix: FTF
+    auto-config: false
+    iftp:
+      enabled: true
+      data-packet-size: 8192
+      retry-data-cnt: 2000
+      view-count: 1000
+      transfer-sleep: 0
+      encrypt: false
+      remote-hosts:
+        - clupine.duckdns.org:24052
+    context:
+      - interface-id: IF_FTF_001
+        action-type: SENDER
+        strategy: StandardFTFStrategy
+        cron-expression: 0/20 * * * * ?
+        on-signal-loop: true
+        file-send-path: "/atb/send/IF_FTF_001"
+        file-temp-path: "/atb/send/IF_FTF_001/temp"
+        file-complete-path: "/atb/send/IF_FTF_001/complete"
+        file-error-path: "/atb/send/IF_FTF_001/error"
+        file-success-path: "/atb/send/IF_FTF_001/success"
+        file-send-count: 1
+        file-retry-count: 3
+        file-delete: false
+        file-glob-pattern: "*.{csv,doc,xml,xlsx,zip,hwp,exe,tar}"
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: FTF_RECEIVER_01
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  task:
+    scheduling:
+      pool:
+        size: 10

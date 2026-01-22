@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.18</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>mb.fw</groupId>
+    <artifactId>atb</artifactId>
+    <version>1.0.2</version>
+    <name>atb</name>
+    <description>Metabuild Inc, Made By clupine, AdaptorTemplateBoot Ver 1.0.2</description>
+    <properties>
+        <java.version>1.8</java.version>
+        <asciidoctor.maven.plugin.version>2.2.1</asciidoctor.maven.plugin.version>
+        <asciidoctorj.pdf.version>1.6.2</asciidoctorj.pdf.version>
+        <asciidoctorj.version>2.5.7</asciidoctorj.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>local-repository</id>
+            <name>local repository</name>
+            <url>file://${project.basedir}/productJar</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>mb.fw</groupId>
+            <artifactId>esb-adaptor-starter</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>mb.fw</groupId>
+            <artifactId>IFTProtocol</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.8</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.flatpack</groupId>
+            <artifactId>flatpack</artifactId>
+            <version>4.0.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+        <dependency>
+            <groupId>com.gpki</groupId>
+            <artifactId>libgpkiapi_jni</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.14.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>12.2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20211205</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.indigo.net</groupId>
+            <artifactId>NetworkAdaptor-lib</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-security</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>mb.fw</groupId>
+                    <artifactId>esb-adaptor-starter</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+            <version>3.1.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>3.1.18</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcutil-jdk18on -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.bouncycastle</groupId>-->
+        <!--            <artifactId>bcutil-jdk15on</artifactId>-->
+        <!--            <version>1.69</version>-->
+        <!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.69</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+            <version>2.6.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.crashub</groupId>
+            <artifactId>crash.connectors.telnet</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.crashub</groupId>
+            <artifactId>crash.cli</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.crashub</groupId>
+            <artifactId>crash.shell</artifactId>
+            <version>1.3.2</version>
+            <classifier>standalone</classifier>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-api -->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.30.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+            <version>1.30.0</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <excludeDevtools>false</excludeDevtools>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/application.properties</exclude>
+                        <exclude>**/application.properties.*</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/application.yml</exclude>
+                        <exclude>**/bean.xml</exclude>
+                        <exclude>**/log4j.xml</exclude>
+                        <exclude>**/mybatis-config.xml</exclude>
+                        <exclude>**/*.xml</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-springboot-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/ATB_LIB</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+<!--                    <release>8</release> &lt;!&ndash; JDK 8로 타겟 설정 &ndash;&gt;-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>run-crash-commands-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>mb.fw.atb.build.CrashCommandsBuild</mainClass>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-atb-spec-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>mb.fw.atb.build.ATBSpecBuild</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.asciidoctor</groupId>-->
+            <!--                <artifactId>asciidoctor-maven-plugin</artifactId>-->
+            <!--                <version>${asciidoctor.maven.plugin.version}</version>-->
+            <!--                <dependencies>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>org.asciidoctor</groupId>-->
+            <!--                        <artifactId>asciidoctorj-pdf</artifactId>-->
+            <!--                        <version>${asciidoctorj.pdf.version}</version>-->
+            <!--                    </dependency>-->
+            <!--                </dependencies>-->
+            <!--                <configuration>-->
+            <!--                    <sourceDirectory>doc/asciidoc</sourceDirectory>-->
+            <!--                    <attributes>-->
+            <!--                        <sourcedir>${project.build.sourceDirectory}</sourcedir>-->
+            <!--                    </attributes>-->
+            <!--                </configuration>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>output-html</id>-->
+            <!--                        <phase>generate-resources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>process-asciidoc</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                    <execution>-->
+            <!--                        <id>generate-pdf-doc</id>-->
+            <!--                        <phase>generate-resources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>process-asciidoc</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <backend>pdf</backend>-->
+            <!--                            <attributes>-->
+            <!--                                <imagesdir>./</imagesdir>-->
+            <!--                                <source-highlighter>coderay</source-highlighter>-->
+            <!--                                <allow-uri-read/>-->
+            <!--                                <icons>font</icons>-->
+            <!--                                <pagenums/>-->
+            <!--                                <toc/>-->
+            <!--                                <idprefix/>-->
+            <!--                                <idseparator>-</idseparator>-->
+            <!--                                <scripts>cjk</scripts>-->
+            <!--                                <pdf-style>KaiGenGothicKR</pdf-style>-->
+            <!--                                <pdf-stylesdir>${project.basedir}/asciidoctor/theme</pdf-stylesdir>-->
+            <!--                                <pdf-fontsdir>${project.basedir}/asciidoctor/fonts</pdf-fontsdir>-->
+            <!--                            </attributes>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+        </plugins>
+    </build>
+</project>

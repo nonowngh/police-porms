@@ -1,0 +1,4 @@
+org.crsh.lang.impl.groovy.ast.ArgumentNameTransformer
+org.crsh.lang.impl.groovy.ast.DefaultImportTransformer
+org.crsh.lang.impl.groovy.ast.CommandTransformer
+org.crsh.lang.impl.groovy.ast.ScriptLastStatementTransformer

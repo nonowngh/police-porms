@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IF_DTD_001">
+    <select id="SELECT" parameterType="hashmap" resultType="hashmap">
+        SELECT *
+        FROM IF_DTD_001_S
+        WHERE ESB_STATUS_CD = 'N'
+          AND ROWNUM <![CDATA[ <= ]]> 2000
+    </select>
+
+    <select id="SELECT_RESEND" parameterType="hashmap" resultType="hashmap">
+        SELECT *
+        FROM IF_DTD_001_S
+        WHERE ESB_TRANSACTION_ID = #{transactionId}
+    </select>
+
+    <update id="UPDATE" parameterType="hashmap">
+        UPDATE IF_DTD_001_S
+        SET ESB_STATUS_CD      = 'P',
+            ESB_TRANSACTION_ID = #{transactionId},
+            ESB_INTERFACE_ID   = #{interfaceId}
+        WHERE ESB_SEQ = #{ESB_SEQ}
+    </update>
+
+    <update id="RESULT_UPDATE" parameterType="hashmap">
+        UPDATE IF_DTD_001_S
+        SET ESB_STATUS_CD = #{receiverResultCd},
+            ESB_RECV_DT   = #{receiverMsgRecvDt}
+        WHERE ESB_TRANSACTION_ID = #{transactionId}
+    </update>
+</mapper>

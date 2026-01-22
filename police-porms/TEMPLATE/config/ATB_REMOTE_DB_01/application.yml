@@ -1,0 +1,33 @@
+atb:
+  if-config:
+    id: REST_REMOTE_DB_01
+    description: "REST Remote DB"
+    prefix: REST_PRV
+    auto-config: false
+    context:
+      - interfaceId: IF_REST_DB_01
+        actionType: RECEIVER
+        strategy: StandardDBInsertStrategy
+        send-system-code: A01
+        receive-system-code: B01
+      - interfaceId: IF_REST_DB_02
+        actionType: RECEIVER
+        strategy: StandardDBSelectStrategy
+        send-system-code: A01
+        receive-system-code: B01
+      - interfaceId: IF_REST_DB_03
+        actionType: RECEIVER
+        strategy: StandardDBUpdateStrategy
+        send-system-code: A01
+        receive-system-code: B01
+      - interfaceId: IF_REST_DB_04
+        actionType: RECEIVER
+        strategy: StandardDBDeleteStrategy
+        send-system-code: A01
+        receive-system-code: B01
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+mybatis:
+  config-location: classpath:mybatis-config.xml

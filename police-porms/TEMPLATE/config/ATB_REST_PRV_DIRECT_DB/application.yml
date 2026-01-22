@@ -1,0 +1,39 @@
+atb:
+  if-config:
+    id: REST_PROVIDER_DB_01
+    description: "REST PROVIDER (Direct DB)"
+    prefix: REST_PRV
+    route-type: NONE
+    auto-config: false
+    context:
+      - interfaceId: IF_REST_DB_01
+        actionType: CUSTOMIZE
+        strategy: StandardDBInsertStrategy
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_PROVIDER_DB_01
+      - interfaceId: IF_REST_DB_02
+        actionType: CUSTOMIZE
+        strategy: StandardDBSelectStrategy
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_PROVIDER_DB_01
+      - interfaceId: IF_REST_DB_03
+        actionType: CUSTOMIZE
+        strategy: StandardDBUpdateStrategy
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_PROVIDER_DB_01
+      - interfaceId: IF_REST_DB_04
+        actionType: CUSTOMIZE
+        strategy: StandardDBDeleteStrategy
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_PROVIDER_DB_01
+server:
+  port: 24219
+spring:
+  main:
+    allow-bean-definition-overriding: true
+mybatis:
+  config-location: classpath:mybatis-config.xml

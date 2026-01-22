@@ -1,0 +1,57 @@
+atb:
+  if-config:
+    id: "FTFD_SENDER_01"
+    description: "(FILE SENDER) + JMS and Socket + (FILE + DB RECEIVER)"
+    prefix: FTFD
+    auto-config: false
+    iftp:
+      enabled: true
+      data-packet-size: 4096
+      retry-data-cnt: 100
+      view-count: 1000
+      transfer-sleep: 0
+      encrypt: true
+      remote-hosts:
+        - clupine.duckdns.org:24052
+    context:
+      - interface-id: IF_FTD_001
+        action-type: SENDER
+        strategy: StandardFTFDStrategy
+        cron-expression: 0/20 * * * * ?
+        on-signal-loop: false
+        file-send-path: "/atb/send/IF_FTD_001"
+        file-temp-path: "/atb/send/IF_FTD_001/temp"
+        file-complete-path: "/atb/send/IF_FTD_001/complete"
+        file-error-path: "/atb/send/IF_FTD_001/error"
+        file-success-path: "/atb/send/IF_FTD_001/success"
+        file-send-count: 10
+        file-retry-count: 3
+        file-delete: true
+        file-glob-pattern: "*.{csv,doc,xml,xlsx,zip,hwp,exe}"
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: FTFD_RECEIVER_01
+      - interface-id: IF_FTD_002
+        action-type: SENDER
+        strategy: StandardFTFDStrategy
+        cron-expression: 0/20 * * * * ?
+        on-signal-loop: false
+        file-send-path: "/atb/send/IF_FTD_002"
+        file-temp-path: "/atb/send/IF_FTD_002/temp"
+        file-complete-path: "/atb/send/IF_FTD_002/complete"
+        file-error-path: "/atb/send/IF_FTD_002/error"
+        file-success-path: "/atb/send/IF_FTD_002/success"
+        file-send-count: 10
+        file-retry-count: 3
+        file-delete: true
+        file-glob-pattern: "*.{csv,doc,xml,xlsx,zip,hwp,exe}"
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: FTFD_RECEIVER_01
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

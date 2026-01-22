@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="threshold" value="DEBUG"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yy.MM.dd HH:mm:ss}] [%-5p]  [%t %C:%L ] - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="threshold" value="DEBUG"/>
+        <param name="file" value="../log/ATB_DTD_R_01/ATB_DTD_R_01.log"/>
+        <param name="maxFileSize" value="10MB"/>
+        <param name="maxBackupIndex" value="10"/>
+        <param name="append" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yy.MM.dd HH:mm:ss}] [%-5p] [%X{transactionId}] %C{1}:%L %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- 오류 로그 남길때 JMS로 발송 TEST용 -->
+    <appender name="ATB_LOGGING" class="mb.fw.atb.appender.ESBMQAppender">
+        <param name="threshold" value="ERROR"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyyMMddHHmmssSSS},%X{adaptorName},%X{interfaceId},%X{transactionId},%m"/>
+        </layout>
+    </appender>
+  
+	<logger name="com.indigo.indigomq">
+        <level value="INFO"/>
+    </logger>
+    <logger name="com.indigo.indigomq.transport.InactivityMonitor">
+        <level value="INFO"/>
+    </logger>
+    <logger name="com.indigo.indigomq.transport.discovery">
+        <level value="INFO"/>
+    </logger>
+ 	<logger name="com.mb.indigo2.imagent.CmcsDispatcher">
+        <level value="INFO"/>
+    </logger>
+
+    <root>
+        <level value="DEBUG"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</log4j:configuration>

@@ -1,0 +1,61 @@
+@startuml
+class mb.fw.atb.strategy.pubsub.StandardFTFDStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
+# {static} void generateFileMessage(IFContext,String,List<String>,FileMessage)
+}
+
+
+abstract class mb.fw.atb.strategy.ATBStrategy {
+# IFConfig config
+# AdaptorConfigBean adaptorConfigBean
+# IFTPClient client
+# ObjectMapper objectMapper
+# XmlMapper xmlMapper
+# JmsTemplate jmsTemplate
++ {abstract}Specifications specifications()
++ {abstract}OnSignalInfo onSignal(IFContext,String,String)
++ {abstract}OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ {abstract}Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ {abstract}void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
++ void startLogging(IFContext,String,String,String,long)
++ void endLogging(IFContext,String,long,String,String,String)
+}
+
+
+class mb.fw.atb.strategy.pubsub.StandardDTDStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+}
+
+
+class mb.fw.atb.strategy.pubsub.StandardFTFStrategy {
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
++ Object onMessageData(IFContext,String,String,Object,Map<String,String>)
++ void onMessageResult(IFContext,String,String,String,String,String,Map<String,String>)
+- {static} void generateFileMessage(IFContext,String,List<String>,FileMessage)
+}
+
+
+class mb.fw.atb.strategy.pubsub.StandardDFTFDStrategy {
+~ DBTransactionService dbTransactionService
++ Specifications specifications()
++ OnSignalInfo onSignal(IFContext,String,String)
++ OnSignalInfo onSignalRetry(IFContext,String,String,Map<String,String>)
+}
+
+
+
+StandardDTDStrategy -up-> ATBStrategy
+StandardFTFStrategy -up-> ATBStrategy
+StandardFTFDStrategy -up-> StandardFTFStrategy
+StandardDFTFDStrategy -up-> StandardFTFDStrategy
+
+@enduml

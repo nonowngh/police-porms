@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean class="com.indigo.indigomq.pool.PooledConnectionFactory"
+        destroy-method="stop" id="jmsConnectionFactory">
+        <description/>
+        <property name="connectionFactory">
+            <bean class="com.indigo.indigomq.IndigoMQConnectionFactory">
+                <property name="brokerURL">
+                    <value><![CDATA[failover:(tcp://127.0.0.1:24211)?initialReconnectDelay=10&maxReconnectDelay=30000&maxReconnectAttempts=0&randomize=true]]></value>
+                </property>
+            </bean>
+        </property>
+        <property name="maxConnections" value="20"/>
+        <property name="idleTimeout" value="30000"/>
+        <property name="maximumActive" value="20"/>
+    </bean>
+</beans>

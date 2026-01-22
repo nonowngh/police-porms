@@ -1,0 +1,43 @@
+network:
+  adaptor:
+    tcp-message:
+      length:
+        enabled: true
+        alias: SGI_TCP
+        jms-listener-use: true
+        jms-listener-queue-name: OUT.SGI_TCP
+        jms-concurrent-consumers: 10
+        call-type: JMS
+        callback-queue-name: IN.SGI_TCP
+        callback-receive-timeout: 5000
+        tcp-mode: SYNC
+        remote-hosts:
+          - 127.0.0.1
+        remote-ports:
+          - 8004
+        extractor:
+          message-id: 39
+          message-id-len: 20
+          work-code: 24
+          work-code-len: 7
+        hex-mode: false
+        length-field-offset: 0
+        length-field-length: 4
+        length-adjustment: 0
+        initial-bytes-to-strip: 0
+        string-value-use: true
+        max-frame-length: 4096
+        reconnect-sec: 30
+        recv-task-count: 10
+        request-usage-size: 10000
+        request-wait-time-out-sec: 10
+        src-org: A01
+        trg-org: SCI
+spring:
+  main:
+    web-application-type: none
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

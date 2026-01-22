@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IF_DTD_002">
+
+    <update id="TX_UPDATE" parameterType="hashmap">
+        UPDATE IF_DTD_002_S
+        SET ESB_STATUS_CD      = 'P',
+            ESB_INTERFACE_ID   = #{interfaceId},
+            ESB_TRANSACTION_ID = #{transactionId}
+        WHERE ESB_STATUS_CD = 'N'
+    </update>
+
+    <select id="SELECT" parameterType="hashmap" resultType="java.util.LinkedHashMap">
+        SELECT *
+        FROM IF_DTD_002_S
+        WHERE ESB_TRANSACTION_ID = #{transactionId}
+    </select>
+
+    <update id="RESULT_UPDATE" parameterType="hashmap">
+        UPDATE IF_DTD_002_S
+        SET ESB_STATUS_CD = #{receiverResultCd},
+            ESB_RECV_DT   = #{receiverMsgRecvDt}
+        WHERE ESB_TRANSACTION_ID = #{transactionId}
+    </update>
+
+    <select id="SELECT_RESEND" parameterType="hashmap" resultType="hashmap">
+        SELECT *
+        FROM IF_DTD_002_S
+        WHERE ESB_TRANSACTION_ID = #{transactionId}
+    </select>
+
+</mapper>
+  

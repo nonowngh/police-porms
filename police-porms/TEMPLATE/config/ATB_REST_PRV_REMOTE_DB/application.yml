@@ -1,0 +1,33 @@
+atb:
+  if-config:
+    id: REST_PROVIDER_DB_02
+    description: "REST PROVIDER (Remote DB)"
+    prefix: REST_PRV
+    route-type: JMS
+    auto-config: false
+    context:
+      - interfaceId: IF_REST_DB_01
+        actionType: CUSTOMIZE
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_REMOTE_DB_01
+      - interfaceId: IF_REST_DB_02
+        actionType: CUSTOMIZE
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_REMOTE_DB_01
+      - interfaceId: IF_REST_DB_03
+        actionType: CUSTOMIZE
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_REMOTE_DB_01
+      - interfaceId: IF_REST_DB_04
+        actionType: CUSTOMIZE
+        send-system-code: A01
+        receive-system-code: B01
+        receiver-ids: REST_REMOTE_DB_01
+server:
+  port: 24219
+spring:
+  main:
+    allow-bean-definition-overriding: true

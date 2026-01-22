@@ -1,0 +1,15 @@
+### DELETE
+POST http://172.28.7.204:24219/atb-api/IF_REST_DB_04
+Content-Type: application/json
+Authorization: Basic metabuild meta1234!@#$
+
+{
+  "dataList": [
+    {
+      "id": "12"
+    },
+    {
+      "id": "13"
+    }
+  ]
+}

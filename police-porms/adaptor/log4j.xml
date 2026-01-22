@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<!DOCTYPE log4j:configuration SYSTEM
+        "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="threshold" value="DEBUG"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yy.MM.dd HH:mm:ss}] [%-5p]  [%t %C:%L ] - %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="com.indigo.indigomq.transport">
+        <priority value="INFO"/>
+    </category>
+    <category name="logging.level.httpclient.wire">
+        <priority value="DEBUG"/>
+    </category>
+    <category name="logging.level.org.apache.http">
+        <priority value="DEBUG"/>
+    </category>
+    <category name="org.springframework.jms.core.JmsTemplate">
+        <priority value="INFO"/>
+    </category>
+
+    <root>
+        <level value="DEBUG"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</log4j:configuration>
