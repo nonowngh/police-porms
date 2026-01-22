@@ -7,10 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mb.fw.policeporms.dto.RequestMessage;
 import mb.fw.policeporms.dto.ResponseMessage;
+import mb.fw.policeporms.service.InnerRecieveService;
 
 @RestController
 @RequestMapping("/esb/api")
 public class InnerController {
+
+	private InnerRecieveService service;
+
+	public InnerController(InnerRecieveService service) {
+		this.service = service;
+	}
 
 	@PostMapping("/inner/receive")
 	public ResponseMessage innerReceive(@RequestBody RequestMessage request) {
