@@ -1,4 +1,4 @@
-package mb.fw.policeporms.configuration;
+package mb.fw.policeporms.config;
 
 import java.time.Duration;
 
@@ -15,7 +15,7 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import reactor.netty.http.client.HttpClient;
 
 @Configuration
-public class WebClientConfiguration {
+public class WebClientConfig {
 
 	@Bean
 	WebClient webClient() {

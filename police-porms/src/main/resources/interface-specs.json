@@ -1,0 +1,18 @@
+[
+  {
+    "interfaceId": "IF_A",
+    "interfaceDescription": "테스트 인터페이스 A",
+    "apiMethod": "POST",
+    "apiUrl": "/api/interface",
+    "apiRequestTimeoutSeconds": 30,
+    "batchSchedulerCron": "0/10 * * * * ?" 
+  },
+  {
+    "interfaceId": "IF_B",
+    "interfaceDescription": "테스트 인터페이스 B",
+    "apiMethod": "GET",
+    "apiUrl": "/api/interfaceB",
+    "apiRequestTimeoutSeconds": 60,
+    "batchSchedulerCron": "0/15 * * * * ?"
+  }
+]

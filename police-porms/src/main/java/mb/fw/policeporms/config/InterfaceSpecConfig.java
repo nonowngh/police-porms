@@ -1,0 +1,43 @@
+package mb.fw.policeporms.config;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
+import mb.fw.policeporms.spec.InterfaceSpec;
+
+@Slf4j
+@Configuration
+public class InterfaceSpecConfig {
+
+	private List<InterfaceSpec> specs;
+
+	@Value("classpath:interface-specs.json")
+	Resource jsonFile;
+
+	@Bean
+	List<InterfaceSpec> interfaceSpecs() throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		specs = mapper.readValue(jsonFile.getInputStream(), new TypeReference<List<InterfaceSpec>>() {
+		});
+		logSpecs();
+		return specs;
+	}
+
+	public void logSpecs() {
+		if (specs != null && !specs.isEmpty()) {
+			log.info("====== InterfaceSpec Config Loaded ======");
+			specs.forEach(spec -> log.info(spec.toString()));
+			log.info("========================================");
+		} else {
+			log.warn("InterfaceSpec Config is empty!");
+		}
+	}
+}

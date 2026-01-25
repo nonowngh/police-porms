@@ -12,7 +12,9 @@ public class InterfaceSpec {
 	//open-api 메소드
 	private String apiMethod;
 	//open-api url
-	private String apiPath;
+	private String apiUrl;
 	//open-api 요청 타임아웃(초)
 	private int apiRequestTimeoutSeconds = 30;
+	//배치 스케줄러 크론
+	private String batchSchedulerCron;
 }

@@ -1,16 +1,6 @@
 package mb.fw.atb.cxf.interceptor;
 
-import com.indigo.esb.xml.XPathUtils;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import mb.fw.atb.config.sub.IFContext;
-import org.apache.cxf.binding.soap.SoapFault;
-import org.apache.cxf.binding.soap.SoapMessage;
-import org.apache.cxf.phase.AbstractPhaseInterceptor;
-import org.apache.cxf.phase.Phase;
-import org.apache.cxf.staxutils.StaxUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.util.Base64;
 
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
@@ -19,7 +9,20 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.dom.DOMSource;
-import java.util.Base64;
+
+import org.apache.cxf.binding.soap.SoapFault;
+import org.apache.cxf.binding.soap.SoapMessage;
+import org.apache.cxf.phase.AbstractPhaseInterceptor;
+import org.apache.cxf.phase.Phase;
+import org.apache.cxf.staxutils.StaxUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import com.indigo.esb.xml.XPathUtils;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import mb.fw.atb.config.sub.IFContext;
 
 @Slf4j
 public class Base64DecInterceptor extends AbstractPhaseInterceptor<SoapMessage> {
