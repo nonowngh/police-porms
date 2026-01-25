@@ -5,25 +5,29 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import mb.fw.atb.util.TransactionIdGenerator;
 import mb.fw.policeporms.dto.RequestMessage;
 import mb.fw.policeporms.dto.ResponseMessage;
+import mb.fw.policeporms.dto.openapi.서울시신호등관련정보.TrafficSafetyResponse;
 import reactor.core.publisher.Mono;
 
-@Component
+@Service
 public class InterfaceCallService {
 
-	private final WebClient webClient;
+	private final WebClient interfaceWebClient;
+	private final WebClient openApiWebClient;
 
-	public InterfaceCallService(WebClient interfaceWebClient) {
-		this.webClient = interfaceWebClient;
+	public InterfaceCallService(@Qualifier("interfaceWebClient") WebClient interfaceWebClient,
+			@Qualifier("openApiWebClient") WebClient openApiWebClient) {
+		this.interfaceWebClient = interfaceWebClient;
+		this.openApiWebClient = openApiWebClient;
 	}
 
-	public Mono<ResponseMessage> sendOpenApiData(String interfaceId, List<Map<String, Object>> dataList) {
-
+	public Mono<ResponseMessage> sendData(String interfaceId, List<Map<String, Object>> dataList) {
 		RequestMessage request = new RequestMessage();
 		request.setInterfaceId(interfaceId);
 		String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
@@ -31,8 +35,17 @@ public class InterfaceCallService {
 		request.setTransactionId(transactionId);
 		request.setDataList(dataList);
 		request.setDataCount(dataList.size());
+		return interfaceWebClient.post().bodyValue(request).retrieve().bodyToMono(ResponseMessage.class);
+	}
 
-		return webClient.post().uri("/api/interface").bodyValue(request).retrieve().bodyToMono(ResponseMessage.class);
+	public TrafficSafetyResponse getTrafficSafetyInfoWebClient(String apiUrl, String serviceKey, int pageNo,
+			int numOfRows) {
+
+		return openApiWebClient.get()
+				.uri(uriBuilder -> uriBuilder.path(apiUrl).queryParam("serviceKey", serviceKey)
+						.queryParam("pageNo", pageNo).queryParam("numOfRows", numOfRows).queryParam("type", "json")
+						.build())
+				.retrieve().bodyToMono(TrafficSafetyResponse.class).block();
 	}
 
 }

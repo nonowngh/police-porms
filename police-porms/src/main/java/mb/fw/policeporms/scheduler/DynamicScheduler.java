@@ -66,8 +66,10 @@ public class DynamicScheduler {
 		try {
 			log.info("Task started for interfaceId={}", spec.getInterfaceId());
 
-			// 여기에 실제 API 호출
-			interfaceCallService.sendOpenApiData(spec.getInterfaceId(), null);
+			//open-api 호출 
+			
+			//내부 esb로 호출
+			interfaceCallService.sendData(spec.getInterfaceId(), null);
 
 			log.info("Task finished for interfaceId={}", spec.getInterfaceId());
 		} catch (Exception e) {

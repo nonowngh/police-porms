@@ -1,6 +1,10 @@
 server:
    port: 26000
 
+web:
+  client:
+    interface-api-url: http://localhost:26001/esb/api/interface/receive-data
+
 spring:
   main:
     web-application-type: none

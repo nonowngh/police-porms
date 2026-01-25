@@ -1,11 +1,11 @@
 [
   {
-    "interfaceId": "IF_A",
-    "interfaceDescription": "테스트 인터페이스 A",
-    "apiMethod": "POST",
-    "apiUrl": "/api/interface",
+    "interfaceId": "IF_EX_API_GIS_01",
+    "interfaceDescription": "[GIS]서울시 신호등 관련정보",
+    "apiMethod": "GET",
+    "apiUrl": "http://openapi.seoul.go.kr:8088/sample/xml/trafficSafetyA057PInfo/1/5/",
     "apiRequestTimeoutSeconds": 30,
-    "batchSchedulerCron": "0/10 * * * * ?" 
+    "batchSchedulerCron": "0 * * * * ?" 
   },
   {
     "interfaceId": "IF_B",
@@ -13,6 +13,6 @@
     "apiMethod": "GET",
     "apiUrl": "/api/interfaceB",
     "apiRequestTimeoutSeconds": 60,
-    "batchSchedulerCron": "0/15 * * * * ?"
+    "batchSchedulerCron": "0 0 * * * ?"
   }
 ]
