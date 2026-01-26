@@ -75,15 +75,13 @@ public class DynamicScheduler {
 					log.warn("[{}] API returned empty or null dataList", interfaceId);
 					return Mono.empty();
 				}
-
-				log.info("[{}] API call finished, sending data. size={}", interfaceId, dataList.size());
+				log.info("[{}] API call finished, sending data. size={},\n datalist = {}", interfaceId, dataList.size(), dataList);
 				return interfaceCallService.sendData(interfaceId, dataList);
 			}).onErrorResume(e -> {
 				log.error("[{}] Error occurred during API call or Data sending: {}", interfaceId, e.getMessage());
 				return Mono.empty();
 			}).doOnSuccess(v -> log.info("[{}] Task finished successfully", interfaceId)).subscribe(null,
 					error -> log.error("[{}] Terminal error in subscribe: ", interfaceId, error));
-
 		} catch (Exception e) {
 			// 비동기 체인 생성 중에 터지는 에러 방어
 			log.error("[{}] Critical error before subscription: ", interfaceId, e);

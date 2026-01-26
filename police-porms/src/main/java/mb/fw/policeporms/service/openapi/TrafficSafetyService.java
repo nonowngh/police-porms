@@ -10,11 +10,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.constants.ApiNameConstants;
 import mb.fw.policeporms.service.CommonApiService;
 import mb.fw.policeporms.spec.InterfaceSpec;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 public class TrafficSafetyService implements CommonApiService {
 
@@ -30,6 +32,7 @@ public class TrafficSafetyService implements CommonApiService {
 			JsonNode contentNode = rootNode.get(spec.getApiName());
 			// 2. 그 안의 "row" 배열 노드 추출
 			JsonNode rowNode = contentNode.get("row");
+			log.info("total list - > {}", contentNode.get("list_total_count"));
 			// 3. Jackson ObjectMapper를 사용하여 List<Map>으로 변환
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.convertValue(rowNode, new TypeReference<List<Map<String, Object>>>() {
