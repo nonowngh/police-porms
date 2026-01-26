@@ -3,8 +3,9 @@
     "interfaceId": "IF_EX_API_GIS_01",
     "interfaceDescription": "[GIS]서울시 신호등 관련정보",
     "apiMethod": "GET",
-    "apiUrl": "http://openapi.seoul.go.kr:8088/sample/xml/trafficSafetyA057PInfo/1/5/",
+    "apiUrl": "http://openapi.seoul.go.kr:8088/sample/json/trafficSafetyA057PInfo/1/5/",
     "apiRequestTimeoutSeconds": 30,
+	"apiName" : "trafficSafetyA057PInfo2",
     "batchSchedulerCron": "0 * * * * ?" 
   },
   {
@@ -13,6 +14,7 @@
     "apiMethod": "GET",
     "apiUrl": "/api/interfaceB",
     "apiRequestTimeoutSeconds": 60,
+	"apiName" : "",
     "batchSchedulerCron": "0 0 * * * ?"
   }
 ]

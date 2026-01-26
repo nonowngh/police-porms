@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.service.InterfaceCallService;
 import mb.fw.policeporms.spec.InterfaceSpec;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
@@ -37,7 +38,6 @@ public class DynamicScheduler {
 		taskScheduler.initialize();
 		this.scheduler = taskScheduler;
 
-		// JSON에 정의된 cron대로 스케줄 등록
 		specs.forEach(this::scheduleTask);
 	}
 
@@ -49,6 +49,7 @@ public class DynamicScheduler {
 			public void run() {
 				task.run();
 			}
+
 			@Override
 			public String toString() {
 				return "InterfaceTask-" + spec.getInterfaceId();
@@ -61,22 +62,31 @@ public class DynamicScheduler {
 	}
 
 	private void runTask(InterfaceSpec spec) {
-		String originalName = Thread.currentThread().getName();
-		Thread.currentThread().setName("scheduler-" + spec.getInterfaceId());
+		if (spec == null) {
+			log.error("InterfaceSpec is null. Cannot run task.");
+			return;
+		}
+		String interfaceId = spec.getInterfaceId();
+		log.info("[{}] Task started", interfaceId);
 		try {
-			log.info("Task started for interfaceId={}", spec.getInterfaceId());
+			interfaceCallService.callApi(spec).flatMap(dataList -> {
+				// dataList가 null일 경우를 대비
+				if (dataList == null || dataList.isEmpty()) {
+					log.warn("[{}] API returned empty or null dataList", interfaceId);
+					return Mono.empty();
+				}
 
-			//open-api 호출 
-			
-			//내부 esb로 호출
-			interfaceCallService.sendData(spec.getInterfaceId(), null);
+				log.info("[{}] API call finished, sending data. size={}", interfaceId, dataList.size());
+				return interfaceCallService.sendData(interfaceId, dataList);
+			}).onErrorResume(e -> {
+				log.error("[{}] Error occurred during API call or Data sending: {}", interfaceId, e.getMessage());
+				return Mono.empty();
+			}).doOnSuccess(v -> log.info("[{}] Task finished successfully", interfaceId)).subscribe(null,
+					error -> log.error("[{}] Terminal error in subscribe: ", interfaceId, error));
 
-			log.info("Task finished for interfaceId={}", spec.getInterfaceId());
 		} catch (Exception e) {
-			log.error("Error executing interfaceId={}", spec.getInterfaceId(), e);
-		} finally {
-			// 스레드 이름 복원
-			Thread.currentThread().setName(originalName);
+			// 비동기 체인 생성 중에 터지는 에러 방어
+			log.error("[{}] Critical error before subscription: ", interfaceId, e);
 		}
 	}
 }
