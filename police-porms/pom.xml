@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>mb.fw</groupId>
-    <artifactId>atb</artifactId>
+    <artifactId>atb-police-porms</artifactId>
     <version>1.0.2</version>
     <name>atb</name>
     <description>Metabuild Inc, Made By clupine, AdaptorTemplateBoot Ver 1.0.2</description>
@@ -240,6 +240,12 @@
                         </exclude>
                     </excludes>
                     <excludeDevtools>false</excludeDevtools>
+                    <includes>
+                        <include>
+                            <groupId>aaa</groupId>
+                            <artifactId>aaa</artifactId>
+                        </include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>
@@ -258,7 +264,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
+          <!--  <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -273,7 +279,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

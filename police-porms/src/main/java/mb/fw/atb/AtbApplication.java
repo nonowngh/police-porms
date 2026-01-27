@@ -1,18 +1,19 @@
 package mb.fw.atb;
 
-import com.mb.indigo2.springsupport.AdaptorConfig;
-import lombok.extern.slf4j.Slf4j;
-import mb.fw.adaptor.util.AdaptorStarter;
-import mb.fw.atb.util.MDCLogging;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.mb.indigo2.springsupport.AdaptorConfig;
+
+import lombok.extern.slf4j.Slf4j;
+import mb.fw.adaptor.util.AdaptorStarter;
+import mb.fw.atb.util.MDCLogging;
+
 @ImportResource({"classpath:bean.xml"})
 @EnableScheduling
-@SpringBootApplication
+//@SpringBootApplication
 @Slf4j
 @ComponentScan(basePackages = {"mb.fw.atb", "mb.fw.adaptor"})
 public class AtbApplication {

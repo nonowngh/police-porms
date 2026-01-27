@@ -1,8 +1,8 @@
 package mb.fw.policeporms.constants;
 
-public class EsbApiPathConstants {
+public class InterfaceApiPathConstants {
 
-	private EsbApiPathConstants() {
+	private InterfaceApiPathConstants() {
 	}
 	
 	public static final String DEFAULT_PATH = "/esb/api";
