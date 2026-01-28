@@ -69,7 +69,7 @@ public class WebClientConfig {
 	@Bean("openApiWebClient")
 	WebClient openApiWebClient() {
 		HttpClient httpClient = HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-				.responseTimeout(Duration.ofSeconds(30)) // 1GB 대응을 위해 넉넉히
+				.responseTimeout(Duration.ofMinutes(10)) // 1GB 대응을 위해 넉넉히
 				.doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(300))
 						.addHandlerLast(new WriteTimeoutHandler(300)));
 

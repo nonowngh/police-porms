@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.ReceiverService;
+import mb.fw.policeporms.common.config.MyBatisConfig;
 import mb.fw.policeporms.common.constant.InterfaceStatus;
 import mb.fw.policeporms.common.constant.MybatisConstants;
 import mb.fw.policeporms.common.dto.RequestMessage;
@@ -31,6 +32,7 @@ import mb.fw.policeporms.common.utils.GzipUtils;
 @RequiredArgsConstructor
 public class InterfaceProcessService {
 
+	private final MyBatisConfig mybatisConfig;
 	private final SqlSessionTemplate sqlSessionTemplate;
 //    private final @Qualifier("batchSqlSessionTemplate") SqlSessionTemplate batchSqlSessionTemplate;
 
@@ -69,7 +71,7 @@ public class InterfaceProcessService {
 
 					batchSession.insert(insertSqlId, row);
 					currentCount++;
-					if (currentCount % 1000 == 0) {
+					if (currentCount % mybatisConfig.getBatchSize() == 0) {
 						batchSession.flushStatements();
 						printProgress(transactionId, totalCount, currentCount);
 					}
@@ -96,7 +98,7 @@ public class InterfaceProcessService {
 	
     private void printProgress(String txId, int total, int current) {
         double progress = (total > 0) ? ((double) current / total) * 100 : 0;
-        log.debug("[{}] ⏳ 진행 상황: {}/{}건 적재 중 ({})", 
+        log.info("[{}] ⏳ 진행 상황: {}/{}건 적재 중 ({})", 
             txId, 
             String.format("%,d", current), 
             String.format("%,d", total), 
