@@ -4,18 +4,19 @@
     "interfaceDescription": "[GIS]서울시 신호등 관련정보",
     "apiUrl": "http://openapi.seoul.go.kr:8088",
     "apiRequestTimeoutSeconds": 30,
-	"apiType" : "data-seoul",
+    "apiType" : "data-seoul",
     "apiServiceId" : "trafficSafetyA057PInfo",
-    "apiKey" : "",
-    "apiRequestFetchSize" : 1000,
-    "batchSchedulerCron": "0 * * * * ?" 
+    "apiKey" : "sample",
+    "apiRequestFetchSize" : 5,
+    "batchSchedulerCron": "0 * * * * ?",
+    "loopCall" : false
   },
   {
     "interfaceId": "IF_B",
     "interfaceDescription": "테스트 인터페이스 B",
     "apiUrl": "/api/interfaceB",
     "apiRequestTimeoutSeconds": 60,
-	"apiType" : "",
+    "apiType" : "soso",
     "apiKey" : "",
     "batchSchedulerCron": "0 0 * * * ?"
   }
