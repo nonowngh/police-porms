@@ -1,0 +1,19 @@
+server:
+   port: 26001
+
+spring:
+  profiles:
+    active: receiver
+  main:
+    web-application-type: servlet
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB      # 개별 파일 최대 크기
+      max-request-size: 200MB   # 전체 요청 최대 크기
+      file-size-threshold: 0  # 이 크기 넘으면 디스크에 임시 저장 (기본값 0)
+      location: /home/indigo/temp-file/rcv      # 임시 파일이 저장될 경로 (지정 안 하면 OS 기본 임시폴더)
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath*:./SQL*.xml

@@ -82,7 +82,7 @@ public class WebClientConfig {
 					}
 					return Mono.just(response);
 				}).retryWhen(
-						Retry.backoff(3, Duration.ofSeconds(2)).jitter(0.75).filter(throwable -> isRetryable(throwable))
+						Retry.backoff(3, Duration.ofSeconds(3)).jitter(0.75).filter(throwable -> isRetryable(throwable))
 								.doBeforeRetry(retrySignal -> log.warn("OpenAPI 호출 재시도 중... 횟수: {}/3, 사유: {}",
 										retrySignal.totalRetries() + 1, retrySignal.failure().getMessage()))))
 				// --- 재처리(Retry) 필터 추가 끝 ---

@@ -3,12 +3,18 @@ server:
 
 web:
   client:
-    interface-api-url: http://localhost:26001/esb/api/interface/receive-data
+    interface-api-url: http://localhost:26001/esb/api/interface
+
+file:
+  transfer:
+    temp-directory: /home/indigo/temp-file
 
 spring:
+  profiles:
+    active: sender
   main:
     web-application-type: none
     allow-bean-definition-overriding: true
-mybatis:
-  config-location: classpath:mybatis-config.xml
-  mapper-locations: classpath*:SQL_*.xml
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
