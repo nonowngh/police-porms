@@ -6,8 +6,8 @@
     "apiRequestTimeoutSeconds": 30,
     "apiType" : "data-seoul",
     "apiServiceId" : "trafficSafetyA057PInfo",
-    "apiKey" : "sample",
-    "apiRequestFetchSize" : 5,
+    "apiKey" : "425a58506e73756e38346176636a6d",
+    "apiRequestFetchSize" : 1000,
     "batchSchedulerCron": "0 * * * * ?",
     "loopCall" : false
   },

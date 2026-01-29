@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
@@ -41,9 +42,8 @@ public class InterfaceCallService {
 		this.fileTransferConfig = fileTransferConfig;
 	}
 
-	public ResponseMessage executeApiDataSend(InterfaceSpec spec, String transactionId) {
+	public ResponseMessage executeApiDataSend(InterfaceSpec spec, String transactionId, Consumer<Integer> countCallback) {
 		String interfaceId = spec.getInterfaceId();
-//		String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
 		ResponseMessage response = new ResponseMessage();
 		response.setInterfaceId(interfaceId);
 		response.setTransactionId(transactionId);
@@ -52,6 +52,11 @@ public class InterfaceCallService {
 		Path sendFile = Paths.get(fileTransferConfig.getTempDirectory(), fileName);
 		try {
 			int totalCount = callApi(spec, sendFile, transactionId);
+			
+			if (countCallback != null) {
+				countCallback.accept(totalCount); 
+	        }
+			
 			if (totalCount == 0) {
 				response.setProcessCd(InterfaceStatus.ERROR);
 				response.setProcessMsg("전송할 데이터(Api 응답데이터)가 없습니다.");

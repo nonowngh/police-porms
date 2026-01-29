@@ -7,7 +7,7 @@ web:
 
 file:
   transfer:
-    temp-directory: /home/indigo/temp-file
+    temp-directory: C:\Users\250318\Desktop\product\temp-file
 
 spring:
   profiles:

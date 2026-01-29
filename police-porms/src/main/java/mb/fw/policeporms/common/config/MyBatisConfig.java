@@ -12,7 +12,7 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "mybatis", ignoreUnknownFields = true)
 public class MyBatisConfig {
 
-	private int batchSize = 1000;
+	private int chunkSize = 1000;
 //	@Bean(name = "batchSqlSessionTemplate")
 //    SqlSessionTemplate batchSqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
 //        return new SqlSessionTemplate(sqlSessionFactory, ExecutorType.BATCH);

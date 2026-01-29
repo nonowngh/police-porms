@@ -9,7 +9,7 @@
         <setting name="jdbcTypeForNull" value="NULL"/>
         <setting name="lazyLoadingEnabled" value="true"/>
         <setting name="defaultFetchSize" value="1000"/>
-        <setting name="defaultStatementTimeout" value="3000"/>
+        <setting name="defaultStatementTimeout" value="3600"/>
         <setting name="logPrefix" value="mybatis."/>
     </settings>
 

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "file.transfer", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "interface.file", ignoreUnknownFields = true)
 public class FileTransferConfig {
 
 	private String tempDirectory;
