@@ -1,7 +1,6 @@
 package mb.fw.policeporms.domain.receiver.service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -11,16 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +27,7 @@ import mb.fw.policeporms.common.constant.MybatisConstants;
 import mb.fw.policeporms.common.dto.RequestMessage;
 import mb.fw.policeporms.common.dto.ResponseMessage;
 import mb.fw.policeporms.common.utils.GzipUtils;
+import mb.fw.policeporms.common.utils.LoggingUtils;
 
 @Slf4j
 @ReceiverService
@@ -86,7 +82,7 @@ public class InterfaceProcessService {
 						params.put(MybatisConstants.Param.LIST, chunkList);
 						sqlSessionTemplate.insert(insertSqlId, params);
 						chunkList.clear();
-						printProgress(transactionId, totalCount, currentCount);
+						LoggingUtils.printInsertProgress(transactionId, totalCount, currentCount);
 					}
 				}
 				// 마지막 잔여 데이터 처리
@@ -145,10 +141,10 @@ public class InterfaceProcessService {
 //		}
 //	}
 
-	private void printProgress(String txId, int total, int current) {
-		double progress = (total > 0) ? ((double) current / total) * 100 : 0;
-		log.info("[{}] ⏳ 진행 상황: {}/{}건 적재 중 ({})", txId, String.format("%,d", current), String.format("%,d", total),
-				String.format("%.1f%%", progress));
-	}
+//	private void printProgress(String txId, int total, int current) {
+//		double progress = (total > 0) ? ((double) current / total) * 100 : 0;
+//		log.info("[{}] ⏳ 진행 상황: {}/{}건 적재 중 ({})", txId, String.format("%,d", current), String.format("%,d", total),
+//				String.format("%.1f%%", progress));
+//	}
 
 }

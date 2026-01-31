@@ -24,6 +24,7 @@ import mb.fw.policeporms.common.annotation.SenderComponent;
 import mb.fw.policeporms.common.constant.ApiHeader;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
+import mb.fw.policeporms.common.utils.LoggingUtils;
 import mb.fw.policeporms.domain.sender.service.base.AbstractApiService;
 import reactor.core.publisher.Mono;
 
@@ -41,7 +42,7 @@ public class DataSeoulService extends AbstractApiService {
 	}
 
 	@Override
-	public int fetchAndSave(InterfaceSpec spec, Path tempFile) {
+	public int fetchAndSave(InterfaceSpec spec, Path tempFile, String transactionId) {
 		int totalSaved = 0;
 		int page = 1;
 		int fetchSize = spec.getApiRequestFetchSize();
@@ -84,8 +85,9 @@ public class DataSeoulService extends AbstractApiService {
 					// 파일 적재 (Gzip 스트림에 작성됨)
 					writeRowsToWriter(writer, rows);
 					totalSaved += rows.size();
-					log.debug("[{}] {} records saved to file (current:{}/total:{})", spec.getInterfaceId(), rows.size(),
-							totalSaved, totalCount);
+					LoggingUtils.printWriteFileProgress(transactionId, rows.size(), totalSaved, totalCount);
+//					log.debug("[{}] {} records saved to file (current:{}/total:{})", spec.getInterfaceId(), rows.size(),
+//							totalSaved, totalCount);
 
 					if (rows.size() < fetchSize || totalSaved >= totalCount)
 						break;

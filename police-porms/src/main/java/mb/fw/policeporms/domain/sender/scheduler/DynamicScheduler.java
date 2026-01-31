@@ -3,6 +3,7 @@ package mb.fw.policeporms.domain.sender.scheduler;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
@@ -28,10 +29,10 @@ public class DynamicScheduler {
 	private TaskScheduler scheduler;
 	private final List<ScheduledFuture<?>> futures = new java.util.ArrayList<>();
 	private final InterfaceCallService interfaceCallService;
-	private final InterfaceLogging interfaceLogging;
+	private final Optional<InterfaceLogging> interfaceLogging;
 
 	public DynamicScheduler(List<InterfaceSpec> specs, InterfaceCallService interfaceCallService,
-			InterfaceLogging interfaceLogging) {
+			Optional<InterfaceLogging> interfaceLogging) {
 		this.specs = specs;
 		this.interfaceCallService = interfaceCallService;
 		this.interfaceLogging = interfaceLogging;
@@ -60,7 +61,7 @@ public class DynamicScheduler {
 
 		ScheduledFuture<?> future = scheduler.schedule(task, new CronTrigger(spec.getBatchSchedulerCron()));
 		futures.add(future);
-		log.info("Scheduled interfaceId={} with cron={}", spec.getInterfaceId(), spec.getBatchSchedulerCron());
+		log.info("⏰ 스케줄 등록 interfaceId={} with cron={}", spec.getInterfaceId(), spec.getBatchSchedulerCron());
 	}
 
 	private void runTask(InterfaceSpec spec) {
@@ -76,7 +77,9 @@ public class DynamicScheduler {
 
 		// 서비스 실행 시 콜백 정의(인터페이스 로깅을 위해~)
 		ResponseMessage result = interfaceCallService.executeApiDataSend(spec, transactionId, (totalCount) -> {
-			interfaceLogging.asyncStartLogging(interfaceId, transactionId, "OUT", "INN", totalCount);
+			interfaceLogging.ifPresent(logging -> {
+				logging.asyncStartLogging(interfaceId, transactionId, "OUT", "INN", totalCount);
+			});
 		});
 
 		// 최종 결과 로깅
@@ -85,10 +88,11 @@ public class DynamicScheduler {
 		} else {
 			log.error("[{}] ❌ 전송 실패 : {}", transactionId, result.getProcessMsg());
 		}
+		interfaceLogging.ifPresent(logging -> {
+			logging.asyncEndLogging(interfaceId, transactionId, result.getResultCount(), result.getProcessCd(),
+					result.getProcessMsg());
+		});
 
-		interfaceLogging.asyncEndLogging(interfaceId, transactionId, result.getResultCount(), result.getProcessCd(),
-				result.getProcessMsg());
-
-		log.info("[{}] 스케줄 종료 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁", transactionId);
+		log.info("[{}] 스케줄 종료 🏁🏁🏁🏁🏁", transactionId);
 	}
 }

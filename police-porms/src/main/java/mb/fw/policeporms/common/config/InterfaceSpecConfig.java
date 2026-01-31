@@ -37,7 +37,7 @@ public class InterfaceSpecConfig {
 	public void logSpecs() {
 		if (specs != null && !specs.isEmpty()) {
 			log.info("====== InterfaceSpec Config Loaded ======");
-			specs.forEach(spec -> log.info(spec.toString()));
+			specs.forEach(spec -> log.info("⚙ " + spec.toString()));
 			log.info("========================================");
 		} else {
 			log.warn("InterfaceSpec Config is empty!");

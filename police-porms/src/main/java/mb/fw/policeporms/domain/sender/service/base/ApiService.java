@@ -9,6 +9,6 @@ public interface ApiService {
 	
 	ApiType getApiType();
 
-	int fetchAndSave(InterfaceSpec spec, Path tempFile);
+	int fetchAndSave(InterfaceSpec spec, Path tempFile, String transactionId);
 	
 }

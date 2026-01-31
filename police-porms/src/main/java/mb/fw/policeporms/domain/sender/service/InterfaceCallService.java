@@ -97,7 +97,7 @@ public class InterfaceCallService {
 		    throw new RuntimeException("No service found for " + spec.getApiType());
 		}
 		try {
-			sendTotalCount = service.fetchAndSave(spec, tempFile);
+			sendTotalCount = service.fetchAndSave(spec, tempFile, transactionId);
 			log.info("[{}] '{}' 파일 생성 완료. 총 건수: {}, 파일크기: {}bytes 수신 서버로 전송 시작...", transactionId,
 					tempFile.toAbsolutePath(), sendTotalCount, Files.size(tempFile));
 		} catch (Exception e) {
