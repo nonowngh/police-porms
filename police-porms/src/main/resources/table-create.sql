@@ -4,6 +4,7 @@
 
 -- DROP TABLE interface.tb_seoul_traffic_signal;
 
+-- 서울열린데이터광장 신호등(서울시 신호등 관련정보)
 CREATE TABLE interface.tb_seoul_traffic_signal (
     history_id varchar(20) NOT NULL,
     atch_mng_no1 varchar(50) NULL,
@@ -32,4 +33,31 @@ CREATE TABLE interface.tb_seoul_traffic_signal (
     ycrd numeric(15, 7) NULL,
     collect_dt timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT tb_seoul_traffic_signal_pkey PRIMARY KEY (history_id)
+);
+
+-- 공공데이터포털 학교(전국초중등학교 위치표준데이터)
+CREATE TABLE GD_GIS_SCHL_MST (
+	schoolId CHAR(10) NOT NULL,
+	schoolNm VARCHAR(20),
+	schoolSe VARCHAR(4),
+	fondDate CHAR(10),
+	fondType CHAR(2),
+	bnhhSe CHAR(2),
+	operSttus VARCHAR(5),
+	lnmadr VARCHAR(50),
+	rdnmadr VARCHAR(50),
+	cddcCode CHAR(7),
+	cddcNm VARCHAR(20),
+	edcSport CHAR(7),
+	edcSportNm VARCHAR(20),
+	creatDate CHAR(10),
+	changeDate CHAR(10),
+	referenceDate CHAR(10),
+	LAT NUMERIC(13) NOT NULL,
+	LOT NUMERIC(13) NOT NULL,
+	FRST_RGTR_ID VARCHAR(20) NOT NULL,
+	FRST_REG_DT DATE NOT NULL,
+	LAST_MDFR_ID VARCHAR(20) NOT NULL,
+	LAST_MDFCN_DT DATE NOT NULL,
+	CONSTRAINT GD_GIS_SCHL_MST_PKEY PRIMARY KEY (schoolId)
 );

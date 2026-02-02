@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_02">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_SCHL_MST
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_SCHL_MST (
+				schoolId,
+				schoolNm,
+				schoolSe,
+				fondDate,
+				fondType,
+				bnhhSe,
+				operSttus,
+				lnmadr,
+				rdnmadr,
+				cddcCode,
+				cddcNm,
+				edcSport,
+				edcSportNm,
+				creatDate,
+				changeDate,
+				referenceDate,
+				LAT,
+				LOT,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.schoolId},
+        #{item.schoolNm},
+        #{item.schoolSe},
+        #{item.fondDate},
+        #{item.fondType},
+        #{item.bnhhSe},
+        #{item.operSttus},
+        #{item.lnmadr},
+        #{item.rdnmadr},
+        #{item.cddcCode},
+        #{item.cddcNm},
+        #{item.edcSport},
+        #{item.edcSportNm},
+        #{item.creatDate},
+        #{item.referenceDate},        
+        NULLIF(#{item.latitude}, '')::numeric,
+        NULLIF(#{item.longitude}, '')::numeric,       
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

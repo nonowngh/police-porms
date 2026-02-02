@@ -12,6 +12,30 @@
     "loopCall" : false
   },
   {
+  	"interfaceId": "IF_EX_API_GIS_02",
+  	"interfaceDescription": "[GIS]공공데이터 전국초중등학교 위치표준데이터",
+  	"apiUrl": "http://api.data.go.kr/openapi",
+  	"apiRequestTimeoutSeconds": 30,
+  	"apiType": "data-portal",
+  	"apiServiceId": "tn_pubr_public_elesch_mskul_lc_api",
+  	"apiKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+  	"apiRequestFetchSize": 1000,
+  	"batchSchedulerCron": "0 * * * * ?",
+  	"loopCall": false
+  },
+  {
+  	"interfaceId": "IF_EX_API_GIS_03",
+  	"interfaceDescription": "[GIS]공공데이터 전국신호등표준데이터",
+  	"apiUrl": "http://api.data.go.kr/openapi",
+  	"apiRequestTimeoutSeconds": 30,
+  	"apiType": "data-portal",
+  	"apiServiceId": "tn_pubr_public_traffic_light_api",
+  	"apiKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+  	"apiRequestFetchSize": 1000,
+  	"batchSchedulerCron": "0 * * * * ?",
+  	"loopCall": false
+  },
+  {
     "interfaceId": "IF_B",
     "interfaceDescription": "테스트 인터페이스 B",
     "apiUrl": "/api/interfaceB",

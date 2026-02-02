@@ -11,7 +11,10 @@ import lombok.RequiredArgsConstructor;
 public enum ApiType {
 	
 	@JsonProperty("data-seoul")
-	DATA_SEOUL("data-seoul", "서울시 데이터 광장");
+	DATA_SEOUL("data-seoul", "서울시 데이터 광장"),
+	
+	@JsonProperty("data-portal")
+	DATA_PORTAL("data-portal", "공공데이터 포털");
 	
 	private final String value;
 	private final String description; 
