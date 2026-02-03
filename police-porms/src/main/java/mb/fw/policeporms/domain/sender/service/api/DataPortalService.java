@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
 import mb.fw.policeporms.common.constant.ApiHeader;
+import mb.fw.policeporms.common.constant.ApiParamKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
 import mb.fw.policeporms.common.utils.LoggingUtils;
@@ -62,10 +63,12 @@ public class DataPortalService extends AbstractApiService {
 				}
 				String serviceKey = root.fieldNames().next();
 				JsonNode serviceResBody = root.get(serviceKey);
-				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
-						getHeader(serviceResBody).toString(), getTotalSize(serviceResBody));
+				log.debug("'{}' api response result : {}, total-count : {}",
+						spec.getAdditionalParams().get(ApiParamKeys.SERVICE_ID), getHeader(serviceResBody).toString(),
+						getTotalSize(serviceResBody));
 				// 에러 코드 체크 (00이 아니면 중단)
-				String resultCode = getHeader(serviceResBody).path(ApiHeader.DATA_PORTAL_RESULT_CODE.getValue()).asText();
+				String resultCode = getHeader(serviceResBody).path(ApiHeader.DATA_PORTAL_RESULT_CODE.getValue())
+						.asText();
 				if (!ApiHeader.DATA_PORTAL_RESULT_SUCCESS.getValue().equals(resultCode)) {
 					log.error("[{}] API error code: {} at page {}", spec.getInterfaceId(), resultCode, page);
 					break;
@@ -107,19 +110,21 @@ public class DataPortalService extends AbstractApiService {
 	}
 
 	private int getTotalSize(JsonNode serviceBody) {
-		return serviceBody.path(ApiHeader.DATA_PORTAL_BODY.getValue()).path(ApiHeader.DATA_PORTAL_TOTAL_COUNT.getValue()).asInt();
+		return serviceBody.path(ApiHeader.DATA_PORTAL_BODY.getValue())
+				.path(ApiHeader.DATA_PORTAL_TOTAL_COUNT.getValue()).asInt();
 	}
 
 	private JsonNode getHeader(JsonNode serviceBody) {
 		return serviceBody.path(ApiHeader.DATA_PORTAL_HEADER.getValue());
 	}
-	
+
 	private JsonNode getBody(JsonNode serviceBody) {
 		return serviceBody.path(ApiHeader.DATA_PORTAL_BODY.getValue());
 	}
 
 	private JsonNode fetchPageFromApi(InterfaceSpec spec, int start, int end) {
-		String apiPath = String.format("/%s?servicekey=%s&pageNo=%d&numOfRows=%d&type=json", spec.getApiServiceId(), spec.getApiKey(), start, end);
+		String apiPath = String.format("/%s?servicekey=%s&pageNo=%d&numOfRows=%d&type=json",
+				spec.getAdditionalParams().get(ApiParamKeys.SERVICE_ID), spec.getApiKey(), start, end);
 		return openApiWebClient.get().uri(spec.getApiUrl() + apiPath).retrieve()
 				.onStatus(status -> status.isError(), response -> {
 					return response.bodyToMono(String.class).flatMap(body -> {

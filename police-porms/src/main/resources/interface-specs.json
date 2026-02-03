@@ -5,7 +5,9 @@
     "apiUrl": "http://openapi.seoul.go.kr:8088",
     "apiRequestTimeoutSeconds": 30,
     "apiType" : "data-seoul",
-    "apiServiceId" : "trafficSafetyA057PInfo",
+	"additionalParams" : {
+		"serviceId" : "trafficSafetyA057PInfo"
+	},
     "apiKey" : "425a58506e73756e38346176636a6d",
     "apiRequestFetchSize" : 1000,
     "batchSchedulerCron": "0 * * * * ?",
