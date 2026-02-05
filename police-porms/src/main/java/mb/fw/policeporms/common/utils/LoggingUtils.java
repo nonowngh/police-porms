@@ -19,7 +19,11 @@ public class LoggingUtils {
 
 	public static void printWriteFileProgress(String txId, int row, int current, int total) {
 		double progress = (total > 0) ? ((double) current / total) * 100 : 0;
-		log.info("[{}] ⏳ 처리 중:  {} 건 파일 저장. {}/{}건 완료 ({})", txId, String.format("%,d", row), String.format("%,d", current), String.format("%,d", total),
-				String.format("%.1f%%", progress));
+		log.info("[{}] ⏳ 처리 중:  {} 건 파일 저장. {}/{}건 완료 ({})", txId, String.format("%,d", row),
+				String.format("%,d", current), String.format("%,d", total), String.format("%.1f%%", progress));
+	}
+
+	public static void printWriteFileComplete(String txId, int row) {
+		log.info("[{}] ⏳ 처리 완료:  {} 건 파일 저장 완료", txId, String.format("%,d", row));
 	}
 }

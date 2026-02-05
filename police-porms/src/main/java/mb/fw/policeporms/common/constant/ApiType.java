@@ -14,7 +14,10 @@ public enum ApiType {
 	DATA_SEOUL("data-seoul", "서울시 데이터 광장"),
 	
 	@JsonProperty("data-portal")
-	DATA_PORTAL("data-portal", "공공데이터 포털");
+	DATA_PORTAL("data-portal", "공공데이터 포털"),
+	
+	@JsonProperty("its-center")
+	ITS_CENTER("its-center", "국가교통정보센터");
 	
 	private final String value;
 	private final String description; 

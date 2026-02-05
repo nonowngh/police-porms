@@ -13,8 +13,8 @@ spring:
       max-file-size: 200MB     
       max-request-size: 200MB  
       file-size-threshold: 0  
-      location: C:\Users\250318\Desktop\product\temp-file\rcv      
+      location: /home/indigo/temp-file/rcv      
 mybatis:
   config-location: classpath:mybatis-config.xml
   mapper-locations: classpath*:./SQL*.xml
-  chunk-size: 1500
+  chunk-size: 2000

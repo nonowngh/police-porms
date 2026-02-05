@@ -5,9 +5,11 @@ web:
   client:
     interface-api-url: http://localhost:26001/esb/api/interface
 
-file:
-  transfer:
-    temp-directory: C:\Users\250318\Desktop\product\temp-file
+interface:
+  logging:
+    enabled: true
+  file:
+    temp-directory: /home/indigo/temp-file
 
 spring:
   profiles:

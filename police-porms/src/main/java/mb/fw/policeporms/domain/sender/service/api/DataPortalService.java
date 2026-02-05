@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
-import mb.fw.policeporms.common.constant.ApiHeader;
+import mb.fw.policeporms.common.constant.ApiResponseKeys;
 import mb.fw.policeporms.common.constant.ApiParamKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
@@ -64,12 +64,12 @@ public class DataPortalService extends AbstractApiService {
 				String serviceKey = root.fieldNames().next();
 				JsonNode serviceResBody = root.get(serviceKey);
 				log.debug("'{}' api response result : {}, total-count : {}",
-						spec.getAdditionalParams().get(ApiParamKeys.SERVICE_ID), getHeader(serviceResBody).toString(),
+						spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID), getHeader(serviceResBody).toString(),
 						getTotalSize(serviceResBody));
 				// 에러 코드 체크 (00이 아니면 중단)
-				String resultCode = getHeader(serviceResBody).path(ApiHeader.DATA_PORTAL_RESULT_CODE.getValue())
+				String resultCode = getHeader(serviceResBody).path(ApiResponseKeys.DATA_PORTAL_RESULT_CODE.getValue())
 						.asText();
-				if (!ApiHeader.DATA_PORTAL_RESULT_SUCCESS.getValue().equals(resultCode)) {
+				if (!ApiResponseKeys.DATA_PORTAL_RESULT_SUCCESS.getValue().equals(resultCode)) {
 					log.error("[{}] API error code: {} at page {}", spec.getInterfaceId(), resultCode, page);
 					break;
 				}
@@ -79,7 +79,7 @@ public class DataPortalService extends AbstractApiService {
 				}
 
 				// 데이터 추출 및 파일 기록
-				JsonNode rowNode = getBody(serviceResBody).get(ApiHeader.DATA_PORTAL_ITEMS_DATA.getValue());
+				JsonNode rowNode = getBody(serviceResBody).get(ApiResponseKeys.DATA_PORTAL_ITEMS_DATA.getValue());
 				if (rowNode != null && rowNode.isArray()) {
 					List<Map<String, Object>> rows = objectMapper.convertValue(rowNode,
 							new TypeReference<List<Map<String, Object>>>() {
@@ -110,26 +110,26 @@ public class DataPortalService extends AbstractApiService {
 	}
 
 	private int getTotalSize(JsonNode serviceBody) {
-		return serviceBody.path(ApiHeader.DATA_PORTAL_BODY.getValue())
-				.path(ApiHeader.DATA_PORTAL_TOTAL_COUNT.getValue()).asInt();
+		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_BODY.getValue())
+				.path(ApiResponseKeys.DATA_PORTAL_TOTAL_COUNT.getValue()).asInt();
 	}
 
 	private JsonNode getHeader(JsonNode serviceBody) {
-		return serviceBody.path(ApiHeader.DATA_PORTAL_HEADER.getValue());
+		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_HEADER.getValue());
 	}
 
 	private JsonNode getBody(JsonNode serviceBody) {
-		return serviceBody.path(ApiHeader.DATA_PORTAL_BODY.getValue());
+		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_BODY.getValue());
 	}
 
 	private JsonNode fetchPageFromApi(InterfaceSpec spec, int start, int end) {
 		String apiPath = String.format("/%s?servicekey=%s&pageNo=%d&numOfRows=%d&type=json",
-				spec.getAdditionalParams().get(ApiParamKeys.SERVICE_ID), spec.getApiKey(), start, end);
+				spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID), spec.getApiKey(), start, end);
 		return openApiWebClient.get().uri(spec.getApiUrl() + apiPath).retrieve()
 				.onStatus(status -> status.isError(), response -> {
 					return response.bodyToMono(String.class).flatMap(body -> {
 						log.error("API 호출 에러 발생! 응답 바디: {}", body);
-						return Mono.error(new RuntimeException("API 응답 오류"));
+						return Mono.error(new RuntimeException("API 응답 오류(" + body + ")"));
 					});
 				}).bodyToMono(String.class).map(res -> {
 					// 응답이 XML( < 로 시작)인지 확인
