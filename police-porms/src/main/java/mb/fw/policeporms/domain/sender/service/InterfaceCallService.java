@@ -48,14 +48,15 @@ public class InterfaceCallService {
 		ResponseMessage response = new ResponseMessage();
 		response.setInterfaceId(interfaceId);
 		response.setTransactionId(transactionId);
-		
-	    java.util.concurrent.atomic.AtomicBoolean isCallbackExecuted = new java.util.concurrent.atomic.AtomicBoolean(false);
-	    Consumer<Integer> safeCallback = (count) -> {
-	        if (countCallback != null && isCallbackExecuted.compareAndSet(false, true)) {
-	            countCallback.accept(count);
-	        }
-	    };
-	    
+
+		java.util.concurrent.atomic.AtomicBoolean isCallbackExecuted = new java.util.concurrent.atomic.AtomicBoolean(
+				false);
+		Consumer<Integer> safeCallback = (count) -> {
+			if (countCallback != null && isCallbackExecuted.compareAndSet(false, true)) {
+				countCallback.accept(count);
+			}
+		};
+
 		// 파일 경로 설정
 		String fileName = "temp_" + transactionId + ".jsonl.gz";
 		Path sendFile = Paths.get(fileTransferConfig.getTempDirectory(), fileName);
@@ -84,10 +85,10 @@ public class InterfaceCallService {
 			log.error("[{}] executeApiDataSend 처리 중 오류 발생 : {}", transactionId, e.getMessage());
 			// 콜백이 아직 실행되지 않았다면 1으로 호출하여 로그 누락 방지
 			safeCallback.accept(1);
-			
+
 			response.setProcessCd(InterfaceStatus.ERROR);
 			response.setProcessMsg(e.getMessage());
-			
+
 		} finally {
 			try {
 				if (Files.deleteIfExists(sendFile)) {
@@ -107,11 +108,14 @@ public class InterfaceCallService {
 		if (service == null) {
 			throw new RuntimeException("No service found for " + spec.getApiType());
 		}
+		long startTime = System.currentTimeMillis();
 		try {
 			sendTotalCount = service.fetchAndSave(spec, tempFile, transactionId);
+			String durationSeconds = String.format("%.1f", (System.currentTimeMillis() - startTime) / 1000.0);
+
 			if (sendTotalCount != 0)
-				log.info("[{}] '{}' 파일 생성 완료. 총 건수: {}, 파일크기: {}bytes 수신 서버로 전송 시작...", transactionId,
-						tempFile.toAbsolutePath(), sendTotalCount, Files.size(tempFile));
+				log.info("[{}] '{}' 파일 생성 완료.(소요시간 : {}s) 총 건수: {}, 파일크기: {}bytes 수신 서버로 전송 시작...", transactionId,
+						tempFile.toAbsolutePath(), durationSeconds, sendTotalCount, Files.size(tempFile));
 		} catch (Exception e) {
 			throw e;
 		}

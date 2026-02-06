@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_TIS_01">
+
+    <delete id="delete">
+        DELETE FROM interface.gd_gis_road_coms_mst
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO interface.gd_gis_road_coms_mst (
+        road_link_id,
+        road_nm,
+        road_rte_drcn_cd,
+        road_link_no,
+        road_node_bgng_id,
+        road_node_end_id,
+        psng_spd,
+        psng_hr,
+        frst_rgtr_id,
+        frst_reg_dt,
+        last_mdfr_id,
+        last_mdfcn_dt
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.linkId},
+        #{item.roadName},
+        #{item.roadDrcType},
+        #{item.linkNo},
+        #{item.startNodeId},
+        #{item.endNodeId},
+        NULLIF(#{item.speed}, '')::numeric,
+        #{item.travelTime},
+        'indigo',
+        now(),
+        'indigo',
+        now()
+    )
+    </foreach>
+  </insert>
+
+</mapper>
