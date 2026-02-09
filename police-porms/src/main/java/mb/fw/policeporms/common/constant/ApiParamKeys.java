@@ -23,5 +23,8 @@ public class ApiParamKeys {
 	public static final String ITS_CENTER_MAX_X = "maxX";
 	public static final String ITS_CENTER_MIN_Y = "minY";
 	public static final String ITS_CENTER_MAX_Y = "maxY";
+	
+	// 도시교통정보센터
+	public static final String UTIC_AUTH_KEY = "key";
 
 }

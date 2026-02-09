@@ -1,58 +1,71 @@
 [
-	{
-	    "interfaceId": "IF_EX_API_GIS_01",
-	    "interfaceDescription": "[GIS]서울시 신호등 관련정보",
-	    "apiUrl": "http://openapi.seoul.go.kr:8088",
-	    "apiRequestTimeoutSeconds": 30,
-	    "apiType" : "data-seoul",
-		"additionalParams" : {
-			"serviceId" : "trafficSafetyA057PInfo"
-		},
-	    "apiKey" : "425a58506e73756e38346176636a6d",
-	    "apiRequestFetchSize" : 1000,
-	    "batchSchedulerCron": "0 0 * * * ?",
-	    "loopCall" : true
-	  },
-	  {
-	    "interfaceId": "IF_EX_API_TIS_01",
-	    "interfaceDescription": "[TIS]지능형교통체계(ITS)-도로소통",
-	    "apiUrl": "https://openapi.its.go.kr:9443",
-	    "apiRequestTimeoutSeconds": 60,
-	    "apiType" : "its-center",
-		"additionalParams" : {
-			"serviceId" : "trafficInfo",
-	        "type" : "all",
-			"getType" : "json",
-	        "minX" : "126.8",
-	        "maxX" : "127.89",
-	        "minY" : "34.9",
-	        "maxY" : "35.1"
-		},
-	    "apiKey" : "858e4d5890b64d58a9bba7bce5b3eac2",
-	    "batchSchedulerCron": "0 * * * * ?"
-	  },
-  {
-  	"interfaceId": "IF_EX_API_GIS_02",
-  	"interfaceDescription": "[GIS]공공데이터 전국초중등학교 위치표준데이터",
-  	"apiUrl": "http://api.data.go.kr/openapi",
-  	"apiRequestTimeoutSeconds": 30,
-  	"apiType": "data-portal",
-  	"apiServiceId": "tn_pubr_public_elesch_mskul_lc_api",
-  	"apiKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-  	"apiRequestFetchSize": 1000,
-  	"batchSchedulerCron": "0 * * * * ?",
-  	"loopCall": false
-  },
-  {
-  	"interfaceId": "IF_EX_API_GIS_03",
-  	"interfaceDescription": "[GIS]공공데이터 전국신호등표준데이터",
-  	"apiUrl": "http://api.data.go.kr/openapi",
-  	"apiRequestTimeoutSeconds": 30,
-  	"apiType": "data-portal",
-  	"apiServiceId": "tn_pubr_public_traffic_light_api",
-  	"apiKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-  	"apiRequestFetchSize": 1000,
-  	"batchSchedulerCron": "0 * * * * ?",
-  	"loopCall": false
-  }
+    {
+        "interfaceId": "IF_EX_API_GIS_01",
+        "interfaceDescription": "[GIS]서울시 신호등 관련정보",
+        "apiUrl": "http://openapi.seoul.go.kr:8088",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-seoul",
+        "additionalParams": {
+            "serviceId": "trafficSafetyA057PInfo"
+        },
+        "apiKey": "425a58506e73756e38346176636a6d",
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 0 * * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_TIS_01",
+        "interfaceDescription": "[TIS]지능형교통체계(ITS)-도로소통",
+        "apiUrl": "https://openapi.its.go.kr:9443",
+        "apiRequestTimeoutSeconds": 60,
+        "apiType": "its-center",
+        "additionalParams": {
+            "serviceId": "trafficInfo",
+            "type": "all",
+            "getType": "json",
+            "minX": "126.8",
+            "maxX": "127.89",
+            "minY": "34.9",
+            "maxY": "35.1"
+        },
+        "apiKey": "858e4d5890b64d58a9bba7bce5b3eac2",
+        "batchSchedulerCron": "0 * * * * ?",
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_TIS_02",
+        "interfaceDescription": "[TIS]도시교통정보센터(UTIC)-돌발상황",
+        "apiUrl": "http://www.utic.go.kr/guide/imsOpenData.do",
+        "apiRequestTimeoutSeconds": 60,
+        "apiType": "utic",
+        "apiKey": "mhUcbyvKQtLLZ9gwc9Shn4miyQ2RKr9uJi8P19pYM0",
+        "batchSchedulerCron": "0 * * * * ?"
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_02",
+        "interfaceDescription": "[GIS]공공데이터 전국초중등학교 위치표준데이터",
+        "apiUrl": "http://api.data.go.kr/openapi",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "tn_pubr_public_elesch_mskul_lc_api",
+        "apiKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_03",
+        "interfaceDescription": "[GIS]공공데이터 전국신호등표준데이터",
+        "apiUrl": "http://api.data.go.kr/openapi",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "tn_pubr_public_traffic_light_api",
+        "apiKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    }
 ]

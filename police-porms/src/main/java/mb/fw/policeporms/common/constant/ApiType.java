@@ -17,7 +17,10 @@ public enum ApiType {
 	DATA_PORTAL("data-portal", "공공데이터 포털"),
 	
 	@JsonProperty("its-center")
-	ITS_CENTER("its-center", "국가교통정보센터");
+	ITS_CENTER("its-center", "국가교통정보센터"),
+	
+	@JsonProperty("utic")
+	UTIC("utic", "도시교통정보센터");
 	
 	private final String value;
 	private final String description; 

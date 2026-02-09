@@ -9,7 +9,7 @@ interface:
   logging:
     enabled: true
   file:
-    temp-directory: /home/indigo/temp-file
+    temp-directory: C:\Users\nonow\Desktop\work\large-test\temp-file
 
 spring:
   profiles:

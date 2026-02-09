@@ -9,16 +9,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public abstract class AbstractApiService implements ApiService {
 
 	protected final ObjectMapper objectMapper;
 	protected final WebClient openApiWebClient;
+	protected final XmlMapper xmlMapper;
 
-	protected AbstractApiService(ObjectMapper objectMapper,
-			@Qualifier("openApiWebClient") WebClient openApiWebClient) {
+	protected AbstractApiService(ObjectMapper objectMapper, @Qualifier("openApiWebClient") WebClient openApiWebClient) {
 		this.objectMapper = objectMapper;
 		this.openApiWebClient = openApiWebClient;
+		this.xmlMapper = (XmlMapper) new XmlMapper()
+				.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	/**

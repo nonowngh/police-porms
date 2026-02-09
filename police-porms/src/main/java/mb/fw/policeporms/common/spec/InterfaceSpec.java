@@ -3,8 +3,6 @@ package mb.fw.policeporms.common.spec;
 import java.util.Map;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import mb.fw.policeporms.common.constant.ApiType;
 
 @Data
@@ -34,5 +32,7 @@ public class InterfaceSpec {
 	private boolean loopCall = true;
 	// 각 api 별로 추가 입력 정보
 	private Map<String, Object> additionalParams;
+	// 인터페이스 사용 여부
+	private boolean enabled = true;
 	
 }

@@ -1,6 +1,7 @@
 package mb.fw.policeporms.common.config;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +29,13 @@ public class InterfaceSpecConfig {
 	List<InterfaceSpec> interfaceSpecs() throws Exception {
 		if(!jsonFile.exists()) throw new Exception("not found json-file 'interface-specs.json'");
 		ObjectMapper mapper = new ObjectMapper();
-		specs = mapper.readValue(jsonFile.getInputStream(), new TypeReference<List<InterfaceSpec>>() {
-		});
+	    List<InterfaceSpec> allSpecs = mapper.readValue(jsonFile.getInputStream(), 
+	            new TypeReference<List<InterfaceSpec>>() {});
+	    
+	    // enabled가 true인 것 필터링
+	    this.specs = allSpecs.stream()
+	            .filter(InterfaceSpec::isEnabled)
+	            .collect(Collectors.toList());
 		logSpecs();
 		return specs;
 	}

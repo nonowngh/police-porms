@@ -29,7 +29,11 @@ public enum ApiResponseKeys {
 	ITS_CENTER_RESULT_MESSAGE("resultMsg"),
 	ITS_CENTER_TOTAL_COUNT("totalCount"),
 	ITS_CENTER_ITEMS("items"),
-	ITS_CENTER_RESULT_CODE_SUCCESS("0");
+	ITS_CENTER_RESULT_CODE_SUCCESS("0"),
+	
+	//utic 응답정보
+	UTIC_RECORD("record");
+
 
 
     private final String value;
