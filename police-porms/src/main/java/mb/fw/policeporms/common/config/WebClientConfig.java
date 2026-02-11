@@ -37,23 +37,17 @@ public class WebClientConfig {
 	@Bean("interfaceWebClient")
 	WebClient esbWebClient() {
 		// 대용량 처리를 위한 메모리 제한 해제 (200MB)
-	    ExchangeStrategies strategies = ExchangeStrategies.builder()
-	            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(200 * 1024 * 1024))
-	            .build();
-	    
-	    HttpClient httpClient = HttpClient.create()
-	            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000) // 연결 시도 시간 (10초)
-	            .responseTimeout(Duration.ofMinutes(15))            // 전체 응답 대기 시간 (15분으로 상향)
-	            .doOnConnected(conn -> conn
-	                // 개별 패킷 사이의 읽기/쓰기 제한 시간을 0(무제한) 혹은 매우 길게 설정
-	                .addHandlerLast(new ReadTimeoutHandler(0)) 
-	                .addHandlerLast(new WriteTimeoutHandler(0)));
-	    return WebClient.builder()
-	            .baseUrl(interfaceApiUrl)
-	            .exchangeStrategies(strategies) // 메모리 전략 적용
-	            .clientConnector(new ReactorClientHttpConnector(httpClient))
-	            .defaultHeader(InterfaceAuthConstants.AUTH_HEADER, InterfaceAuthConstants.AUTH_KEY)
-	            .build();
+		ExchangeStrategies strategies = ExchangeStrategies.builder()
+				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(200 * 1024 * 1024)).build();
+
+		HttpClient httpClient = HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+				.responseTimeout(Duration.ofMinutes(15)) // 전체 응답 대기 시간 (15분으로 상향)
+				.doOnConnected(conn -> conn
+						// 개별 패킷 사이의 읽기/쓰기 제한 시간을 0(무제한) 혹은 매우 길게 설정
+						.addHandlerLast(new ReadTimeoutHandler(0)).addHandlerLast(new WriteTimeoutHandler(0)));
+		return WebClient.builder().baseUrl(interfaceApiUrl).exchangeStrategies(strategies) // 메모리 전략 적용
+				.clientConnector(new ReactorClientHttpConnector(httpClient))
+				.defaultHeader(InterfaceAuthConstants.AUTH_HEADER, InterfaceAuthConstants.AUTH_KEY).build();
 	}
 
 //	@Bean("openApiWebClient")
@@ -68,12 +62,19 @@ public class WebClientConfig {
 
 	@Bean("openApiWebClient")
 	WebClient openApiWebClient() {
+		ExchangeStrategies strategies = ExchangeStrategies.builder()
+				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(100 * 1024 * 1024)).build();
+
 		HttpClient httpClient = HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-				.responseTimeout(Duration.ofMinutes(10)) // 1GB 대응을 위해 넉넉히
+				.responseTimeout(Duration.ofMinutes(60)) // 1GB 대응을 위해 넉넉히
 				.doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(300))
 						.addHandlerLast(new WriteTimeoutHandler(300)));
 
-		return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient))
+		return WebClient.builder().exchangeStrategies(strategies)
+				.clientConnector(new ReactorClientHttpConnector(httpClient)).filter((request, next) -> {
+					log.info("🌐 call api -> [{}] {}", request.method(), request.url());
+					return next.exchange(request);
+				})
 				// --- 재처리(Retry) 필터 추가 시작 ---
 				.filter((request, next) -> next.exchange(request).flatMap(response -> {
 					// 5xx 에러 발생 시 에러로 강제 전환하여 재시도 유도
@@ -86,7 +87,6 @@ public class WebClientConfig {
 								.doBeforeRetry(retrySignal -> log.warn("OpenAPI 호출 재시도 중... 횟수: {}/3, 사유: {}",
 										retrySignal.totalRetries() + 1, retrySignal.failure().getMessage()))))
 				// --- 재처리(Retry) 필터 추가 끝 ---
-				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build();
 	}
 

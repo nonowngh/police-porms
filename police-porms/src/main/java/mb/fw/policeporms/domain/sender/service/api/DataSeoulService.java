@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
 import mb.fw.policeporms.common.constant.ApiResponseKeys;
-import mb.fw.policeporms.common.constant.ApiParamKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
 import mb.fw.policeporms.common.utils.LoggingUtils;
@@ -63,8 +62,7 @@ public class DataSeoulService extends AbstractApiService {
 				}
 				String serviceKey = root.fieldNames().next();
 				JsonNode serviceBody = root.get(serviceKey);
-				log.debug("'{}' api response result : {}, total-count : {}",
-						spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID),
+				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
 						getResult(serviceBody).toString(), getTotalSize(serviceBody));
 				// 에러 코드 체크 (INFO-000이 아니면 중단)
 				String resultCode = getResult(serviceBody).path(ApiResponseKeys.DATA_SEOUL_RESULT_CODE.getValue())
@@ -118,8 +116,7 @@ public class DataSeoulService extends AbstractApiService {
 	}
 
 	private JsonNode fetchPageFromApi(InterfaceSpec spec, int start, int end) {
-		String apiPath = String.format("/%s/json/%s/%d/%d/", spec.getApiKey(),
-				spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID), start, end);
+		String apiPath = String.format("/%s/json/%s/%d/%d/", spec.getApiKey(), spec.getApiServiceId(), start, end);
 		return openApiWebClient.get().uri(spec.getApiUrl() + apiPath).retrieve()
 				.onStatus(status -> status.isError(), response -> {
 					return response.bodyToMono(String.class).flatMap(body -> {

@@ -20,8 +20,8 @@ public class InterfaceSpec {
 	private int apiRequestTimeoutSeconds = 30;
 	// open-api 타입
 	private ApiType apiType;
-//	// open-api 서비스 아이디
-//	private String apiServiceId;
+	// open-api 서비스 아이디
+	private String apiServiceId;
 	// open-api 인증키
 	private String apiKey;
 	// open-api 호출건당 요청 사이즈

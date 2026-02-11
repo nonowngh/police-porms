@@ -22,10 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
 import mb.fw.policeporms.common.constant.ApiResponseKeys;
-import mb.fw.policeporms.common.constant.ApiParamKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
 import mb.fw.policeporms.common.utils.LoggingUtils;
+import mb.fw.policeporms.common.utils.WebClientUtils;
 import mb.fw.policeporms.domain.sender.service.base.AbstractApiService;
 import reactor.core.publisher.Mono;
 
@@ -63,9 +63,8 @@ public class DataPortalService extends AbstractApiService {
 				}
 				String serviceKey = root.fieldNames().next();
 				JsonNode serviceResBody = root.get(serviceKey);
-				log.debug("'{}' api response result : {}, total-count : {}",
-						spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID), getHeader(serviceResBody).toString(),
-						getTotalSize(serviceResBody));
+				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
+						getHeader(serviceResBody).toString(), getTotalSize(serviceResBody));
 				// 에러 코드 체크 (00이 아니면 중단)
 				String resultCode = getHeader(serviceResBody).path(ApiResponseKeys.DATA_PORTAL_RESULT_CODE.getValue())
 						.asText();
@@ -123,9 +122,9 @@ public class DataPortalService extends AbstractApiService {
 	}
 
 	private JsonNode fetchPageFromApi(InterfaceSpec spec, int start, int end) {
-		String apiPath = String.format("/%s?servicekey=%s&pageNo=%d&numOfRows=%d&type=json",
-				spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID), spec.getApiKey(), start, end);
-		return openApiWebClient.get().uri(spec.getApiUrl() + apiPath).retrieve()
+		String apiPath = String.format("/%s", spec.getApiServiceId());
+
+		return openApiWebClient.get().uri(WebClientUtils.appendQueryParams(spec, apiPath).build().toUri()).retrieve()
 				.onStatus(status -> status.isError(), response -> {
 					return response.bodyToMono(String.class).flatMap(body -> {
 						log.error("API 호출 에러 발생! 응답 바디: {}", body);
@@ -144,5 +143,4 @@ public class DataPortalService extends AbstractApiService {
 					}
 				}).block();
 	}
-
 }

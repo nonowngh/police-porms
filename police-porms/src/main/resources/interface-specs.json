@@ -5,9 +5,7 @@
         "apiUrl": "http://openapi.seoul.go.kr:8088",
         "apiRequestTimeoutSeconds": 30,
         "apiType": "data-seoul",
-        "additionalParams": {
-            "serviceId": "trafficSafetyA057PInfo"
-        },
+        "serviceId":  "trafficSafetyA057PInfo",
         "apiKey": "425a58506e73756e38346176636a6d",
         "apiRequestFetchSize": 1000,
         "batchSchedulerCron": "0 0 * * * ?",
@@ -20,8 +18,8 @@
         "apiUrl": "https://openapi.its.go.kr:9443",
         "apiRequestTimeoutSeconds": 60,
         "apiType": "its-center",
+        "serviceId": "trafficInfo",
         "additionalParams": {
-            "serviceId": "trafficInfo",
             "type": "all",
             "getType": "json",
             "minX": "126.8",
@@ -39,7 +37,9 @@
         "apiUrl": "http://www.utic.go.kr/guide/imsOpenData.do",
         "apiRequestTimeoutSeconds": 60,
         "apiType": "utic",
-        "apiKey": "mhUcbyvKQtLLZ9gwc9Shn4miyQ2RKr9uJi8P19pYM0",
+        "additionalParams": {
+            "key": "mhUcbyvKQtLLZ9gwc9Shn4miyQ2RKr9uJi8P19pYM0"
+        },        
         "batchSchedulerCron": "0 * * * * ?"
     },
     {

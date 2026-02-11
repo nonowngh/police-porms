@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,11 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
-import mb.fw.policeporms.common.constant.ApiParamKeys;
 import mb.fw.policeporms.common.constant.ApiResponseKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
 import mb.fw.policeporms.common.utils.LoggingUtils;
+import mb.fw.policeporms.common.utils.WebClientUtils;
 import mb.fw.policeporms.domain.sender.service.base.AbstractApiService;
 import reactor.core.publisher.Mono;
 
@@ -59,8 +58,8 @@ public class ItsCenterService extends AbstractApiService {
 			JsonNode headerNode = root.path(ApiResponseKeys.ITS_CENTER_HEADER.getValue());
 			JsonNode bodyNode = root.path(ApiResponseKeys.ITS_CENTER_BODY.getValue());
 			int totalCount = getTotalSize(bodyNode);
-			log.debug("'{}' api response result : {}, total-count : {}",
-					spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID), headerNode.toString(), totalCount);
+			log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(), headerNode.toString(),
+					totalCount);
 
 			if (totalCount == 0)
 				return 0;
@@ -100,31 +99,17 @@ public class ItsCenterService extends AbstractApiService {
 	}
 
 	private JsonNode callApi(InterfaceSpec spec) {
-		String apiPath = String.format("/%s", spec.getAdditionalParams().get(ApiParamKeys.COMMON_SERVICE_ID));
-		return openApiWebClient.get()
-				.uri(UriComponentsBuilder.fromHttpUrl(spec.getApiUrl()).path(apiPath)
-						.queryParam(ApiParamKeys.COMMON_API_KEY, spec.getApiKey())
-						.queryParam(ApiParamKeys.ITS_CENTER_API_TYPE,
-								spec.getAdditionalParams().get(ApiParamKeys.ITS_CENTER_API_TYPE))
-						.queryParam(ApiParamKeys.ITS_CENTER_OUTPUT_TYPE,
-								spec.getAdditionalParams().get(ApiParamKeys.ITS_CENTER_OUTPUT_TYPE))
-						.queryParam(ApiParamKeys.ITS_CENTER_MIN_X,
-								spec.getAdditionalParams().get(ApiParamKeys.ITS_CENTER_MIN_X))
-						.queryParam(ApiParamKeys.ITS_CENTER_MAX_X,
-								spec.getAdditionalParams().get(ApiParamKeys.ITS_CENTER_MAX_X))
-						.queryParam(ApiParamKeys.ITS_CENTER_MIN_Y,
-								spec.getAdditionalParams().get(ApiParamKeys.ITS_CENTER_MIN_Y))
-						.queryParam(ApiParamKeys.ITS_CENTER_MAX_Y,
-								spec.getAdditionalParams().get(ApiParamKeys.ITS_CENTER_MAX_Y))
-						.build().toUri())
-				.retrieve().onStatus(status -> status.isError(), response -> {
+		String apiPath = String.format("/%s", spec.getApiServiceId());
+
+		return openApiWebClient.get().uri(WebClientUtils.appendQueryParams(spec, apiPath).build().toUri()).retrieve()
+				.onStatus(status -> status.isError(), response -> {
 					return response.bodyToMono(String.class).flatMap(body -> {
 						log.error("API 호출 에러 발생! 응답 바디: {}", body);
 						return Mono.error(new RuntimeException("API 응답 오류(" + body + ")"));
 					});
 				}).bodyToMono(String.class).map(res -> {
 					try {
-						return objectMapper.readTree(res); // 정상일 때만 JSON 파싱
+						return objectMapper.readTree(res);
 					} catch (Exception e) {
 						throw new RuntimeException("JSON 파싱 오류", e);
 					}

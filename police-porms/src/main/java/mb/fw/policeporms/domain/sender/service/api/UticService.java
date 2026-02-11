@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,11 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
-import mb.fw.policeporms.common.constant.ApiParamKeys;
 import mb.fw.policeporms.common.constant.ApiResponseKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
 import mb.fw.policeporms.common.utils.LoggingUtils;
+import mb.fw.policeporms.common.utils.WebClientUtils;
 import mb.fw.policeporms.domain.sender.service.base.AbstractApiService;
 import reactor.core.publisher.Mono;
 
@@ -104,10 +103,7 @@ public class UticService extends AbstractApiService {
 	}
 
 	private JsonNode callApi(InterfaceSpec spec) {
-		return openApiWebClient.get()
-				.uri(UriComponentsBuilder.fromHttpUrl(spec.getApiUrl())
-						.queryParam(ApiParamKeys.UTIC_AUTH_KEY, spec.getApiKey()).build().toUri())
-				.retrieve()
+		return openApiWebClient.get().uri(WebClientUtils.appendQueryParams(spec, "").build().toUri()).retrieve()
 				.onStatus(status -> status.isError(), response -> response.bodyToMono(String.class).flatMap(body -> {
 					log.error("API 호출 에러 발생! 응답 바디: {}", body);
 					return Mono.error(new RuntimeException("API 응답 오류(" + body + ")"));
