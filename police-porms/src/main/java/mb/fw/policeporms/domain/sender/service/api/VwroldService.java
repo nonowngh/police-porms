@@ -5,26 +5,24 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderComponent;
@@ -38,15 +36,15 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @SenderComponent
-public class DataPortalService extends AbstractApiService {
+public class VwroldService extends AbstractApiService {
 
-	protected DataPortalService(ObjectMapper objectMapper, WebClient openApiWebClient) {
+	protected VwroldService(ObjectMapper objectMapper, WebClient openApiWebClient) {
 		super(objectMapper, openApiWebClient);
 	}
 
 	@Override
 	public ApiType getApiType() {
-		return ApiType.DATA_PORTAL;
+		return ApiType.V_WORLD;
 	}
 
 	@Override
@@ -68,24 +66,37 @@ public class DataPortalService extends AbstractApiService {
 					log.warn("[{}] Empty response from API at page {}", spec.getInterfaceId(), page);
 					break;
 				}
-				String serviceKey = root.fieldNames().next();
-				JsonNode serviceResBody = root.get(serviceKey);
-				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
-						getHeader(serviceResBody).toString(), getTotalSize(serviceResBody));
-				// 에러 코드 체크 (00이 아니면 중단)
-				String resultCode = getHeader(serviceResBody).path(ApiResponseKeys.DATA_PORTAL_RESULT_CODE.getValue())
-						.asText();
-				if (!ApiResponseKeys.DATA_PORTAL_RESULT_SUCCESS.getValue().equals(resultCode)) {
-					log.error("[{}] API error code: {} at page {}", spec.getInterfaceId(), resultCode, page);
+				
+				// 에러 체크 (exceptions가 존재하면 중단)
+				if(root.has(ApiResponseKeys.V_WORLD_RESULT_EXCEPTIONS.getValue())) {
+					JsonNode exceptionsNode = root.path(ApiResponseKeys.V_WORLD_RESULT_EXCEPTIONS.getValue());
+					if (exceptionsNode.isArray() && exceptionsNode.size() > 0) {
+		                JsonNode firstException = exceptionsNode.get(0);
+		                String resultExpCode = firstException.path("code").asText();
+		                String resultExptext = firstException.path("text").asText();
+		                log.error("[{}] API error code: {}, text: {}, at page {}", spec.getInterfaceId(), resultExpCode, resultExptext, page);
+		            } else {
+		            	log.warn("[{}] API error code information Nothing", spec.getInterfaceId());
+		            }
 					break;
 				}
+				
 				// 총 갯수 저장
 				if (totalCount == -1) {
-					totalCount = getTotalSize(serviceResBody);
+					totalCount = getTotalSize(root);
 				}
 
 				// 데이터 추출 및 파일 기록
-				JsonNode rowNode = getBody(serviceResBody).get(ApiResponseKeys.DATA_PORTAL_ITEMS_DATA.getValue());
+				if(!root.has(ApiResponseKeys.V_WORLD_FEATURES.getValue())) {
+					log.warn("[{}] Empty response features from API at page {}", spec.getInterfaceId(), page);
+					break;
+				}
+				// V-World 응답 데이터 평탄화
+				JsonNode rowNode = makeJsonFlattener(root);
+				
+				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
+						rowNode.toString(), getTotalSize(root));
+				
 				if (rowNode != null && rowNode.isArray()) {
 					List<Map<String, Object>> rows = objectMapper.convertValue(rowNode,
 							new TypeReference<List<Map<String, Object>>>() {
@@ -116,16 +127,49 @@ public class DataPortalService extends AbstractApiService {
 	}
 
 	private int getTotalSize(JsonNode serviceBody) {
-		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_BODY.getValue())
-				.path(ApiResponseKeys.DATA_PORTAL_TOTAL_COUNT.getValue()).asInt();
+		return serviceBody.path(ApiResponseKeys.V_WORLD_TOTAL_COUNT.getValue()).asInt();
 	}
+	
+	private JsonNode makeJsonFlattener(JsonNode root) {
+		
+		try {
+			JsonNode featuresNode = root.get(ApiResponseKeys.V_WORLD_FEATURES.getValue());
+			if (!featuresNode.isArray()) {
+				throw new IllegalArgumentException("features 필드가 배열(Array) 아님!");
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			ArrayNode newFeaturesArray = mapper.createArrayNode();
 
-	private JsonNode getHeader(JsonNode serviceBody) {
-		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_HEADER.getValue());
-	}
+            for (JsonNode feature : featuresNode) {
+                ObjectNode flattenedFeature = mapper.createObjectNode();
+                Iterator<Map.Entry<String, JsonNode>> fields = feature.fields();
 
-	private JsonNode getBody(JsonNode serviceBody) {
-		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_BODY.getValue());
+                while (fields.hasNext()) {
+                    Map.Entry<String, JsonNode> field = fields.next();
+                    String key = field.getKey();
+                    JsonNode value = field.getValue();
+
+                    if (ApiResponseKeys.V_WORLD_FEATURE_PROPERTIES.getValue().equals(key)) {
+                        if (value != null && value.isObject()) {
+                            Iterator<Map.Entry<String, JsonNode>> props = value.fields();
+                            while (props.hasNext()) {
+                                Map.Entry<String, JsonNode> prop = props.next();
+                                flattenedFeature.set(prop.getKey(), prop.getValue());
+                            }
+                        }
+                    } else {
+                        flattenedFeature.set(key, value);
+                    }
+                }
+                newFeaturesArray.add(flattenedFeature);
+            }
+
+            return newFeaturesArray;
+			
+		} catch (Exception e) {
+            throw new RuntimeException("JSON 변환 오류.", e);
+        }
+		
 	}
 
 	private JsonNode fetchPageFromApi(InterfaceSpec spec, int page) {
@@ -134,13 +178,10 @@ public class DataPortalService extends AbstractApiService {
 	    UriComponentsBuilder builder = WebClientUtils.appendQueryParams(spec, apiPath);
 	    Map<String, Object> additionalParams = spec.getAdditionalParams();
 	    if (additionalParams != null) {
-	        if (additionalParams.containsKey("pageNo")) {
-	            builder.replaceQueryParam("pageNo", page);
+	        if (additionalParams.containsKey("startindex")) {
+	            builder.replaceQueryParam("startindex", page);
 	        }
 	    }
-
-		java.net.URI finalUri = builder.build().toUri();
-		log.debug("요청 API URL: {}", finalUri.toString());
 
 		return openApiWebClient.get().uri(builder.build().toUri()).retrieve()
 				.onStatus(status -> status.isError(), response -> {
@@ -150,30 +191,10 @@ public class DataPortalService extends AbstractApiService {
 					});
 				}).bodyToMono(String.class).map(res -> {
 					// 응답이 XML( < 로 시작)인지 확인
-					if (additionalParams.containsKey("dataType")) {
-			            String dataType = String.valueOf(additionalParams.get("dataType"));
-			            if ("xml".equalsIgnoreCase(dataType)) {
-			            	XmlMapper xmlMapper = new XmlMapper();
-			                ObjectMapper jsonMapper = new ObjectMapper();
-			                XMLInputFactory factory = XMLInputFactory.newFactory();
-			                try {
-		                        XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(res));
-		                        reader.nextTag(); 
-		                        String rootName = reader.getLocalName();
-		                        JsonNode dataNode = xmlMapper.readTree(res);
-		                        ObjectNode finalNode = jsonMapper.createObjectNode();
-		                        finalNode.set(rootName, dataNode);
-			                    return objectMapper.readTree(finalNode.toPrettyString()); // 정상일 때만 JSON 파싱
-			                } catch (Exception e) {
-			                    log.error("XML to JSON 변환 중 오류 발생", e);
-			                }
-			            }
-			        } else {
-			        	if (res.trim().startsWith("<")) {
-			        		log.error("응답 메시지 포맷 XML : {}", res);
-			        		throw new RuntimeException("API 서버로부터 XML 에러 메시지 수신");
-			        	}
-			        }
+					if (res.trim().startsWith("<")) {
+						log.error("응답 메시지 포맷 XML : {}", res);
+						throw new RuntimeException("API 서버로부터 XML 에러 메시지 수신");
+					}
 					try {
 						return objectMapper.readTree(res); // 정상일 때만 JSON 파싱
 					} catch (Exception e) {

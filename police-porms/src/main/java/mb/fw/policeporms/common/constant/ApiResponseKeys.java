@@ -22,6 +22,14 @@ public enum ApiResponseKeys {
 	DATA_PORTAL_RESULT_CODE("resultCode"),
 	DATA_PORTAL_RESULT_SUCCESS("00"),
 	
+	//v-world 응답 정보
+	V_WORLD_TOTAL_COUNT("totalFeatures"),
+	V_WORLD_FEATURES("features"),
+	V_WORLD_FEATURE_PROPERTIES("properties"),
+	V_WORLD_RESULT_EXCEPTIONS("exceptions"),
+	V_WORLD_RESULT_EXCEPTIONS_CODE("code"),
+	V_WORLD_RESULT_EXCEPTIONS_TEXT("text"),
+	
 	//its-center 응답 정보
 	ITS_CENTER_HEADER("header"),
 	ITS_CENTER_BODY("body"),

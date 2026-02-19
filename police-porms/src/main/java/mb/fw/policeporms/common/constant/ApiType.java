@@ -16,6 +16,9 @@ public enum ApiType {
 	@JsonProperty("data-portal")
 	DATA_PORTAL("data-portal", "공공데이터 포털"),
 	
+	@JsonProperty("v-world")
+	V_WORLD("v-world", "브이월드"),
+	
 	@JsonProperty("its-center")
 	ITS_CENTER("its-center", "국가교통정보센터"),
 	

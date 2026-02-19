@@ -2,5 +2,5 @@
 GIS - GIS
 교통 - TIS
 공통 - COM
-인구 -
-기상 - 
+인구 - POP
+기상 - WEA
