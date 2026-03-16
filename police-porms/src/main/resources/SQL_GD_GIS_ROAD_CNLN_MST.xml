@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_09">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_ROAD_CNLN_MST
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_ROAD_CNLN_MST (
+				UFID_ID,
+				ROAD_NO,
+				ROAD_CNLN_NM,
+				ROAD_SE_CD,
+				ROAD_CNLN_STPT_NM,
+				ROAD_CNLN_EDPNT_NM,
+				PCKN_QLMT_CD,
+				CRSBR_EN_CD,
+				LANE_CNT,
+				ROAD_WD,
+				OWST_SE_CD,
+				ETC_CN,
+				ROAD_NM,
+				DMAP_INTG_CD,
+				MNFTR_NO,
+				ROAD_CNLN_GEOM_VL,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.ufid},
+        #{item.rdnu},
+        #{item.name},
+        #{item.rddv},
+        #{item.stpt},
+        #{item.edpt},
+        #{item.pvqt},
+        #{item.dvyn},
+        #{item.rdln},
+        #{item.rvwd},
+        #{item.onsd},
+        #{item.rest},
+        #{item.rdnm},
+        #{item.scls},
+        #{item.fmta},
+        ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(#{item.geometry}::text), 5179)),
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

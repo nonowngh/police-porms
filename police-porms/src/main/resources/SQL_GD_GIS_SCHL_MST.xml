@@ -48,7 +48,7 @@
         #{item.edcSport},
         #{item.edcSportNm},
         #{item.creatDate},
-        #{item.changeDate},
+      	#{item.changeDate},
         #{item.referenceDate},        
         NULLIF(#{item.latitude}, '')::numeric,
         NULLIF(#{item.longitude}, '')::numeric,       

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_08">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_KECO_MARMD
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_KECO_MARMD (
+				so2Grade,
+				coFlag,
+				khaiValue,
+				so2Value,
+				coValue,
+				pm10Flag,
+				pm10Value,
+				o3Grade,
+				khaiGrade,
+				no2Flag,
+				no2Grade,
+				o3Flag,
+				so2Flag,
+				dataTime,
+				coGrade,
+				no2Value,
+				pm10Grade,
+				o3Value,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.so2Grade},
+        #{item.coFlag},
+        #{item.khaiValue},
+        #{item.so2Value},
+        #{item.coValue},
+        #{item.pm10Flag},
+        #{item.pm10Value},
+        #{item.o3Grade},
+        #{item.khaiGrade},
+        #{item.no2Flag},
+        #{item.no2Grade},
+        #{item.o3Flag},
+        #{item.so2Flag},
+        #{item.dataTime},
+        #{item.coGrade},
+        #{item.no2Value},
+        #{item.pm10Grade},
+        #{item.o3Value},
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

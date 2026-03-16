@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_02">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_TRFL_MST
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_TRFL_MST (
+				STDG_CTPV_NM,
+				SGG_NM,
+				ROAD_RTE_NM,
+				ROAD_CLSF_NM,
+				RTE_NM,
+				ROAD_RTE_DRCN_CD,
+				LCTN_ROAD_NM_ADDR,
+				LCTN_LOTNO_ADDR,
+				LAT,
+				LOT,
+				TRFLC_INSTL_MTH_CD,
+				ROAD_SHP_CD,
+				MAIN_ROAD_YN,
+				TRFL_MNG_NO,
+				TRFL_SE_CD,
+				TRFL_COLR_KND_CD,
+				SGNL_LGHT_MTH_CD,
+				SGNL_LGHT_SEQ_VL,
+				SGNL_LGHT_HR_VL,
+				SGNL_ILMN_KND_CD,
+				SGNL_CTRL_MTH_CD,
+				SGNL_HR_DCSN_MTH_CD,
+				FLSHR_OPER_YN,
+				FLSHR_OPER_BGNG_TM,
+				FLSHR_OPER_END_TM,
+				PDST_FNCTNG_TRFC_LC_EN,
+				RMND_HR_INDCT_DVC_EN,
+				BLPL_SOND_TRFCLC_EN,
+				ROAD_TRFC_GDNB_NO,
+				MNG_INST_NM,
+				MNG_INST_TELNO,
+				DATA_CRTR_YMD,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.schoolId},
+        #{item.ctpvnNm},
+        #{item.signguNm},
+        #{item.roadKnd},
+        #{item.roadRouteNo},
+        #{item.roadRouteNm},
+        #{item.roadRouteDrc},
+        #{item.rdnmadr},
+        #{item.lnmadr},
+        NULLIF(#{item.latitude}, '')::numeric,
+        NULLIF(#{item.longitude}, '')::numeric,  
+        #{item.sgngnrlInstlMthd},
+        #{item.roadType},
+        #{item.priorRoadYn},
+        #{item.tfclghtManageNo},
+        #{item.tfclghtSe},
+        #{item.tfclghtColorKnd},
+        #{item.sgnaspMthd},
+        #{item.sgnaspOrdr},
+        #{item.sgnaspTime},
+        #{item.srcKnd},
+        #{item.signlCtrlMthd},
+        #{item.signlTimeMthdType},
+        #{item.opratnYn},
+        #{item.flashingLightOpenHhmm},
+        #{item.flashingLightCloseHhmm},
+        #{item.fnctngSgngnYn},
+        #{item.remndrIdctYn},
+        #{item.sondSgngnYn},
+        #{item.drcbrdSn},
+        #{item.institutionNm},
+        #{item.phoneNumber},
+        #{item.referenceDate},     
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

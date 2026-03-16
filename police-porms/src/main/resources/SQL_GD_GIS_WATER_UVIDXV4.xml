@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_06">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_WATER_UVIDXV4
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_WATER_UVIDXV4 (
+				code,
+				areaNo,
+				date,
+				h0,
+				h3,
+				h6,
+				h9,
+				h12,
+				h15,
+				h18,
+				h21,
+				h24,
+				h27,
+				h30,
+				h33,
+				h36,
+				h39,
+				h42,
+				h45,
+				h48,
+				h51,
+				h54,
+				h57,
+				h60,
+				h63,
+				h66,
+				h69,
+				h72,
+				h75,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.code},
+        #{item.areaNo},
+        #{item.date},
+        #{item.h0},
+        #{item.h3},
+        #{item.h6},
+        #{item.h9},
+        #{item.h12},
+        #{item.h15},
+        #{item.h18},
+        #{item.h21},
+        #{item.h24},
+        #{item.h27},
+        #{item.h30},
+        #{item.h33},
+        #{item.h36},
+        #{item.h39},
+        #{item.h42},
+        #{item.h45},
+        #{item.h48},
+        #{item.h51},
+        #{item.h54},
+        #{item.h57},
+        #{item.h60},
+        #{item.h63},
+        #{item.h66},
+        #{item.h69},
+        #{item.h72},
+        #{item.h75},
+
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

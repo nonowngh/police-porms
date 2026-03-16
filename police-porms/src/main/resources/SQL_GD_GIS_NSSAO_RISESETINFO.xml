@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_07">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_NSSAO_RISESETINFO
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_NSSAO_RISESETINFO (
+				aste,
+				astm,
+				civile,
+				civilm,
+				latitude,
+				latitudeNum,
+				location,
+				locdate,
+				longitude,
+				longitudeNum,
+				moonrise,
+				moonset,
+				moontransit,
+				naute,
+				nautm,
+				sunrise,
+				sunset,
+				suntransit,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.aste},
+        #{item.astm},
+        #{item.civile},
+        #{item.civilm},
+        #{item.latitude},
+        #{item.latitudeNum},
+        #{item.location},
+        #{item.locdate},
+        #{item.longitude},
+        #{item.longitudeNum},
+        #{item.moonrise},
+        #{item.moonset},
+        #{item.moontransit},
+        #{item.naute},
+        #{item.nautm},
+        #{item.sunrise},
+        #{item.sunset},
+        #{item.suntransit},
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

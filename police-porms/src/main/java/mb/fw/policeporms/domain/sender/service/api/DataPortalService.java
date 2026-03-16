@@ -9,13 +9,16 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,7 +26,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import mb.fw.policeporms.common.annotation.SenderComponent;
 import mb.fw.policeporms.common.constant.ApiResponseKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
+import mb.fw.policeporms.common.utils.ESBProductEncryption;
 import mb.fw.policeporms.common.utils.LoggingUtils;
 import mb.fw.policeporms.common.utils.WebClientUtils;
 import mb.fw.policeporms.domain.sender.service.base.AbstractApiService;
@@ -39,6 +42,14 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @SenderComponent
 public class DataPortalService extends AbstractApiService {
+
+	private static final String PARAM_SERVICE_KEY = "serviceKey";
+	private static final String PARAM_DETAIL_SERVICE_ID = "detailServiceId";
+	private static final String PARAM_DETAIL_KEY = "detailKey";
+	private static final String PARAM_DETAIL_ONLY_PARAMS = "detailOnlyParams";
+	private static final String PARAM_MASTER_ONLY_PARAMS = "masterOnlyParams"; 
+	private static final String PREFIX_CURRENT_DATE = "CURRENT_DATE";
+	private static final String DUMMY_SINGLE_CALL = "SINGLE_CALL_DUMMY";
 
 	protected DataPortalService(ObjectMapper objectMapper, WebClient openApiWebClient) {
 		super(objectMapper, openApiWebClient);
@@ -52,133 +63,463 @@ public class DataPortalService extends AbstractApiService {
 	@Override
 	public int fetchAndSave(InterfaceSpec spec, Path tempFile, String transactionId) {
 		int totalSaved = 0;
-		int page = 1;
 		int fetchSize = spec.getApiRequestFetchSize();
-		int totalCount = -1;
+
+		Map<String, Object> additionalParams = spec.getAdditionalParams() != null 
+				? new HashMap<>(spec.getAdditionalParams()) 
+				: new HashMap<>();
+
+		// serviceKey 암호화(ENC) 복호화 처리 (대소문자 모두 지원)
+		String[] keyCandidates = {"serviceKey", "ServiceKey"};
+		for (String keyName : keyCandidates) {
+			if (additionalParams.containsKey(keyName)) {
+				String encryptedKey = String.valueOf(additionalParams.get(keyName));
+				if (encryptedKey.startsWith("ENC(") && encryptedKey.endsWith(")")) {
+					try {
+						String decryptedKey = ESBProductEncryption.decryptString(encryptedKey);
+						additionalParams.put(keyName, decryptedKey);
+					} catch (Exception e) {
+						log.error("[{}] serviceKey 복호화 오류", spec.getInterfaceId(), e);
+						throw new RuntimeException("API serviceKey 복호화 실패", e); 
+					}
+				}
+			}
+		}
+
+		// 동적 날짜 자동 치환 및 계산
+		LocalDateTime now = LocalDateTime.now();
+		Map<String, Object> dateUpdates = new HashMap<>();
+		for (Map.Entry<String, Object> entry : additionalParams.entrySet()) {
+			Object valueObj = entry.getValue();
+			if (valueObj instanceof String) {
+				String valStr = ((String) valueObj).trim();
+				
+				if (valStr.startsWith(PREFIX_CURRENT_DATE)) {
+					int colonIndex = valStr.indexOf(":");
+					if (colonIndex != -1) {
+						String mathPart = valStr.substring(PREFIX_CURRENT_DATE.length(), colonIndex).trim();
+						String formatPattern = valStr.substring(colonIndex + 1).trim();
+						
+						LocalDateTime targetDate = now;
+						
+						if (!mathPart.isEmpty()) {
+							try {
+								int daysOffset = Integer.parseInt(mathPart);
+								targetDate = targetDate.plusDays(daysOffset);
+							} catch (NumberFormatException e) {
+								log.error("[{}] 날짜 계산식 파싱 오류 (무시됨): {}", spec.getInterfaceId(), mathPart, e);
+							}
+						}
+						
+						try {
+							String formattedDate = targetDate.format(DateTimeFormatter.ofPattern(formatPattern));
+							dateUpdates.put(entry.getKey(), formattedDate);
+						} catch (IllegalArgumentException e) {
+							log.error("[{}] 잘못된 날짜 포맷: {}", spec.getInterfaceId(), formatPattern, e);
+						}
+					}
+				}
+			}
+		}
+		if (!dateUpdates.isEmpty()) additionalParams.putAll(dateUpdates);
+
+		// 외부 파일(txt, csv)을 읽어서 동적 배열(단일/다중)로 변환
+		Map<String, Object> fileUpdates = new HashMap<>();
+		List<String> keysToRemove = new ArrayList<>();
+
+		for (Map.Entry<String, Object> entry : additionalParams.entrySet()) {
+			if (entry.getValue() instanceof String) {
+				String valStr = ((String) entry.getValue()).trim();
+				if (valStr.startsWith("FILE:")) {
+					String filePath = valStr.substring(5).trim();
+					String paramKey = entry.getKey(); 
+					
+					try {
+						List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+						List<Object> parsedList = new ArrayList<>();
+						
+						if (paramKey.contains(",")) {
+							String[] keys = paramKey.split("\\s*,\\s*");
+							for (String line : lines) {
+								if (line.trim().isEmpty()) continue; 
+								String[] values = line.split("\\s*,\\s*");
+								
+								Map<String, String> map = new HashMap<>();
+								for (int i = 0; i < keys.length && i < values.length; i++) {
+									map.put(keys[i], values[i]); 
+								}
+								parsedList.add(map);
+							}
+							fileUpdates.put("MULTI_FILE_PARAM_LIST", parsedList);
+							keysToRemove.add(paramKey);
+						} else {
+							for (String line : lines) {
+								if (!line.trim().isEmpty()) parsedList.add(line.trim());
+							}
+							fileUpdates.put(paramKey, parsedList);
+						}
+						log.info("[{}] 외부 파라미터 파일 로드 완료: {} (총 {}건)", spec.getInterfaceId(), filePath, parsedList.size());
+					} catch (IOException e) {
+						log.error("[{}] 외부 파라미터 파일 읽기 실패: {}", spec.getInterfaceId(), filePath, e);
+						throw new RuntimeException("외부 파라미터 파일 읽기 실패", e);
+					}
+				}
+			}
+		}
+		
+		for (String k : keysToRemove) additionalParams.remove(k);
+		if (!fileUpdates.isEmpty()) additionalParams.putAll(fileUpdates);
+
+
+		// 리스트(배열) 파라미터 추출
+		String loopParamKey = null;
+		List<?> loopParamValues = null;
+
+		for (Map.Entry<String, Object> entry : additionalParams.entrySet()) {
+			if (entry.getValue() instanceof List) {
+				loopParamKey = entry.getKey();
+				loopParamValues = (List<?>) entry.getValue();
+				break; 
+			}
+		}
+		
+		if (loopParamKey != null) {
+			additionalParams.remove(loopParamKey);
+		}
+
+		if (loopParamValues == null || loopParamValues.isEmpty()) {
+			loopParamValues = Arrays.asList(DUMMY_SINGLE_CALL);
+		}
+
+		// 상세 API 관련 파라미터 추출
+		boolean useDetailApi = additionalParams.containsKey(PARAM_DETAIL_SERVICE_ID);
+		String[] detailKeys = new String[0]; 
+		if (useDetailApi && additionalParams.containsKey(PARAM_DETAIL_KEY)) {
+			Object detailKeyObj = additionalParams.get(PARAM_DETAIL_KEY);
+			if (detailKeyObj != null && !String.valueOf(detailKeyObj).trim().isEmpty()) {
+				detailKeys = String.valueOf(detailKeyObj).split("\\s*,\\s*");
+			}
+		}
+
 		try (OutputStream fos = Files.newOutputStream(tempFile, StandardOpenOption.CREATE);
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
-				GZIPOutputStream gzos = new GZIPOutputStream(bos); // 압축 레이어 추가
+				GZIPOutputStream gzos = new GZIPOutputStream(bos); 
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(gzos, StandardCharsets.UTF_8))) {
-			while (true) {
-				int start = ((page - 1) * fetchSize) + 1;
-				int end = page * fetchSize;
-				// api 호출
-				JsonNode root = fetchPageFromApi(spec, page);
-				if (root == null || !root.fieldNames().hasNext()) {
-					log.warn("[{}] Empty response from API at page {}", spec.getInterfaceId(), page);
-					break;
-				}
-				String serviceKey = root.fieldNames().next();
-				JsonNode serviceResBody = root.get(serviceKey);
-				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
-						getHeader(serviceResBody).toString(), getTotalSize(serviceResBody));
-				// 에러 코드 체크 (00이 아니면 중단)
-				String resultCode = getHeader(serviceResBody).path(ApiResponseKeys.DATA_PORTAL_RESULT_CODE.getValue())
-						.asText();
-				if (!ApiResponseKeys.DATA_PORTAL_RESULT_SUCCESS.getValue().equals(resultCode)) {
-					log.error("[{}] API error code: {} at page {}", spec.getInterfaceId(), resultCode, page);
-					break;
-				}
-				// 총 갯수 저장
-				if (totalCount == -1) {
-					totalCount = getTotalSize(serviceResBody);
+			
+			int totalArraySize = loopParamValues.size();
+			int currentArrayIndex = 0;
+
+			for (Object loopValue : loopParamValues) {
+				currentArrayIndex++; 
+				List<String> injectedKeys = new ArrayList<>();
+
+				if (loopValue instanceof Map) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> mapValue = (Map<String, Object>) loopValue;
+					additionalParams.putAll(mapValue);         
+					injectedKeys.addAll(mapValue.keySet());    
+				} else if (loopParamKey != null && !DUMMY_SINGLE_CALL.equals(loopValue)) {
+					additionalParams.put(loopParamKey, loopValue); 
+					injectedKeys.add(loopParamKey);                
 				}
 
-				// 데이터 추출 및 파일 기록
-				JsonNode rowNode = getBody(serviceResBody).get(ApiResponseKeys.DATA_PORTAL_ITEMS_DATA.getValue());
-				if (rowNode != null && rowNode.isArray()) {
-					List<Map<String, Object>> rows = objectMapper.convertValue(rowNode,
-							new TypeReference<List<Map<String, Object>>>() {
-							});
+				int page = 1;
+				int currentLoopTotalCount = -1; 
+				int currentLoopSaved = 0;       
 
-					// 파일 적재 (Gzip 스트림에 작성됨)
-					writeRowsToWriter(writer, rows);
-					totalSaved += rows.size();
-					LoggingUtils.printWriteFileProgress(transactionId, rows.size(), totalSaved, totalCount);
-					log.debug("[{}] {} records saved to file (current:{}/total:{})", spec.getInterfaceId(), rows.size(),
-							totalSaved, totalCount);
-
-					if (rows.size() < fetchSize || totalSaved >= totalCount)
+				while (true) {
+					// 마스터 API 호출
+					JsonNode root = fetchPageFromApi(spec, page, additionalParams);
+					if (root == null || root.isEmpty()) break;
+					
+					JsonNode headerNode = root.findPath(ApiResponseKeys.DATA_PORTAL_HEADER.getValue());
+					String resultCode = headerNode.path(ApiResponseKeys.DATA_PORTAL_RESULT_CODE.getValue()).asText().trim();
+					
+					if (!ApiResponseKeys.DATA_PORTAL_RESULT_SUCCESS.getValue().equals(resultCode) && !"0000".equals(resultCode)) {
+						log.error("[{}] API error code: {} at page {}", spec.getInterfaceId(), resultCode, page);
 						break;
-				} else {
-					break;
-				}
-				page++;
+					}
+					
+					if (currentLoopTotalCount == -1) {
+						currentLoopTotalCount = getTotalSize(root);
+					}
 
-				if (!spec.isLoopCall())
-					break;
-			}
+					boolean isMultiCall = !DUMMY_SINGLE_CALL.equals(loopValue);
+
+					if (currentLoopTotalCount == 0) {
+						if (isMultiCall) {
+							log.warn("[{}] 배열 [{}/{}] 0건 리턴 (파라미터: {}) -> 스킵 (현재 총 누적: {}건)", 
+									spec.getInterfaceId(), currentArrayIndex, totalArraySize, loopValue, totalSaved);
+						} else {
+							log.warn("[{}] 데이터 0건 리턴 -> 단일 호출 조기 종료", spec.getInterfaceId());
+						}
+						break;
+					}
+
+					JsonNode rowNode = root.findPath(ApiResponseKeys.DATA_PORTAL_ITEMS_DATA.getValue());
+					
+					if (rowNode.isMissingNode() || rowNode.isNull() || (rowNode.isTextual() && rowNode.asText().trim().isEmpty())) {
+						if (isMultiCall) {
+							log.warn("[{}] 배열 [{}/{}] items 빈 태그 (파라미터: {}) -> 스킵 (현재 총 누적: {}건)", 
+									spec.getInterfaceId(), currentArrayIndex, totalArraySize, loopValue, totalSaved);
+						} else {
+							log.warn("[{}] items 태그가 비어있습니다 -> 단일 호출 조기 종료", spec.getInterfaceId());
+						}
+						break;
+					}
+					
+					if (rowNode.isObject() && rowNode.has(ApiResponseKeys.DATA_PORTAL_ITEMS_WEA_DATA.getValue())) {
+						rowNode = rowNode.get(ApiResponseKeys.DATA_PORTAL_ITEMS_WEA_DATA.getValue());
+					}
+					
+					if (rowNode != null) {
+						List<Map<String, Object>> rows = new ArrayList<>();
+						
+						if (rowNode.isArray()) {
+							rows = objectMapper.convertValue(rowNode, new TypeReference<List<Map<String, Object>>>() {});
+						} else if (rowNode.isObject()) {
+							Map<String, Object> singleRow = objectMapper.convertValue(rowNode, new TypeReference<Map<String, Object>>() {});
+							rows.add(singleRow);
+						}
+
+						if (!rows.isEmpty()) {
+							if (useDetailApi && detailKeys.length > 0) {
+								String detailServiceId = String.valueOf(additionalParams.get(PARAM_DETAIL_SERVICE_ID));
+								
+								for (Map<String, Object> row : rows) {
+									Map<String, String> extractedKeys = new HashMap<>();
+									boolean hasAllKeys = true;
+									
+									for (String keyDef : detailKeys) {
+										String masterKey = keyDef;
+										String detailParamName = keyDef;
+										
+										if (keyDef.contains(":")) {
+											String[] parts = keyDef.split(":");
+											if (parts.length >= 2) {
+												masterKey = parts[0].trim();
+												detailParamName = parts[1].trim();
+											}
+										}
+										
+										Object valObj = row.get(masterKey);
+										if (valObj != null && !String.valueOf(valObj).trim().isEmpty()) {
+											extractedKeys.put(detailParamName, String.valueOf(valObj));
+										} else {
+											hasAllKeys = false;
+											break; 
+										}
+									}
+									
+									if (hasAllKeys && !extractedKeys.isEmpty()) {
+										try {
+											JsonNode detailNode = fetchDetailFromApi(spec, detailServiceId, extractedKeys, additionalParams);
+											JsonNode detailDataNode = extractDataNode(detailNode);
+											
+											if (detailDataNode != null) {
+												Map<String, Object> detailMap = objectMapper.convertValue(detailDataNode, 
+														new TypeReference<Map<String, Object>>() {});
+												row.putAll(detailMap); 
+											} else {
+												log.debug("[{}] 상세 API 데이터 0건 (파라미터: {}) -> 병합 생략", 
+														spec.getInterfaceId(), extractedKeys);
+											}
+										} catch (Exception e) {
+											log.error("[{}] 상세 API 호출 오류 (파라미터: {})", spec.getInterfaceId(), extractedKeys, e);
+										}
+									} else {
+										log.warn("[{}] 마스터 데이터에 상세 조회를 위한 필수 키가 없습니다. 설정된 detailKey: {}", 
+												spec.getInterfaceId(), Arrays.toString(detailKeys));
+									}
+								}
+							}
+
+							writeRowsToWriter(writer, rows);
+							totalSaved += rows.size();
+							currentLoopSaved += rows.size();
+							
+							if (isMultiCall) {
+								log.info("[{}] 배열 [{}/{}] 처리 중 (파라미터: {}) -> 이번 적재: {}건 / 총 누적 적재: {}건", 
+										spec.getInterfaceId(), currentArrayIndex, totalArraySize, loopValue, rows.size(), totalSaved);
+							} else {
+								log.info("[{}] 처리 중 -> 이번 적재: {}건 / 총 누적 적재: {}건", 
+										spec.getInterfaceId(), rows.size(), totalSaved);
+							}
+
+							LoggingUtils.printWriteFileProgress(transactionId, rows.size(), currentLoopSaved, currentLoopTotalCount);
+							
+							if (rows.size() < fetchSize || currentLoopSaved >= currentLoopTotalCount) break;
+						} else {
+							break; 
+						}
+					} else {
+						break; 
+					}
+					page++;
+
+					if (!spec.isLoopCall()) break;
+				} 
+
+				for (String key : injectedKeys) {
+					additionalParams.remove(key);
+				}
+				
+			} 
+
 		} catch (IOException e) {
-			log.error("파일 처리 중 오루 -> ", e);
+			log.error("파일 처리 중 오류 -> ", e);
 			throw new RuntimeException(e);
 		}
 		return totalSaved;
 	}
 
-	private int getTotalSize(JsonNode serviceBody) {
-		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_BODY.getValue())
-				.path(ApiResponseKeys.DATA_PORTAL_TOTAL_COUNT.getValue()).asInt();
+	
+	private int getTotalSize(JsonNode root) {
+		JsonNode tcNode = root.findPath(ApiResponseKeys.DATA_PORTAL_TOTAL_COUNT.getValue());
+		if (!tcNode.isMissingNode() && !tcNode.isNull()) {
+			try {
+				return Integer.parseInt(tcNode.asText().trim());
+			} catch (NumberFormatException e) {
+				return 0;
+			}
+		}
+		return 0;
 	}
-
-	private JsonNode getHeader(JsonNode serviceBody) {
-		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_HEADER.getValue());
-	}
-
-	private JsonNode getBody(JsonNode serviceBody) {
-		return serviceBody.path(ApiResponseKeys.DATA_PORTAL_BODY.getValue());
-	}
-
-	private JsonNode fetchPageFromApi(InterfaceSpec spec, int page) {
-		String apiPath = String.format("/%s", spec.getApiServiceId());
+	
+	private JsonNode extractDataNode(JsonNode root) {
+		if (root == null || root.isEmpty()) return null;
 		
-	    UriComponentsBuilder builder = WebClientUtils.appendQueryParams(spec, apiPath);
-	    Map<String, Object> additionalParams = spec.getAdditionalParams();
-	    if (additionalParams != null) {
-	        if (additionalParams.containsKey("pageNo")) {
-	            builder.replaceQueryParam("pageNo", page);
-	        }
-	    }
+		JsonNode totalCountNode = root.findPath(ApiResponseKeys.DATA_PORTAL_TOTAL_COUNT.getValue());
+		if (!totalCountNode.isMissingNode() && "0".equals(totalCountNode.asText().trim())) {
+			return null;
+		}
+		
+		JsonNode rowNode = root.findPath(ApiResponseKeys.DATA_PORTAL_ITEMS_DATA.getValue());
+		
+		if (rowNode.isMissingNode() || rowNode.isNull() || (rowNode.isTextual() && rowNode.asText().trim().isEmpty())) {
+			return null;
+		}
 
-		java.net.URI finalUri = builder.build().toUri();
-		log.debug("요청 API URL: {}", finalUri.toString());
+		if (rowNode.isObject() && rowNode.has(ApiResponseKeys.DATA_PORTAL_ITEMS_WEA_DATA.getValue())) {
+			rowNode = rowNode.get(ApiResponseKeys.DATA_PORTAL_ITEMS_WEA_DATA.getValue());
+		}
+		
+		if (rowNode.isArray() && rowNode.size() > 0) {
+			return rowNode.get(0); 
+		}
+		return rowNode;
+	}
 
-		return openApiWebClient.get().uri(builder.build().toUri()).retrieve()
+	// 마스터 API 호출
+	private JsonNode fetchPageFromApi(InterfaceSpec spec, int page, Map<String, Object> processedParams) {
+		String apiPath = String.format("/%s", spec.getApiServiceId());
+		UriComponentsBuilder builder = WebClientUtils.appendQueryParams(spec, apiPath);
+		
+		if (processedParams != null) {
+			if (spec.getAdditionalParams() != null) {
+				for (String key : spec.getAdditionalParams().keySet()) {
+					builder.replaceQueryParam(key); 
+				}
+			}
+			for (Map.Entry<String, Object> entry : processedParams.entrySet()) {
+				builder.queryParam(entry.getKey(), entry.getValue());
+			}
+			
+			builder.replaceQueryParam(PARAM_DETAIL_SERVICE_ID);
+			builder.replaceQueryParam(PARAM_DETAIL_KEY);
+			builder.replaceQueryParam(PARAM_MASTER_ONLY_PARAMS);
+			
+			if (processedParams.containsKey(PARAM_DETAIL_ONLY_PARAMS)) {
+				String[] detailOnlyKeys = String.valueOf(processedParams.get(PARAM_DETAIL_ONLY_PARAMS)).split(",");
+				for (String key : detailOnlyKeys) {
+					builder.replaceQueryParam(key.trim());
+				}
+				builder.replaceQueryParam(PARAM_DETAIL_ONLY_PARAMS);
+			}
+
+			if (processedParams.containsKey("pageNo")) {
+				builder.replaceQueryParam("pageNo", page);
+			}
+		}
+
+		// 한글 파라미터(지역명 등) 전송을 위한 UTF-8 인코딩 강제
+		java.net.URI finalUri = builder.build(false).encode(StandardCharsets.UTF_8).toUri();
+		log.debug("마스터 요청 API URL: {}", finalUri.toString());
+
+		return openApiWebClient.get().uri(finalUri).retrieve()
 				.onStatus(status -> status.isError(), response -> {
 					return response.bodyToMono(String.class).flatMap(body -> {
-						log.error("API 호출 에러 발생! 응답 바디: {}", body);
 						return Mono.error(new RuntimeException("API 응답 오류(" + body + ")"));
 					});
 				}).bodyToMono(String.class).map(res -> {
-					// 응답이 XML( < 로 시작)인지 확인
-					if (additionalParams.containsKey("dataType")) {
-			            String dataType = String.valueOf(additionalParams.get("dataType"));
-			            if ("xml".equalsIgnoreCase(dataType)) {
-			            	XmlMapper xmlMapper = new XmlMapper();
-			                ObjectMapper jsonMapper = new ObjectMapper();
-			                XMLInputFactory factory = XMLInputFactory.newFactory();
-			                try {
-		                        XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(res));
-		                        reader.nextTag(); 
-		                        String rootName = reader.getLocalName();
-		                        JsonNode dataNode = xmlMapper.readTree(res);
-		                        ObjectNode finalNode = jsonMapper.createObjectNode();
-		                        finalNode.set(rootName, dataNode);
-			                    return objectMapper.readTree(finalNode.toPrettyString()); // 정상일 때만 JSON 파싱
-			                } catch (Exception e) {
-			                    log.error("XML to JSON 변환 중 오류 발생", e);
-			                }
-			            }
-			        } else {
-			        	if (res.trim().startsWith("<")) {
-			        		log.error("응답 메시지 포맷 XML : {}", res);
-			        		throw new RuntimeException("API 서버로부터 XML 에러 메시지 수신");
-			        	}
-			        }
+					if (processedParams != null && processedParams.containsKey("dataType") && "xml".equalsIgnoreCase(String.valueOf(processedParams.get("dataType")))) {
+						try {
+							XmlMapper xmlMapper = new XmlMapper();
+							return xmlMapper.readTree(res); 
+						} catch (Exception e) {
+							throw new RuntimeException("XML Parsing Error", e);
+						}
+					} else {
+						if (res.trim().startsWith("<")) throw new RuntimeException("API 서버로부터 XML 에러 메시지 수신");
+					}
 					try {
-						return objectMapper.readTree(res); // 정상일 때만 JSON 파싱
+						return objectMapper.readTree(res);
 					} catch (Exception e) {
 						throw new RuntimeException("JSON 파싱 오류", e);
 					}
 				}).block();
+	}
+
+	// 상세 API 호출
+	private JsonNode fetchDetailFromApi(InterfaceSpec spec, String detailServiceId, Map<String, String> extractedKeys, Map<String, Object> processedParams) {
+		String apiPath = String.format("/%s", detailServiceId); 
+		UriComponentsBuilder builder = WebClientUtils.appendQueryParams(spec, apiPath);
+		
+		if (processedParams != null) {
+			if (spec.getAdditionalParams() != null) {
+				for (String key : spec.getAdditionalParams().keySet()) {
+					builder.replaceQueryParam(key);
+				}
+			}
+			for (Map.Entry<String, Object> entry : processedParams.entrySet()) {
+				builder.queryParam(entry.getKey(), entry.getValue());
+			}
+			
+			builder.replaceQueryParam(PARAM_DETAIL_SERVICE_ID);
+			builder.replaceQueryParam(PARAM_DETAIL_KEY);
+			builder.replaceQueryParam(PARAM_DETAIL_ONLY_PARAMS);
+			
+			if (processedParams.containsKey(PARAM_MASTER_ONLY_PARAMS)) {
+				String[] masterOnlyKeys = String.valueOf(processedParams.get(PARAM_MASTER_ONLY_PARAMS)).split(",");
+				for (String key : masterOnlyKeys) {
+					builder.replaceQueryParam(key.trim());
+				}
+				builder.replaceQueryParam(PARAM_MASTER_ONLY_PARAMS);
+			}
+		}
+		
+		for (Map.Entry<String, String> entry : extractedKeys.entrySet()) {
+			builder.replaceQueryParam(entry.getKey(), entry.getValue());
+		}
+
+		// 상세 호출 시에도 한글 깨짐 방지 인코딩
+		java.net.URI finalUri = builder.build(false).encode(StandardCharsets.UTF_8).toUri();
+		log.debug("상세 요청 API URL: {}", finalUri.toString());
+
+		return openApiWebClient.get().uri(finalUri).retrieve()
+				.onStatus(status -> status.isError(), response -> {
+					return response.bodyToMono(String.class).flatMap(body -> Mono.error(new RuntimeException("상세 API 에러")));
+				}).bodyToMono(String.class).map(res -> {
+					if (processedParams != null && processedParams.containsKey("dataType") && "xml".equalsIgnoreCase(String.valueOf(processedParams.get("dataType")))) {
+						try {
+							XmlMapper xmlMapper = new XmlMapper();
+							return xmlMapper.readTree(res);
+						} catch (Exception e) {
+							throw new RuntimeException("XML Parsing Error", e);
+						}
+					}
+					try { return objectMapper.readTree(res); } 
+					catch (Exception e) { throw new RuntimeException("상세 JSON 오류"); }
+				}).block(); 
 	}
 }

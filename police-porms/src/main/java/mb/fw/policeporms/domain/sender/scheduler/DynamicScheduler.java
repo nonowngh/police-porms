@@ -70,10 +70,12 @@ public class DynamicScheduler {
 		String interfaceId = spec.getInterfaceId();
 		String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
 		String transactionId = TransactionIdGenerator.generate(interfaceId, "", currentDate);
-		log.info("[{}-{}] 스케줄 작업 시작 ▶️▶️▶️ transaction-id : {}", interfaceId, spec.getInterfaceDescription(),
-				transactionId);
-
-//        ResponseMessage result = interfaceCallService.executeApiDataSend(spec, transactionId);
+		
+		// 시작 시간 기록
+		long startTimeMs = System.currentTimeMillis();
+		String startTimeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+		
+		log.info("[{}-{}] 스케줄 작업 시작 ▶️▶️▶️ transaction-id : {} | 시작시간 : {}", interfaceId, spec.getInterfaceDescription(), transactionId, startTimeStr);
 
 		// 서비스 실행 시 콜백 정의(인터페이스 로깅을 위해~)
 		ResponseMessage result = interfaceCallService.executeApiDataSend(spec, transactionId, (totalCount) -> {
@@ -92,7 +94,12 @@ public class DynamicScheduler {
 			logging.asyncEndLogging(interfaceId, transactionId, result.getResultCount(), result.getProcessCd(),
 					result.getProcessMsg());
 		});
+		// 종료 시간 및 소요 시간 계산
+		long endTimeMs = System.currentTimeMillis();
+		String endTimeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+		long durationMs = endTimeMs - startTimeMs;
+		double durationSec = durationMs / 1000.0;
 
-		log.info("[{}] 스케줄 종료 🏁🏁🏁🏁🏁", transactionId);
+		log.info("[{}] 스케줄 종료 🏁🏁🏁🏁🏁 종료시간 : {} | 총 소요시간 : {}ms ({}초)", transactionId, endTimeStr, durationMs, durationSec);
 	}
 }

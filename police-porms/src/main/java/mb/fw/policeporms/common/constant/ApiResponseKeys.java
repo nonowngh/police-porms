@@ -19,6 +19,7 @@ public enum ApiResponseKeys {
 	DATA_PORTAL_HEADER("header"),
 	DATA_PORTAL_BODY("body"),
 	DATA_PORTAL_ITEMS_DATA("items"),
+	DATA_PORTAL_ITEMS_WEA_DATA("item"),
 	DATA_PORTAL_RESULT_CODE("resultCode"),
 	DATA_PORTAL_RESULT_SUCCESS("00"),
 	
@@ -26,6 +27,7 @@ public enum ApiResponseKeys {
 	V_WORLD_TOTAL_COUNT("totalFeatures"),
 	V_WORLD_FEATURES("features"),
 	V_WORLD_FEATURE_PROPERTIES("properties"),
+	V_WORLD_FEATURE_GEOMETRY("geometry"),
 	V_WORLD_RESULT_EXCEPTIONS("exceptions"),
 	V_WORLD_RESULT_EXCEPTIONS_CODE("code"),
 	V_WORLD_RESULT_EXCEPTIONS_TEXT("text"),

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_10">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_ROAD_UPISUQ
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_ROAD_UPISUQ (
+				gid,
+				present_sn,
+				lclas_cl,
+				mlsfc_cl,
+				sclas_cl,
+				atrb_se,
+				wtnnc_sn,
+				ntfc_sn,
+				dgm_nm,
+				dgm_ar,
+				dgm_lt,
+				signgu_se,
+				grad_se,
+				road_ty,
+				road_no,
+				road_role,
+				excut_se,
+				sig_nam,
+				lcl_nam,
+				mls_nam,
+				scl_nam,
+				atr_nam,
+				pmi_nam,
+				exc_nam,
+      			ag_geom,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.id},
+        #{item.present_sn},
+        #{item.lclas_cl},
+        #{item.mlsfc_cl},
+        #{item.sclas_cl},
+        #{item.atrb_se},
+        #{item.wtnnc_sn},
+        #{item.ntfc_sn},
+        #{item.dgm_nm},
+        #{item.dgm_ar},
+        #{item.dgm_lt},
+        #{item.signgu_se},
+        #{item.grad_se},
+        #{item.road_ty},
+        #{item.road_no},
+        #{item.road_role},
+        #{item.excut_se},
+        #{item.sig_nam},
+        #{item.lcl_nam},
+        #{item.mls_nam},
+        #{item.scl_nam},
+        #{item.atr_nam},
+        #{item.pmi_nam},
+        #{item.exc_nam},
+        ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(#{item.geometry}::text), 5179)),
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

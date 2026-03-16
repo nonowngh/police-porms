@@ -66,10 +66,30 @@ public class InterfaceCallService {
 			safeCallback.accept(totalCount);
 
 			if (totalCount == 0) {
-				response.setProcessCd(InterfaceStatus.ERROR);
-				response.setProcessMsg("전송할 데이터(API 응답건수 0)가 없습니다.");
+				// 파라미터 중 List(배열)가 있는지 확인하여 다중 호출 여부 판별
+				boolean isMultiCall = false;
+				if (spec.getAdditionalParams() != null) {
+					for (Object value : spec.getAdditionalParams().values()) {
+						if (value instanceof java.util.List) {
+							isMultiCall = true;
+							break;
+						}
+					}
+				}
+
+				if (isMultiCall) {
+					// 다중 호출(배열)일 경우 모든 배열이 0건 이어도 스킵 및 성공 처리
+					response.setProcessCd(InterfaceStatus.SUCCESS);
+					response.setResultCount(0);
+					response.setProcessMsg("배열 데이터 0건 리턴으로 파일 전송을 생략합니다.");
+				} else {
+					// 단일 호출일 경우 0건 '에러' 처리
+					response.setProcessCd(InterfaceStatus.ERROR);
+					response.setProcessMsg("전송할 데이터(API 응답건수 0)가 없습니다.");
+				}
 				return response;
 			}
+			
 			response.setResultCount(totalCount);
 
 			RequestMessage request = RequestMessage.builder().interfaceId(interfaceId).transactionId(transactionId)
@@ -85,7 +105,6 @@ public class InterfaceCallService {
 			log.error("[{}] executeApiDataSend 처리 중 오류 발생 : {}", transactionId, e.getMessage());
 			// 콜백이 아직 실행되지 않았다면 1으로 호출하여 로그 누락 방지
 			safeCallback.accept(1);
-
 			response.setProcessCd(InterfaceStatus.ERROR);
 			response.setProcessMsg(e.getMessage());
 
@@ -125,9 +144,9 @@ public class InterfaceCallService {
 	// 생성한 파일 수신 ESB 프로세스로 전송
 	private Mono<ResponseMessage> sendFile(RequestMessage request, File file) {
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
-		// 1. RequestMessage 객체 자체를 "message"라는 이름의 JSON 파트로 추가
+		// RequestMessage 객체 자체를 "message"라는 이름의 JSON 파트로 추가
 		builder.part("message", request, MediaType.APPLICATION_JSON);
-		// 2. 실제 파일 추가
+		// 실제 파일 추가
 		builder.part("file", new FileSystemResource(file));
 		return this.interfaceWebClient.post().uri(InterfaceApiPathConstants.RECEIVE_FILE_PATH)
 				.contentType(MediaType.MULTIPART_FORM_DATA).body(BodyInserters.fromMultipartData(builder.build()))

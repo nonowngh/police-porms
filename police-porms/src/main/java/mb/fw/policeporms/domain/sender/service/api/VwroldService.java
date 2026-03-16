@@ -157,6 +157,12 @@ public class VwroldService extends AbstractApiService {
                                 flattenedFeature.set(prop.getKey(), prop.getValue());
                             }
                         }
+                    } else if(ApiResponseKeys.V_WORLD_FEATURE_GEOMETRY.getValue().equals(key)) {
+                    	if (value != null && !value.isNull()) {
+                            flattenedFeature.put(key, value.toString());
+                        } else {
+                            flattenedFeature.set(key, value);
+                        }
                     } else {
                         flattenedFeature.set(key, value);
                     }

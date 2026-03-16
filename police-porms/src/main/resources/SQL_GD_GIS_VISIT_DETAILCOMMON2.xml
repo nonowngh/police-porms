@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_03">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_VISIT_DETAILCOMMON2
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_VISIT_DETAILCOMMON2 (
+				contentid,
+				contenttypeid,
+				title,
+				createdtime,
+				modifiedtime,
+				tel,
+				telname,
+				homepage,
+				firstimage,
+				firstimage2,
+				cpyrhtDivCd,
+				areacode,
+				sigungucode,
+				lDongRegnCd,
+				lDongSignguCd,
+				lclsSystm1,
+				lclsSystm2,
+				lclsSystm3,
+				cat1,
+				cat2,
+				cat3,
+				addr1,
+				addr2,
+				zipcode,
+				mapx,
+				mapy,
+				mlevel,
+				overview,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.contentid},
+        #{item.contenttypeid},
+        #{item.title},
+        #{item.createdtime},
+        #{item.modifiedtime},
+        #{item.tel},
+        #{item.telname},
+        #{item.homepage},
+        #{item.firstimage},
+        #{item.firstimage2},
+        #{item.cpyrhtDivCd},
+        #{item.areacode},
+        #{item.sigungucode},
+        #{item.lDongRegnCd},
+        #{item.lDongSignguCd},
+        #{item.lclsSystm1},
+        #{item.lclsSystm2},
+        #{item.lclsSystm3},
+        #{item.cat1},
+        #{item.cat2},
+        #{item.cat3},
+        #{item.addr1},
+        #{item.addr2},
+        #{item.zipcode},
+        #{item.mapx},
+        #{item.mapy},
+        #{item.mlevel},
+        #{item.overview},
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

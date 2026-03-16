@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_04">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_VISIT_DETAILINTRO2
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_VISIT_DETAILINTRO2 (
+				contentid,
+				contenttypeid,
+				sponsor1,
+				sponsor1tel,
+				sponsor2,
+				sponsor2tel,
+				eventenddate,
+				playtime,
+				eventplace,
+				eventhomepage,
+				agelimit,
+				bookingplace,
+				placeinfo,
+				subevent,
+				program,
+				eventstartdate,
+				usetimefestival,
+				discountinfofestival,
+				spendtimefestival,
+				festivalgrade,
+				progresstype,
+				festivaltype,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.contentid},
+        #{item.contenttypeid},
+        #{item.sponsor1},
+        #{item.sponsor1tel},
+        #{item.sponsor2},
+        #{item.sponsor2tel},
+        #{item.eventenddate},
+        #{item.playtime},
+        #{item.eventplace},
+        #{item.eventhomepage},
+        #{item.agelimit},
+        #{item.bookingplace},
+        #{item.placeinfo},
+        #{item.subevent},
+        #{item.program},
+        #{item.eventstartdate},
+        #{item.usetimefestival},
+        #{item.discountinfofestival},
+        #{item.spendtimefestival},
+        #{item.festivalgrade},
+        #{item.progresstype},
+        #{item.festivaltype},
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>
