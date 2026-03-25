@@ -1,5 +1,6 @@
 package mb.fw.policeporms.common.config;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.time.Duration;
 
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.constant.InterfaceAuthConstants;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.http.client.PrematureCloseException;
 import reactor.util.retry.Retry;
 
 @Profile("sender")
@@ -92,8 +94,11 @@ public class WebClientConfig {
 
 	// 재시도 대상 판별 메서드
 	private boolean isRetryable(Throwable ex) {
-		// 1. 타임아웃 2. 서버에러(5xx) 3. 커넥션 거부 등 네트워크 오류 시 재시도
-		return ex instanceof TimeoutException || ex instanceof WebClientResponseException
-				|| ex instanceof ConnectException;
+		// 1. 타임아웃 2. 서버에러(5xx) 3. 커넥션 거부 등 네트워크 오류 4. 연결 일방적 종료 시 재시도
+		return ex instanceof TimeoutException 
+	            || ex instanceof WebClientResponseException
+	            || ex instanceof ConnectException
+	            || ex instanceof PrematureCloseException
+	            || ex instanceof IOException;
 	}
 }
