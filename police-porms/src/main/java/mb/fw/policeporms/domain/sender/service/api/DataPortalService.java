@@ -69,7 +69,7 @@ public class DataPortalService extends AbstractApiService {
 				? new HashMap<>(spec.getAdditionalParams()) 
 				: new HashMap<>();
 
-		// serviceKey 암호화(ENC) 복호화 처리 (대소문자 모두 지원)
+		// serviceKey 암호화(ENC) 복호화 처리
 		String[] keyCandidates = {"serviceKey", "ServiceKey"};
 		for (String keyName : keyCandidates) {
 			if (additionalParams.containsKey(keyName)) {
@@ -170,7 +170,6 @@ public class DataPortalService extends AbstractApiService {
 		for (String k : keysToRemove) additionalParams.remove(k);
 		if (!fileUpdates.isEmpty()) additionalParams.putAll(fileUpdates);
 
-
 		// 리스트(배열) 파라미터 추출
 		String loopParamKey = null;
 		List<?> loopParamValues = null;
@@ -226,6 +225,7 @@ public class DataPortalService extends AbstractApiService {
 				int page = 1;
 				int currentLoopTotalCount = -1; 
 				int currentLoopSaved = 0;       
+				int currentMasterSaved = 0; // 프로그레스 및 페이징 종료를 위한 순수 마스터 누적 건수
 
 				while (true) {
 					// 마스터 API 호출
@@ -283,10 +283,21 @@ public class DataPortalService extends AbstractApiService {
 						}
 
 						if (!rows.isEmpty()) {
+							int originalMasterSize = rows.size();
+							
+							int detailSuccessCount = 0; 
+							int detailTotalFetchedCount = 0; 
+							
 							if (useDetailApi && detailKeys.length > 0) {
 								String detailServiceId = String.valueOf(additionalParams.get(PARAM_DETAIL_SERVICE_ID));
 								
+								int totalDetailSize = rows.size();
+								int currentDetailIdx = 0;
+								
+								List<Map<String, Object>> expandedRows = new ArrayList<>();
+								
 								for (Map<String, Object> row : rows) {
+									currentDetailIdx++;
 									Map<String, String> extractedKeys = new HashMap<>();
 									boolean hasAllKeys = true;
 									
@@ -311,44 +322,96 @@ public class DataPortalService extends AbstractApiService {
 										}
 									}
 									
+									int currentFetchCount = 0; 
+									
 									if (hasAllKeys && !extractedKeys.isEmpty()) {
 										try {
 											JsonNode detailNode = fetchDetailFromApi(spec, detailServiceId, extractedKeys, additionalParams);
 											JsonNode detailDataNode = extractDataNode(detailNode);
 											
 											if (detailDataNode != null) {
-												Map<String, Object> detailMap = objectMapper.convertValue(detailDataNode, 
-														new TypeReference<Map<String, Object>>() {});
-												row.putAll(detailMap); 
+												if (detailDataNode.isArray()) {
+													currentFetchCount = detailDataNode.size();
+													if (currentFetchCount > 0) {
+														for (JsonNode itemNode : detailDataNode) {
+															Map<String, Object> newExpandedRow = new HashMap<>(row); 
+															Map<String, Object> detailMap = objectMapper.convertValue(itemNode, new TypeReference<Map<String, Object>>() {});
+															newExpandedRow.putAll(detailMap); 
+															expandedRows.add(newExpandedRow); 
+														}
+													} else {
+														expandedRows.add(row); 
+													}
+												} else if (detailDataNode.isObject()) {
+													currentFetchCount = 1;
+													Map<String, Object> newExpandedRow = new HashMap<>(row);
+													Map<String, Object> detailMap = objectMapper.convertValue(detailDataNode, new TypeReference<Map<String, Object>>() {});
+													newExpandedRow.putAll(detailMap);
+													expandedRows.add(newExpandedRow);
+												}
 											} else {
-												log.debug("[{}] 상세 API 데이터 0건 (파라미터: {}) -> 병합 생략", 
-														spec.getInterfaceId(), extractedKeys);
+												expandedRows.add(row); 
+												log.debug("[{}] 상세 API 데이터 0건 (파라미터: {}) -> 마스터 원본 유지", spec.getInterfaceId(), extractedKeys);
 											}
+											
+											detailSuccessCount += currentFetchCount; 
+											
 										} catch (Exception e) {
-											log.error("[{}] 상세 API 호출 오류 (파라미터: {})", spec.getInterfaceId(), extractedKeys, e);
+											log.error("[{}] 상세 API 호출 오류 (파라미터: {}) -> 마스터 원본 유지", spec.getInterfaceId(), extractedKeys, e);
+											expandedRows.add(row); 
 										}
 									} else {
 										log.warn("[{}] 마스터 데이터에 상세 조회를 위한 필수 키가 없습니다. 설정된 detailKey: {}", 
 												spec.getInterfaceId(), Arrays.toString(detailKeys));
+										expandedRows.add(row);
 									}
+									
+									detailTotalFetchedCount += currentFetchCount; 
+									
+									log.info("[{}] 🔄 상세호출 [{}/{}] 마스터전체: {}건 | 현재상세 응답: {}건 | 누적상세 응답: {}건 (요청: {})", 
+											spec.getInterfaceId(), 
+											currentDetailIdx, totalDetailSize, 
+											totalDetailSize, 
+											currentFetchCount, 
+											detailTotalFetchedCount, 
+											extractedKeys);
 								}
+								
+								rows = expandedRows; 
 							}
 
 							writeRowsToWriter(writer, rows);
 							totalSaved += rows.size();
-							currentLoopSaved += rows.size();
+							currentLoopSaved += rows.size(); 
+							
+							// 마스터 진행 건수를 누적
+							currentMasterSaved += originalMasterSize; 
 							
 							if (isMultiCall) {
-								log.info("[{}] 배열 [{}/{}] 처리 중 (파라미터: {}) -> 이번 적재: {}건 / 총 누적 적재: {}건", 
-										spec.getInterfaceId(), currentArrayIndex, totalArraySize, loopValue, rows.size(), totalSaved);
+								if (useDetailApi) {
+									log.info("[{}] 배열 [{}/{}] 처리 중 (파라미터: {}) -> 마스터: {}건 (상세 1:N 확장병합: {}건) / 총 누적 적재: {}건", 
+											spec.getInterfaceId(), currentArrayIndex, totalArraySize, loopValue, rows.size(), detailSuccessCount, totalSaved);
+								} else {
+									log.info("[{}] 배열 [{}/{}] 처리 중 (파라미터: {}) -> 이번 적재: {}건 / 총 누적 적재: {}건", 
+											spec.getInterfaceId(), currentArrayIndex, totalArraySize, loopValue, rows.size(), totalSaved);
+								}
 							} else {
-								log.info("[{}] 처리 중 -> 이번 적재: {}건 / 총 누적 적재: {}건", 
-										spec.getInterfaceId(), rows.size(), totalSaved);
+								if (useDetailApi) {
+									log.info("[{}] 처리 중 -> 이번 적재: {}건 (상세 1:N 확장병합: {}건) / 총 누적 적재: {}건", 
+											spec.getInterfaceId(), rows.size(), detailSuccessCount, totalSaved);
+								} else {
+									log.info("[{}] 처리 중 -> 이번 적재: {}건 / 총 누적 적재: {}건", 
+											spec.getInterfaceId(), rows.size(), totalSaved);
+								}
 							}
 
-							LoggingUtils.printWriteFileProgress(transactionId, rows.size(), currentLoopSaved, currentLoopTotalCount);
+							LoggingUtils.printWriteFileProgress(transactionId, rows.size(), currentMasterSaved, currentLoopTotalCount);
 							
-							if (rows.size() < fetchSize || currentLoopSaved >= currentLoopTotalCount) break;
+							// 무한 루프나 조기 종료 방지를 위해 페이징 탈출 조건 마스터 기준으로 판단
+							if (originalMasterSize < fetchSize || currentMasterSaved >= currentLoopTotalCount) {
+								break;
+							}
+							
 						} else {
 							break; 
 						}
@@ -373,7 +436,6 @@ public class DataPortalService extends AbstractApiService {
 		return totalSaved;
 	}
 
-	
 	private int getTotalSize(JsonNode root) {
 		JsonNode tcNode = root.findPath(ApiResponseKeys.DATA_PORTAL_TOTAL_COUNT.getValue());
 		if (!tcNode.isMissingNode() && !tcNode.isNull()) {
@@ -404,9 +466,6 @@ public class DataPortalService extends AbstractApiService {
 			rowNode = rowNode.get(ApiResponseKeys.DATA_PORTAL_ITEMS_WEA_DATA.getValue());
 		}
 		
-		if (rowNode.isArray() && rowNode.size() > 0) {
-			return rowNode.get(0); 
-		}
 		return rowNode;
 	}
 
@@ -442,7 +501,6 @@ public class DataPortalService extends AbstractApiService {
 			}
 		}
 
-		// 한글 파라미터(지역명 등) 전송을 위한 UTF-8 인코딩 강제
 		java.net.URI finalUri = builder.build(false).encode(StandardCharsets.UTF_8).toUri();
 		log.debug("마스터 요청 API URL: {}", finalUri.toString());
 
@@ -502,7 +560,6 @@ public class DataPortalService extends AbstractApiService {
 			builder.replaceQueryParam(entry.getKey(), entry.getValue());
 		}
 
-		// 상세 호출 시에도 한글 깨짐 방지 인코딩
 		java.net.URI finalUri = builder.build(false).encode(StandardCharsets.UTF_8).toUri();
 		log.debug("상세 요청 API URL: {}", finalUri.toString());
 

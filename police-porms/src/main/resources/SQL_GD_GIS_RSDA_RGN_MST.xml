@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_11">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_RSDA_RGN_MST
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_RSDA_RGN_MST (
+				SPCE_ID,
+				uname,
+				ucode,
+				sido_name,
+				sido_cd,
+				sigg_name,
+				dnum,
+				bon_bun,
+				bu_bun,
+				admin_cd,
+				RSDA_RGN_MNG_NO,
+				RMRK_CN,
+				ANCMNT_YMD,
+				SOU_STDG_CPSGG_CD,
+				RSDA_GEOM_VL,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.id},
+        #{item.uname},
+        #{item.ucode},
+        #{item.sido_name},
+        #{item.sido_cd},
+        #{item.sigg_name},
+        #{item.dnum},
+        #{item.bon_bun},
+        #{item.bu_bun},
+        #{item.admin_cd},
+        #{item.mnum},
+        #{item.remark},
+        #{item.dyear},
+        #{item.std_sggcd},
+      	ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(#{item.geometry}::text), 5179)),
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

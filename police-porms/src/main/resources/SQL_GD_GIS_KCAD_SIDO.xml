@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_GIS_12">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_KCAD_SIDO
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_KCAD_SIDO (
+				ctprvn_cd,
+				gid,
+				ctp_eng_nm,
+				ctp_kor_nm,
+				cat_cde,
+				cat_nam,
+				ag_geom,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.ctprvn_cd},
+        #{item.id},
+        #{item.ctp_eng_nm},
+        #{item.ctp_kor_nm},
+        #{item.cat_cde},
+        #{item.cat_nam},
+      	ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(#{item.geometry}::text), 5179)),
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

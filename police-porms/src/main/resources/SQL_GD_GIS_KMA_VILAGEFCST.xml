@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_WEA_02">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_KMA_VILAGEFCST
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_KMA_VILAGEFCST (
+				baseDate,
+				baseTime,
+				category,
+				fcstDate,
+				fcstTime,
+				fcstValue,
+				nx,
+				ny,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.baseDate},
+        #{item.baseTime},
+        #{item.category},
+        #{item.fcstDate},
+        #{item.fcstTime},
+        #{item.fcstValue},
+        #{item.nx},
+        #{item.ny},
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>

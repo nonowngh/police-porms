@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_WEA_03">
+
+    <delete id="delete">
+        DELETE FROM GD_GIS_KMA_GETPWNCD
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+    INSERT INTO GD_GIS_KMA_GETPWNCD (
+				allEndTime,
+				areaCode,
+				areaName,
+				cancel,
+				command,
+				endTime,
+				stnId,
+				tmFc,
+				tmSeq,
+				warnVar,
+				warnStress,
+				startTime,
+				FRST_RGTR_ID,
+				FRST_REG_DT,
+				LAST_MDFR_ID,
+				LAST_MDFCN_DT
+    ) VALUES 
+    <foreach collection="list" item="item" separator=",">
+    (
+        #{item.allEndTime},
+        #{item.areaCode},
+        #{item.areaName},
+        #{item.cancel},
+        #{item.command},
+        #{item.endTime},
+        #{item.stnId},
+        #{item.tmFc},
+        #{item.tmSeq},
+        #{item.warnVar},
+        #{item.warnStress},
+        #{item.startTime},
+        'indigo',
+        NOW(),
+        'indigo',
+        NOW()        
+    )
+    </foreach>
+  </insert>
+
+</mapper>
