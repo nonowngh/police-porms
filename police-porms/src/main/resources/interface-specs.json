@@ -1,113 +1,114 @@
 [
-	{
-		"interfaceId": "IF_EX_API_TIS_01",
-		"interfaceDescription": "[TIS]지능형교통체계(ITS)-도로소통",
-		"apiUrl": "https://openapi.its.go.kr:9443",
-		"apiRequestTimeoutSeconds": 60,
-		"apiType": "its-center",
-		"apiServiceId": "trafficInfo",
-		"additionalParams": {
-			"type": "all",
-			"getType": "json",
-			"minX": "126.8",
-			"maxX": "127.89",
-			"minY": "34.9",
-			"maxY": "35.1"
-		},
-		"apiKey": "858e4d5890b64d58a9bba7bce5b3eac2",
-		"batchSchedulerCron": "0 * * * * ?",
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_TIS_02",
-		"interfaceDescription": "[TIS]도시교통정보센터(UTIC)-돌발상황",
-		"apiUrl": "http://www.utic.go.kr/guide/imsOpenData.do",
-		"apiRequestTimeoutSeconds": 60,
-		"apiType": "utic",
-		"additionalParams": {
-			"key": "mhUcbyvKQtLLZ9gwc9Shn4miyQ2RKr9uJi8P19pYM0"
-		},
-		"batchSchedulerCron": "0 * * * * ?"
-	},
-	{
-		"interfaceId": "IF_EX_API_WEA_01",
-		"interfaceDescription": "[GIS]공공데이터포털 (기상청_단기예보 ((구)_동네예보) 조회서비스)-1.초단기실황조회",
-		"apiUrl": "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "data-portal",
-		"apiServiceId": "getUltraSrtNcst",
-		"additionalParams": {
+    {
+        "interfaceId": "IF_EX_API_TIS_01",
+        "interfaceDescription": "[TIS]지능형교통체계(ITS)-도로소통",
+        "apiUrl": "https://openapi.its.go.kr:9443",
+        "apiRequestTimeoutSeconds": 60,
+        "apiType": "its-center",
+        "apiServiceId": "trafficInfo",
+        "additionalParams": {
+            "type": "all",
+            "getType": "json",
+            "minX": "126.8",
+            "maxX": "127.89",
+            "minY": "34.9",
+            "maxY": "35.1"
+        },
+        "apiKey": "858e4d5890b64d58a9bba7bce5b3eac2",
+        "batchSchedulerCron": "0 * * * * ?",
+        "enabled": false,
+        "dataEncrypt": true
+    },
+    {
+        "interfaceId": "IF_EX_API_TIS_02",
+        "interfaceDescription": "[TIS]도시교통정보센터(UTIC)-돌발상황",
+        "apiUrl": "http://www.utic.go.kr/guide/imsOpenData.do",
+        "apiRequestTimeoutSeconds": 60,
+        "apiType": "utic",
+        "additionalParams": {
+            "key": "mhUcbyvKQtLLZ9gwc9Shn4miyQ2RKr9uJi8P19pYM0"
+        },
+        "batchSchedulerCron": "0 * * * * ?"
+    },
+    {
+        "interfaceId": "IF_EX_API_WEA_01",
+        "interfaceDescription": "[GIS]공공데이터포털 (기상청_단기예보 ((구)_동네예보) 조회서비스)-1.초단기실황조회",
+        "apiUrl": "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "getUltraSrtNcst",
+        "additionalParams": {
             "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
             "dataType": "json",
             "pageNo": "1",
             "numOfRows": "1000",
-			"base_date": "CURRENT_DATE:yyyyMMdd",
+            "base_date": "CURRENT_DATE:yyyyMMdd",
             "base_time": "CURRENT_DATE:HH0000",
             "nx,ny": "FILE:/home/indigo/largedata/grid.txt"
         },
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_WEA_02",
-		"interfaceDescription": "[GIS]공공데이터포털 (기상청_단기예보 ((구)_동네예보) 조회서비스)-2.단기예보조회",
-		"apiUrl": "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "data-portal",
-		"apiServiceId": "getVilageFcst",
-		"additionalParams": {
-			"serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-			"dataType": "json",
-			"pageNo": "1",
-			"numOfRows": "1000",
-			"base_date": "CURRENT_DATE:yyyyMMdd",
-			"base_time": "CURRENT_DATE:0500",
-			"nx,ny": "FILE:/home/indigo/largedata/grid.txt"
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_WEA_03",
-		"interfaceDescription": "[GIS]공공데이터포털 (기상청_기상특보 조회서비스)-1.특보코드조회",
-		"apiUrl": "https://apis.data.go.kr/1360000/WthrWrnInfoService",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "data-portal",
-		"apiServiceId": "getPwnCd",
-		"additionalParams": {
-			"serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-			"dataType": "json",
-			"pageNo": "1",
-			"numOfRows": "1000",
-			"stnId": "108"
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_01",
-		"interfaceDescription": "[GIS]공공데이터 전국초중등학교 위치표준데이터",
-		"apiUrl": "http://api.data.go.kr/openapi",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "data-portal",
-		"apiServiceId": "tn_pubr_public_elesch_mskul_lc_api",
-		"additionalParams": {
-			"serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-			"type": "json",
-			"pageNo": "1",
-			"numOfRows": "1000"
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_WEA_02",
+        "interfaceDescription": "[GIS]공공데이터포털 (기상청_단기예보 ((구)_동네예보) 조회서비스)-2.단기예보조회",
+        "apiUrl": "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "getVilageFcst",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "dataType": "json",
+            "pageNo": "1",
+            "numOfRows": "1000",
+            "base_date": "CURRENT_DATE:yyyyMMdd",
+            "base_time": "CURRENT_DATE:0500",
+            "nx,ny": "FILE:/home/indigo/largedata/grid.txt"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_WEA_03",
+        "interfaceDescription": "[GIS]공공데이터포털 (기상청_기상특보 조회서비스)-1.특보코드조회",
+        "apiUrl": "https://apis.data.go.kr/1360000/WthrWrnInfoService",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "getPwnCd",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "dataType": "json",
+            "pageNo": "1",
+            "numOfRows": "1000",
+            "stnId": "108"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_01",
+        "interfaceDescription": "[GIS]공공데이터 전국초중등학교 위치표준데이터",
+        "apiUrl": "http://api.data.go.kr/openapi",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "tn_pubr_public_elesch_mskul_lc_api",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "type": "json",
+            "pageNo": "1",
+            "numOfRows": "1000"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
     {
         "interfaceId": "IF_EX_API_GIS_02",
         "interfaceDescription": "[GIS]공공데이터 전국신호등표준데이터",
@@ -125,54 +126,54 @@
         "batchSchedulerCron": "0 5 * * * ?",
         "loopCall": false,
         "enabled": false
-	},
-	{
-	    "interfaceId": "IF_EX_API_GIS_03",
-	    "interfaceDescription": "한국관광공사_축제 마스터 및 공통정보(detailCommon2) 병합 조회",
-	    "apiUrl": "https://apis.data.go.kr/B551011/KorService2",
-	    "apiType": "data-portal",
-	    "apiServiceId": "searchFestival2",
-	    "additionalParams": {
-	        "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-	        "MobileOS": "WEB",
-	        "MobileApp": "porms",
-	        "_type": "json",
-	        "eventStartDate": "CURRENT_DATE:yyyyMMdd", 
-	        "detailServiceId": "detailCommon2",
-	        "detailKey": "contentid:contentId",
-			"masterOnlyParams": "eventStartDate",
-			"pageNo": "1",
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_03",
+        "interfaceDescription": "한국관광공사_축제 마스터 및 공통정보(detailCommon2) 병합 조회",
+        "apiUrl": "https://apis.data.go.kr/B551011/KorService2",
+        "apiType": "data-portal",
+        "apiServiceId": "searchFestival2",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "MobileOS": "WEB",
+            "MobileApp": "porms",
+            "_type": "json",
+            "eventStartDate": "CURRENT_DATE:yyyyMMdd",
+            "detailServiceId": "detailCommon2",
+            "detailKey": "contentid:contentId",
+            "masterOnlyParams": "eventStartDate",
+            "pageNo": "1",
             "numOfRows": "1000"
-	    },
-	    "apiRequestFetchSize": 1000,
-	    "batchSchedulerCron": "0 * * * * ?",
-	    "loopCall": true,
-	    "enabled": false
-	},
-	{
-	    "interfaceId": "IF_EX_API_GIS_04",
-	    "interfaceDescription": "한국관광공사_축제 마스터 및 소개정보(detailIntro2) 병합 조회",
-	    "apiUrl": "https://apis.data.go.kr/B551011/KorService2",
-	    "apiType": "data-portal",
-	    "apiServiceId": "searchFestival2",
-	    "additionalParams": {
-	        "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-	        "MobileOS": "WEB",
-	        "MobileApp": "porms",
-	        "_type": "json",
-	        "numOfRows": "1000",
-	        "pageNo": "1",
-	        "eventStartDate": "CURRENT_DATE:yyyyMMdd", 
-	        "detailServiceId": "detailIntro2",	        
-	        "detailKey": "contentid:contentId, contenttypeid:contentTypeId",
-	        "masterOnlyParams": "eventStartDate"
-	    },
-	    "apiRequestFetchSize": 1000,
-	    "batchSchedulerCron": "0 * * * * ?", 
-	    "loopCall": false,
-	    "enabled": false
-	},
-	{
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_04",
+        "interfaceDescription": "한국관광공사_축제 마스터 및 소개정보(detailIntro2) 병합 조회",
+        "apiUrl": "https://apis.data.go.kr/B551011/KorService2",
+        "apiType": "data-portal",
+        "apiServiceId": "searchFestival2",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "MobileOS": "WEB",
+            "MobileApp": "porms",
+            "_type": "json",
+            "numOfRows": "1000",
+            "pageNo": "1",
+            "eventStartDate": "CURRENT_DATE:yyyyMMdd",
+            "detailServiceId": "detailIntro2",
+            "detailKey": "contentid:contentId, contenttypeid:contentTypeId",
+            "masterOnlyParams": "eventStartDate"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    },
+    {
         "interfaceId": "IF_EX_API_GIS_05",
         "interfaceDescription": "[GIS]한국관광공사_축제 서비스분류코드 조회(/categoryCode2) 조회",
         "apiUrl": "https://apis.data.go.kr/B551011/KorService2",
@@ -181,8 +182,8 @@
         "apiServiceId": "categoryCode2",
         "additionalParams": {
             "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-			"MobileOS": "WEB",
-			"MobileApp": "porms",
+            "MobileOS": "WEB",
+            "MobileApp": "porms",
             "_type": "json",
             "pageNo": "1",
             "numOfRows": "1000"
@@ -191,221 +192,221 @@
         "batchSchedulerCron": "0 * * * * ?",
         "loopCall": false,
         "enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_06",
-		"interfaceDescription": "[GIS] 기상청_생활지수 조회서비스-자외선지수조회 조회",
-		"apiUrl": "https://apis.data.go.kr/1360000/LivingWthrIdxServiceV4",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "data-portal",
-		"apiServiceId": "getUVIdxV4",
-		"additionalParams": {
-			"serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-			"areaNo": " ",
-			"time": "CURRENT_DATE:yyyyMMddHH",
-			"dataType": "json",
-			"pageNo": "1",
-			"numOfRows": "1000"
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": false,
-		"enabled": false
-	},
-	{
-    "interfaceId": "IF_EX_API_GIS_07",
-    "interfaceDescription": "[GIS] 한국천문연구원_출몰시각정보-지역별 해달 출몰시각 정보조회",
-    "apiUrl": "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService",
-    "apiRequestTimeoutSeconds": 30,
-    "apiType": "data-portal",
-    "apiServiceId": "getAreaRiseSetInfo",
-    "additionalParams": {
-        "ServiceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-        "dataType": "xml",
-        "locdate": "CURRENT_DATE:yyyyMMdd",
-        "location": "FILE:/home/indigo/largedata/location.txt"
     },
-    "apiRequestFetchSize": 1000,
-    "batchSchedulerCron": "0 * * * * ?",
-    "loopCall": false,
-    "enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_08",
-		"interfaceDescription": "[GIS] 한국환경공단_에어코리아_대기오염정보-측정소별 실시간 측정정보 조회(getMsrstnAcctoRltmMesureDnsty) 병합 조회",
-		"apiUrl": "http://apis.data.go.kr/B552584",
-		"apiType": "data-portal",
-		"apiServiceId": "MsrstnInfoInqireSvc/getMsrstnList",
-		"additionalParams": {
-			"serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
-			"returnType": "json",
-			"numOfRows": "1000",
-			"pageNo": "1",
-			"dataTerm": "DAILY",
-			"detailServiceId": "ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty",
-			"detailKey": "stationName",
-			"detailOnlyParams": "dataTerm"
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 3 15 * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_09",
-		"interfaceDescription": "[GIS]V-Wrold 도로중심선",
-		"apiUrl": "https://api.vworld.kr/req",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "v-world",
-		"apiServiceId": "wfs",
-		"additionalParams": {
-			"key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
-			"service": "WFS",
+    {
+        "interfaceId": "IF_EX_API_GIS_06",
+        "interfaceDescription": "[GIS] 기상청_생활지수 조회서비스-자외선지수조회 조회",
+        "apiUrl": "https://apis.data.go.kr/1360000/LivingWthrIdxServiceV4",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "getUVIdxV4",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "areaNo": " ",
+            "time": "CURRENT_DATE:yyyyMMddHH",
+            "dataType": "json",
+            "pageNo": "1",
+            "numOfRows": "1000"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_07",
+        "interfaceDescription": "[GIS] 한국천문연구원_출몰시각정보-지역별 해달 출몰시각 정보조회",
+        "apiUrl": "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-portal",
+        "apiServiceId": "getAreaRiseSetInfo",
+        "additionalParams": {
+            "ServiceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "dataType": "xml",
+            "locdate": "CURRENT_DATE:yyyyMMdd",
+            "location": "FILE:/home/indigo/largedata/location.txt"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_08",
+        "interfaceDescription": "[GIS] 한국환경공단_에어코리아_대기오염정보-측정소별 실시간 측정정보 조회(getMsrstnAcctoRltmMesureDnsty) 병합 조회",
+        "apiUrl": "http://apis.data.go.kr/B552584",
+        "apiType": "data-portal",
+        "apiServiceId": "MsrstnInfoInqireSvc/getMsrstnList",
+        "additionalParams": {
+            "serviceKey": "8e17c22a88263e440938b77801b8801d151231270db2b68a228cce7d0d9e7d95",
+            "returnType": "json",
+            "numOfRows": "1000",
+            "pageNo": "1",
+            "dataTerm": "DAILY",
+            "detailServiceId": "ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty",
+            "detailKey": "stationName",
+            "detailOnlyParams": "dataTerm"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 3 15 * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_09",
+        "interfaceDescription": "[GIS]V-Wrold 도로중심선",
+        "apiUrl": "https://api.vworld.kr/req",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "v-world",
+        "apiServiceId": "wfs",
+        "additionalParams": {
+            "key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
+            "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
-			"output": "application/json",
+            "output": "application/json",
             "exceptions": "application/json",
-			"startindex": "1",
+            "startindex": "1",
             "count": "1000",
-			"typename": "lt_l_n3a0020000",
-            "srsname": "EPSG:5179"			
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": false,
-		"enabled": true
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_10",
-		"interfaceDescription": "[GIS]V-Wrold 도시계획(도로)",
-		"apiUrl": "https://api.vworld.kr/req",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "v-world",
-		"apiServiceId": "wfs",
-		"additionalParams": {
-			"key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
-			"service": "WFS",
+            "typename": "lt_l_n3a0020000",
+            "srsname": "EPSG:5179"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": true
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_10",
+        "interfaceDescription": "[GIS]V-Wrold 도시계획(도로)",
+        "apiUrl": "https://api.vworld.kr/req",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "v-world",
+        "apiServiceId": "wfs",
+        "additionalParams": {
+            "key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
+            "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
-			"output": "application/json",
+            "output": "application/json",
             "exceptions": "application/json",
-			"startindex": "1",
+            "startindex": "1",
             "count": "1000",
-			"typename": "lt_c_upisuq151",
-            "srsname": "EPSG:5179"			
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": false,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_11",
-		"interfaceDescription": "[GIS]V-Wrold 도시지역(주거지역)",
-		"apiUrl": "https://api.vworld.kr/req",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "v-world",
-		"apiServiceId": "wfs",
-		"additionalParams": {
-			"key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
-			"service": "WFS",
+            "typename": "lt_c_upisuq151",
+            "srsname": "EPSG:5179"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_11",
+        "interfaceDescription": "[GIS]V-Wrold 도시지역(주거지역)",
+        "apiUrl": "https://api.vworld.kr/req",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "v-world",
+        "apiServiceId": "wfs",
+        "additionalParams": {
+            "key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
+            "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
-			"output": "application/json",
+            "output": "application/json",
             "exceptions": "application/json",
-			"startindex": "1",
+            "startindex": "1",
             "count": "1000",
-			"typename": "lt_c_uq111",
-            "srsname": "EPSG:5179"			
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 53 16 * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_12",
-		"interfaceDescription": "[GIS]V-Wrold 행정 경계(시도)(법정동 기준)",
-		"apiUrl": "https://api.vworld.kr/req",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "v-world",
-		"apiServiceId": "wfs",
-		"additionalParams": {
-			"key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
-			"service": "WFS",
+            "typename": "lt_c_uq111",
+            "srsname": "EPSG:5179"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 53 16 * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_12",
+        "interfaceDescription": "[GIS]V-Wrold 행정 경계(시도)(법정동 기준)",
+        "apiUrl": "https://api.vworld.kr/req",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "v-world",
+        "apiServiceId": "wfs",
+        "additionalParams": {
+            "key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
+            "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
-			"output": "application/json",
+            "output": "application/json",
             "exceptions": "application/json",
-			"startindex": "1",
+            "startindex": "1",
             "count": "1000",
-			"typename": "lt_c_adsido_info",
-            "srsname": "EPSG:5179"			
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 24 17 * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_13",
-		"interfaceDescription": "[GIS]V-Wrold 행정 경계(시군구)(법정동 기준)",
-		"apiUrl": "https://api.vworld.kr/req",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "v-world",
-		"apiServiceId": "wfs",
-		"additionalParams": {
-			"key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
-			"service": "WFS",
+            "typename": "lt_c_adsido_info",
+            "srsname": "EPSG:5179"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 24 17 * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_13",
+        "interfaceDescription": "[GIS]V-Wrold 행정 경계(시군구)(법정동 기준)",
+        "apiUrl": "https://api.vworld.kr/req",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "v-world",
+        "apiServiceId": "wfs",
+        "additionalParams": {
+            "key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
+            "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
-			"output": "application/json",
+            "output": "application/json",
             "exceptions": "application/json",
-			"startindex": "1",
+            "startindex": "1",
             "count": "1000",
-			"typename": "lt_c_adsigg_info",
-            "srsname": "EPSG:5179"			
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 46 17 * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_14",
-		"interfaceDescription": "[GIS]V-Wrold 행정 경계(읍면동)(법정동 기준)",
-		"apiUrl": "https://api.vworld.kr/req",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "v-world",
-		"apiServiceId": "wfs",
-		"additionalParams": {
-			"key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
-			"service": "WFS",
+            "typename": "lt_c_adsigg_info",
+            "srsname": "EPSG:5179"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 46 17 * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_14",
+        "interfaceDescription": "[GIS]V-Wrold 행정 경계(읍면동)(법정동 기준)",
+        "apiUrl": "https://api.vworld.kr/req",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "v-world",
+        "apiServiceId": "wfs",
+        "additionalParams": {
+            "key": "FCAE91DD-4410-3B66-A068-CB5113C65A7D",
+            "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
-			"output": "application/json",
+            "output": "application/json",
             "exceptions": "application/json",
-			"startindex": "1",
+            "startindex": "1",
             "count": "1000",
-			"typename": "lt_c_ademd_info",
-            "srsname": "EPSG:5179"			
-		},
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 3 18 * * ?",
-		"loopCall": true,
-		"enabled": false
-	},
-	{
-		"interfaceId": "IF_EX_API_GIS_015",
-		"interfaceDescription": "[GIS]서울시 신호등 관련정보",
-		"apiUrl": "http://openapi.seoul.go.kr:8088",
-		"apiRequestTimeoutSeconds": 30,
-		"apiType": "data-seoul",
-		"apiServiceId": "trafficSafetyA057PInfo",
-		"apiKey": "425a58506e73756e38346176636a6d",
-		"apiRequestFetchSize": 1000,
-		"batchSchedulerCron": "0 * * * * ?",
-		"loopCall": false,
-		"enabled": false
-	}
+            "typename": "lt_c_ademd_info",
+            "srsname": "EPSG:5179"
+        },
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 3 18 * * ?",
+        "loopCall": true,
+        "enabled": false
+    },
+    {
+        "interfaceId": "IF_EX_API_GIS_015",
+        "interfaceDescription": "[GIS]서울시 신호등 관련정보",
+        "apiUrl": "http://openapi.seoul.go.kr:8088",
+        "apiRequestTimeoutSeconds": 30,
+        "apiType": "data-seoul",
+        "apiServiceId": "trafficSafetyA057PInfo",
+        "apiKey": "425a58506e73756e38346176636a6d",
+        "apiRequestFetchSize": 1000,
+        "batchSchedulerCron": "0 * * * * ?",
+        "loopCall": false,
+        "enabled": false
+    }
 ]
