@@ -1,6 +1,7 @@
 package mb.fw.policeporms.domain.receiver.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,7 @@ import mb.fw.policeporms.common.constant.MybatisConstants;
 import mb.fw.policeporms.common.dto.RequestMessage;
 import mb.fw.policeporms.common.dto.ResponseMessage;
 import mb.fw.policeporms.common.utils.GzipUtils;
+import mb.fw.policeporms.common.utils.InterfaceEncryptUtils;
 import mb.fw.policeporms.common.utils.LoggingUtils;
 
 @Slf4j
@@ -43,10 +45,10 @@ public class InterfaceProcessService {
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseMessage fileProcess(RequestMessage request, MultipartFile file) {
 		String interfaceId = request.getInterfaceId();
+		String transactionId = request.getTransactionId();
 		String insertSqlId = interfaceId + "." + MybatisConstants.SqlId.INSERT;
 		String deleteSqlId = interfaceId + "." + MybatisConstants.SqlId.DELETE;
-		
-		String transactionId = request.getTransactionId();
+
 		ResponseMessage response = new ResponseMessage();
 		response.setInterfaceId(interfaceId);
 		response.setTransactionId(transactionId);
@@ -58,42 +60,32 @@ public class InterfaceProcessService {
 //			response.setResultCount(0);
 			return response;
 		}
-		int totalCount = request.getSendDataCount();
+
+		String fileName = file.getOriginalFilename();
+		boolean isEncrypt = fileName != null && fileName.toLowerCase().endsWith(".enc");
+
 		try {
 			sqlSessionTemplate.delete(deleteSqlId);
 			log.info("[{}] 기존 데이터 삭제 완료", transactionId);
 
-			try (InputStream is = file.getInputStream();
-					GZIPInputStream gzis = new GZIPInputStream(is);
-					BufferedReader reader = new BufferedReader(new InputStreamReader(gzis, StandardCharsets.UTF_8))) {
-
-				String line;
-				int currentCount = 0;
-				List<Map<String, Object>> chunkList = new ArrayList<>();
-				int chunkSize = mybatisConfig.getChunkSize(); // 예: 1000
-				Map<String, Object> params = new HashMap<>();
-
-				while ((line = reader.readLine()) != null) {
-					Map<String, Object> row = objectMapper.readValue(line, new TypeReference<Map<String, Object>>() {
-					});
-					chunkList.add(row);
-					currentCount++;
-					if (chunkList.size() >= chunkSize) {
-						params.put(MybatisConstants.Param.LIST, chunkList);
-						sqlSessionTemplate.insert(insertSqlId, params);
-						chunkList.clear();
-						LoggingUtils.printInsertProgress(transactionId, totalCount, currentCount);
-					}
+			try (InputStream is = file.getInputStream()) {
+				InputStream finalIn = is;
+				if (isEncrypt) {
+					finalIn = InterfaceEncryptUtils.createFileDecryptInputStream(finalIn);
+					log.debug("[{}] 암호화 파일 복호화 스트림 연결 완료", transactionId);
 				}
-				// 마지막 잔여 데이터 처리
-				if (!chunkList.isEmpty()) {
-					params.put(MybatisConstants.Param.LIST, chunkList);
-					sqlSessionTemplate.insert(insertSqlId, params);
+
+				try (GZIPInputStream gzis = new GZIPInputStream(finalIn);
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(gzis, StandardCharsets.UTF_8))) {
+
+					int currentCount = processInsert(reader, insertSqlId, transactionId, request.getSendDataCount());
+
+					log.info("[{}] 최종 적재 완료: 총 {}건", transactionId, String.format("%,d", currentCount));
+					response.setProcessCd(InterfaceStatus.SUCCESS);
+					response.setProcessMsg("처리완료");
+					response.setResultCount(currentCount);
 				}
-				log.info("[{}] 최종 적재 완료: 총 {}건", transactionId, String.format("%,d", currentCount));
-				response.setProcessCd(InterfaceStatus.SUCCESS);
-				response.setProcessMsg("처리완료");
-				response.setResultCount(currentCount);
 			}
 		} catch (Exception e) {
 			log.error("[{}] 수신 처리 중 치명적 오류 발생", transactionId, e);
@@ -101,11 +93,87 @@ public class InterfaceProcessService {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			response.setProcessCd(InterfaceStatus.ERROR);
 			response.setProcessMsg("DB 적재 실패 : " + e.getMessage());
-//			response.setResultCount(0);
+//				response.setResultCount(0);
 		}
 
 		return response;
 	}
+
+//			try (InputStream is = file.getInputStream();
+//					GZIPInputStream gzis = new GZIPInputStream(is);
+//					BufferedReader reader = new BufferedReader(new InputStreamReader(gzis, StandardCharsets.UTF_8))) {
+//
+//				String line;
+//				int currentCount = 0;
+//				List<Map<String, Object>> chunkList = new ArrayList<>();
+//				int chunkSize = mybatisConfig.getChunkSize(); // 예: 1000
+//				Map<String, Object> params = new HashMap<>();
+//
+//				while ((line = reader.readLine()) != null) {
+//					Map<String, Object> row = objectMapper.readValue(line, new TypeReference<Map<String, Object>>() {
+//					});
+//					chunkList.add(row);
+//					currentCount++;
+//					if (chunkList.size() >= chunkSize) {
+//						params.put(MybatisConstants.Param.LIST, chunkList);
+//						sqlSessionTemplate.insert(insertSqlId, params);
+//						chunkList.clear();
+//						LoggingUtils.printInsertProgress(transactionId, totalCount, currentCount);
+//					}
+//				}
+//				// 마지막 잔여 데이터 처리
+//				if (!chunkList.isEmpty()) {
+//					params.put(MybatisConstants.Param.LIST, chunkList);
+//					sqlSessionTemplate.insert(insertSqlId, params);
+//				}
+//				log.info("[{}] 최종 적재 완료: 총 {}건", transactionId, String.format("%,d", currentCount));
+//				response.setProcessCd(InterfaceStatus.SUCCESS);
+//				response.setProcessMsg("처리완료");
+//				response.setResultCount(currentCount);
+//			}
+//		} catch (Exception e) {
+//			log.error("[{}] 수신 처리 중 치명적 오류 발생", transactionId, e);
+//			// 트랜잭션 롤백 강제
+//			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//			response.setProcessCd(InterfaceStatus.ERROR);
+//			response.setProcessMsg("DB 적재 실패 : " + e.getMessage());
+////			response.setResultCount(0);
+//		}
+
+	/**
+	 * 데이터를 읽어 Chunk 단위로 DB에 Insert 합니다.
+	 */
+	private int processInsert(BufferedReader reader, String insertSqlId, String transactionId, int totalCount)
+			throws IOException {
+		String line;
+		int currentCount = 0;
+		int chunkSize = mybatisConfig.getChunkSize();
+		List<Map<String, Object>> chunkList = new ArrayList<>();
+		Map<String, Object> params = new HashMap<>();
+
+		while ((line = reader.readLine()) != null) {
+			Map<String, Object> row = objectMapper.readValue(line, new TypeReference<Map<String, Object>>() {
+			});
+			chunkList.add(row);
+			currentCount++;
+
+			if (chunkList.size() >= chunkSize) {
+				params.put(MybatisConstants.Param.LIST, chunkList);
+				sqlSessionTemplate.insert(insertSqlId, params);
+				chunkList.clear();
+				LoggingUtils.printInsertProgress(transactionId, totalCount, currentCount);
+			}
+		}
+
+		// 마지막 잔여 데이터 처리
+		if (!chunkList.isEmpty()) {
+			params.put(MybatisConstants.Param.LIST, chunkList);
+			sqlSessionTemplate.insert(insertSqlId, params);
+		}
+		return currentCount;
+	}
+
+	
 
 //	private void insertRow(MultipartFile file, String insertSqlId, String deleteSqlId, String transactionId,
 //			ResponseMessage response, int totalCount)

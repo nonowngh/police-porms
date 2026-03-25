@@ -59,6 +59,8 @@ public class InterfaceCallService {
 
 		// 파일 경로 설정
 		String fileName = "temp_" + transactionId + ".jsonl.gz";
+		if (spec.isDataEncrypt())
+			fileName += ".enc";
 		Path sendFile = Paths.get(fileTransferConfig.getTempDirectory(), fileName);
 		try {
 			int totalCount = callApi(spec, sendFile, transactionId);
@@ -89,7 +91,7 @@ public class InterfaceCallService {
 				}
 				return response;
 			}
-			
+
 			response.setResultCount(totalCount);
 
 			RequestMessage request = RequestMessage.builder().interfaceId(interfaceId).transactionId(transactionId)

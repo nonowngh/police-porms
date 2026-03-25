@@ -2,7 +2,6 @@ package mb.fw.policeporms.domain.sender.service.api;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +23,7 @@ import mb.fw.policeporms.common.annotation.SenderComponent;
 import mb.fw.policeporms.common.constant.ApiResponseKeys;
 import mb.fw.policeporms.common.constant.ApiType;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
+import mb.fw.policeporms.common.utils.InterfaceEncryptUtils;
 import mb.fw.policeporms.common.utils.LoggingUtils;
 import mb.fw.policeporms.common.utils.WebClientUtils;
 import mb.fw.policeporms.domain.sender.service.base.AbstractApiService;
@@ -45,48 +45,60 @@ public class ItsCenterService extends AbstractApiService {
 	@Override
 	public int fetchAndSave(InterfaceSpec spec, Path tempFile, String transactionId) {
 		int totalSaved = 0;
+
+		boolean isEncrypt = spec.isDataEncrypt();
+
 		try (OutputStream fos = Files.newOutputStream(tempFile, StandardOpenOption.CREATE);
-				BufferedOutputStream bos = new BufferedOutputStream(fos);
-				GZIPOutputStream gzos = new GZIPOutputStream(bos); // 압축 레이어 추가
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(gzos, StandardCharsets.UTF_8))) {
-
-			// api 호출
-			JsonNode root = callApi(spec);
-			if (root == null || !root.fieldNames().hasNext()) {
-				throw new RuntimeException("[" + spec.getInterfaceId() + "}] Empty response from API");
-			}
-			JsonNode headerNode = root.path(ApiResponseKeys.ITS_CENTER_HEADER.getValue());
-			JsonNode bodyNode = root.path(ApiResponseKeys.ITS_CENTER_BODY.getValue());
-			int totalCount = getTotalSize(bodyNode);
-			log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(), headerNode.toString(),
-					totalCount);
-
-			if (totalCount == 0)
-				return 0;
-
-			// 에러 코드 체크 ('0'이 아니면 중단)
-			String resultCode = getResult(headerNode).asText();
-			if (!ApiResponseKeys.ITS_CENTER_RESULT_CODE_SUCCESS.getValue().equals(resultCode)) {
-				throw new RuntimeException("[" + spec.getInterfaceId() + "] API error : " + headerNode.asText());
+				BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+			OutputStream finalOut = bos;
+			
+			// 파일 암호화 적용 여부
+			if (isEncrypt) {
+				finalOut = InterfaceEncryptUtils.createFileEncryptOutputStream(finalOut);
 			}
 
-			// 데이터 추출 및 파일 기록
-			JsonNode rowNode = bodyNode.get(ApiResponseKeys.ITS_CENTER_ITEMS.getValue());
-			if (rowNode != null && rowNode.isArray()) {
-				List<Map<String, Object>> rows = objectMapper.convertValue(rowNode,
-						new TypeReference<List<Map<String, Object>>>() {
-						});
+			try (GZIPOutputStream gzos = new GZIPOutputStream(finalOut);
+					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(gzos, StandardCharsets.UTF_8))) {
+				
+				// api 호출
+				JsonNode root = callApi(spec);
+				if (root == null || !root.fieldNames().hasNext()) {
+					throw new RuntimeException("[" + spec.getInterfaceId() + "] Empty response from API");
+				}
 
-				// 파일 적재 (Gzip 스트림에 작성됨)
-				writeRowsToWriter(writer, rows);
-				totalSaved += rows.size();
-				LoggingUtils.printWriteFileComplete(transactionId, rows.size());
+				JsonNode headerNode = root.path(ApiResponseKeys.ITS_CENTER_HEADER.getValue());
+				JsonNode bodyNode = root.path(ApiResponseKeys.ITS_CENTER_BODY.getValue());
+				int totalCount = getTotalSize(bodyNode);
+				log.debug("'{}' api response result : {}, total-count : {}", spec.getApiServiceId(),
+						headerNode.toString(), totalCount);
+				if (totalCount == 0)
+					return 0;
+				
+				// 에러 코드 체크 ('0'이 아니면 중단)
+				String resultCode = getResult(headerNode).asText();
+				if (!ApiResponseKeys.ITS_CENTER_RESULT_CODE_SUCCESS.getValue().equals(resultCode)) {
+					throw new RuntimeException("[" + spec.getInterfaceId() + "] API error : " + headerNode.asText());
+				}
+				
+				// 데이터 추출 및 파일 기록
+				JsonNode rowNode = bodyNode.get(ApiResponseKeys.ITS_CENTER_ITEMS.getValue());
+				if (rowNode != null && rowNode.isArray()) {
+					List<Map<String, Object>> rows = objectMapper.convertValue(rowNode,
+							new TypeReference<List<Map<String, Object>>>() {
+							});
+					
+					// 파일 적재 (Gzip 스트림에 작성됨)
+					writeRowsToWriter(writer, rows);
+					totalSaved += rows.size();
+					LoggingUtils.printWriteFileComplete(transactionId, rows.size());
+				}
 			}
 
-		} catch (IOException e) {
-			log.error("파일 처리 중 오루 -> ", e);
+		} catch (Exception e) {
+			log.error("파일 처리 중 오류 -> ", e);
 			throw new RuntimeException(e);
 		}
+
 		return totalSaved;
 	}
 

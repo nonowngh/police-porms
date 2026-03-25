@@ -34,5 +34,6 @@ public class InterfaceSpec {
 	private Map<String, Object> additionalParams;
 	// 인터페이스 사용 여부
 	private boolean enabled = true;
-	
+	// 전송 데이터 암호화 적용 여부
+	private boolean dataEncrypt = false;
 }

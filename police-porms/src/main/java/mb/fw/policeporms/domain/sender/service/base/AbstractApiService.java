@@ -41,4 +41,5 @@ public abstract class AbstractApiService implements ApiService {
 			throw new RuntimeException("데이터 기록 중 입출력 오류 발생", e);
 		}
 	}
+
 }
