@@ -19,6 +19,9 @@ public enum ApiType {
 	@JsonProperty("v-world")
 	V_WORLD("v-world", "브이월드"),
 	
+	@JsonProperty("jurisd")
+	JURISD("jurisd", "관할경계"),
+	
 	@JsonProperty("its-center")
 	ITS_CENTER("its-center", "국가교통정보센터"),
 	

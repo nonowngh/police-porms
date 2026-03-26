@@ -396,6 +396,46 @@
         "loopCall": true,
         "enabled": false
     },
+	{
+		"interfaceId": "IF_EX_API_JUR_01",
+		"interfaceDescription": "[GIS]Geonuris 경찰서 관할경계",
+		"apiUrl": "http://10.17.25.101:8880/mapstudio",
+		"apiRequestTimeoutSeconds": 30,
+		"apiType": "jurisd",
+		"apiServiceId": "wfs",
+		"additionalParams": {
+			"request": "GetFeature",
+			"key": "82A146A2-492A-94FE-F5A7-BA083343F6CE",
+			"service": "wfs",
+			"request": "GetFeature",
+			"typename": "PS_BOUND_FULL",
+			"outputformat": "json"
+		},
+		"apiRequestFetchSize": 1000,
+		"batchSchedulerCron": "0 3 18 * * ?",
+		"loopCall": true,
+		"enabled": false
+	},
+	{
+		"interfaceId": "IF_EX_API_JUR_02",
+		"interfaceDescription": "[GIS]Geonuris 경찰청 관할경계",
+		"apiUrl": "http://10.17.25.101:8880/mapstudio",
+		"apiRequestTimeoutSeconds": 30,
+		"apiType": "jurisd",
+		"apiServiceId": "wfs",
+		"additionalParams": {
+			"request": "GetFeature",
+			"key": "82A146A2-492A-94FE-F5A7-BA083343F6CE",
+			"service": "wfs",
+			"request": "GetFeature",
+			"typename": "PBOUND_FULL",
+			"outputformat": "json"
+		},
+		"apiRequestFetchSize": 1000,
+		"batchSchedulerCron": "0 3 18 * * ?",
+		"loopCall": true,
+		"enabled": false
+	},
     {
         "interfaceId": "IF_EX_API_GIS_015",
         "interfaceDescription": "[GIS]서울시 신호등 관련정보",

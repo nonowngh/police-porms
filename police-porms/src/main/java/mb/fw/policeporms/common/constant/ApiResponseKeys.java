@@ -32,6 +32,12 @@ public enum ApiResponseKeys {
 	V_WORLD_RESULT_EXCEPTIONS_CODE("code"),
 	V_WORLD_RESULT_EXCEPTIONS_TEXT("text"),
 	
+	//v-world 응답 정보
+	JURISD_FEATURES("features"),
+	JURISD_FEATURE_PROPERTIES("properties"),
+	JURISD_FEATURE_GEOMETRY("geometry"),
+	JURISD_FEATURE_EXCEPTIONS("exceptions"),
+	
 	//its-center 응답 정보
 	ITS_CENTER_HEADER("header"),
 	ITS_CENTER_BODY("body"),

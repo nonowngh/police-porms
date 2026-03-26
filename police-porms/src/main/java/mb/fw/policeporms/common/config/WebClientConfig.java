@@ -25,6 +25,7 @@ import mb.fw.policeporms.common.constant.InterfaceAuthConstants;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.PrematureCloseException;
+import reactor.netty.resources.ConnectionProvider;
 import reactor.util.retry.Retry;
 
 @Profile("sender")
@@ -66,8 +67,16 @@ public class WebClientConfig {
 	WebClient openApiWebClient() {
 		ExchangeStrategies strategies = ExchangeStrategies.builder()
 				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(100 * 1024 * 1024)).build();
+		
+		// ConnectionProvider 커스텀 설정(유휴 커넥션 빠른 정리)
+	    ConnectionProvider provider = ConnectionProvider.builder("openapi-custom-pool")
+	            .maxIdleTime(Duration.ofSeconds(8)) // 공공데이터 포털보다 먼저 끊도록 8초로 짧게 설정
+	            .maxLifeTime(Duration.ofMinutes(5)) // 커넥션 최대 생존 시간
+	            .pendingAcquireTimeout(Duration.ofSeconds(10))
+	            .evictInBackground(Duration.ofSeconds(10)) // 백그라운드에서 주기적으로 유휴 커넥션 정리
+	            .build();
 
-		HttpClient httpClient = HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+		HttpClient httpClient = HttpClient.create(provider).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
 				.responseTimeout(Duration.ofMinutes(60)) // 1GB 대응을 위해 넉넉히
 				.doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(300))
 						.addHandlerLast(new WriteTimeoutHandler(300)));
@@ -94,11 +103,18 @@ public class WebClientConfig {
 
 	// 재시도 대상 판별 메서드
 	private boolean isRetryable(Throwable ex) {
-		// 1. 타임아웃 2. 서버에러(5xx) 3. 커넥션 거부 등 네트워크 오류 4. 연결 일방적 종료 시 재시도
-		return ex instanceof TimeoutException 
-	            || ex instanceof WebClientResponseException
-	            || ex instanceof ConnectException
-	            || ex instanceof PrematureCloseException
-	            || ex instanceof IOException;
+		Throwable cause = ex;
+		// 예외의 꼬리를 물고 들어가며 근본 원인(Root Cause)이 무엇인지 전부 검사
+		while (cause != null) {
+			if (cause instanceof TimeoutException 
+					|| cause instanceof WebClientResponseException
+					|| cause instanceof ConnectException 
+					|| cause instanceof PrematureCloseException
+					|| cause instanceof IOException) {
+				return true;
+			}
+			cause = cause.getCause(); // 안쪽에 감춰진 예외를 꺼냄
+		}
+		return false;
 	}
 }
