@@ -43,7 +43,6 @@ import reactor.core.publisher.Mono;
 @SenderComponent
 public class VwroldService extends AbstractApiService {
 
-	// 📌 하드코딩 방지를 위한 상수 정의
 	private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 	private static final int MAX_RETRY_COUNT = 3;
 	private static final String PARAM_START_INDEX = "startindex";
@@ -66,13 +65,13 @@ public class VwroldService extends AbstractApiService {
 		boolean useGridMode = false;
 		Map<String, Object> additionalParams = spec.getAdditionalParams();
 
-		// 1. JSON 설정에서 대용량 모드(Grid) 활성화 여부 확인 및 파라미터 안전 제거
+		// JSON 설정에서 대용량 모드(Grid) 활성화 여부 확인 및 파라미터 안전 제거
 		if (additionalParams != null && additionalParams.containsKey(PARAM_USE_GRID_MODE)) {
 			useGridMode = Boolean.parseBoolean(String.valueOf(additionalParams.get(PARAM_USE_GRID_MODE)));
 			additionalParams.remove(PARAM_USE_GRID_MODE);
 		}
 
-		// 2. 플래그 값에 따라 분기 처리
+		// 플래그 값에 따라 분기 처리
 		if (useGridMode) {
 			log.info("[{}] JSON 설정 감지: 대용량 데이터 모드(Grid BBOX)로 수집을 시작합니다.", spec.getInterfaceId());
 			return fetchAndSaveWithGrid(spec, tempFile, transactionId);
@@ -82,15 +81,13 @@ public class VwroldService extends AbstractApiService {
 		}
 	}
 
-	// =========================================================================
-	// 📍 [모드 1] 대용량 데이터 전용 로직 (BBOX 격자 분할 + 재시작 + 누적 진행률)
-	// =========================================================================
+	// 대용량 데이터 전용 로직 (BBOX 격자 분할 + 재시작 + 누적 진행률)
 	private int fetchAndSaveWithGrid(InterfaceSpec spec, Path tempFile, String transactionId) {
 		int grandTotalSaved = 0;
 		int fetchSize = spec.getApiRequestFetchSize();
 		
-		// 10x10 격자로 전국 분할
-		List<String> bboxes = generateKoreaGridBboxes(10, 10);
+		// 40x40 초미세 격자로 전국 1,600등분 분할 (데이터 밀집 지역 누락 방지)
+		List<String> bboxes = generateKoreaGridBboxes(40, 40);
 		
 		Path progressFile = Paths.get(tempFile.toString() + ".progress");
 		Set<String> completedBboxes = readProgress(progressFile);
@@ -130,7 +127,13 @@ public class VwroldService extends AbstractApiService {
 							if (exceptionsNode.isArray() && exceptionsNode.size() > 0) {
 								String resultExpCode = exceptionsNode.get(0).path(RESPONSE_ERROR_CODE).asText();
 								String resultExptext = exceptionsNode.get(0).path(RESPONSE_ERROR_TEXT).asText();
-								log.error("[{}] API error code: {}, text: {}, at page {}", spec.getInterfaceId(), resultExpCode, resultExptext, page);
+								
+								//  100만 건 초과 경고 로그
+								if (page >= 1000) {
+									log.error("🚨 [{}] [긴급] 격자 내 데이터가 100만 건을 초과하여 잘렸습니다! 격자를 더 잘게 쪼개야 합니다. (BBOX: {})", spec.getInterfaceId(), bbox);
+								} else {
+									log.error("[{}] API error code: {}, text: {}, at page {}", spec.getInterfaceId(), resultExpCode, resultExptext, page);
+								}
 							}
 							break;
 						}
@@ -188,9 +191,7 @@ public class VwroldService extends AbstractApiService {
 		return grandTotalSaved;
 	}
 
-	// =========================================================================
-	// 📍 [모드 2] 일반 데이터 전용 로직 (단순 페이징)
-	// =========================================================================
+	// 일반 데이터 전용 로직 (단순 페이징)
 	private int fetchAndSaveNormal(InterfaceSpec spec, Path tempFile, String transactionId) {
 		int totalSaved = 0;
 		int page = 1;
@@ -202,7 +203,6 @@ public class VwroldService extends AbstractApiService {
 			spec.getAdditionalParams().remove(PARAM_BBOX);
 		}
 		
-		// CREATE 모드로 새 파일 생성
 		try (OutputStream fos = Files.newOutputStream(tempFile, StandardOpenOption.CREATE);
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
 				GZIPOutputStream gzos = new GZIPOutputStream(bos);
@@ -275,9 +275,6 @@ public class VwroldService extends AbstractApiService {
 		return totalSaved;
 	}
 
-	// =========================================================================
-	// 🛠️ 공통 유틸리티 메서드 
-	// =========================================================================
 
 	private JsonNode fetchPageFromApiWithRetry(InterfaceSpec spec, int page) {
 		int attempt = 0;
@@ -297,10 +294,11 @@ public class VwroldService extends AbstractApiService {
 		return null;
 	}
 
+	// 좌표 확장 적용: 서해(백령도) 및 동해(독도) 포함 안전 영역 확보
 	private List<String> generateKoreaGridBboxes(int cols, int rows) {
 		List<String> bboxes = new ArrayList<>();
-		double minX = 700000.0, minY = 1300000.0;
-		double maxX = 1400000.0, maxY = 2200000.0;
+		double minX = 600000.0, minY = 1300000.0;
+		double maxX = 1500000.0, maxY = 2200000.0;
 		
 		double stepX = (maxX - minX) / cols;
 		double stepY = (maxY - minY) / rows;
