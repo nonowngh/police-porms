@@ -361,7 +361,7 @@ public class DataPortalService extends AbstractApiService {
 											expandedRows.add(row); 
 										}
 									} else {
-										log.warn("[{}] 마스터 데이터에 상세 조회를 위한 필수 키가 없습니다. 설정된 detailKey: {}", 
+										log.warn("[{}] 마스터 데이터에 상세 조회를 위한 필수 키가 없음. 설정된 detailKey: {}", 
 												spec.getInterfaceId(), Arrays.toString(detailKeys));
 										expandedRows.add(row);
 									}

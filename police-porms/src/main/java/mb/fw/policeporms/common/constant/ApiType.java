@@ -22,6 +22,9 @@ public enum ApiType {
 	@JsonProperty("jurisd")
 	JURISD("jurisd", "관할경계"),
 	
+	@JsonProperty("polnet")
+	POLNET("polnet", "폴넷"),
+	
 	@JsonProperty("its-center")
 	ITS_CENTER("its-center", "국가교통정보센터"),
 	

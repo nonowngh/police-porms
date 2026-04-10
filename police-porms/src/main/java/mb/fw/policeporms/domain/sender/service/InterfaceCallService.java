@@ -5,16 +5,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.extern.slf4j.Slf4j;
 import mb.fw.policeporms.common.annotation.SenderService;
 import mb.fw.policeporms.common.config.FileTransferConfig;
@@ -26,6 +31,7 @@ import mb.fw.policeporms.common.dto.ResponseMessage;
 import mb.fw.policeporms.common.spec.InterfaceSpec;
 import mb.fw.policeporms.domain.sender.service.base.ApiService;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 @Slf4j
 @SenderService
@@ -56,6 +62,16 @@ public class InterfaceCallService {
 				countCallback.accept(count);
 			}
 		};
+
+		// 📌 JSON 설정(additionalParams)에서 커스텀 타임아웃 값 추출
+		int customTimeoutMinutes = 0;
+		if (spec.getAdditionalParams() != null && spec.getAdditionalParams().containsKey("customTimeoutMinutes")) {
+			try {
+				customTimeoutMinutes = Integer.parseInt(String.valueOf(spec.getAdditionalParams().get("customTimeoutMinutes")));
+			} catch (NumberFormatException e) {
+				log.warn("[{}] customTimeoutMinutes 파라미터 파싱 오류. 기본 타임아웃을 사용합니다.", interfaceId);
+			}
+		}
 
 		// 파일 경로 설정
 		String fileName = "temp_" + transactionId + ".jsonl.gz";
@@ -97,7 +113,8 @@ public class InterfaceCallService {
 			RequestMessage request = RequestMessage.builder().interfaceId(interfaceId).transactionId(transactionId)
 					.sendDataCount(totalCount).sendFileName(fileName).sendFileSize(Files.size(sendFile)).build();
 
-			ResponseMessage serverResponse = sendFile(request, sendFile.toFile()).block();
+			// 📌 sendFile 메서드에 customTimeoutMinutes 파라미터 전달
+			ResponseMessage serverResponse = sendFile(request, sendFile.toFile(), customTimeoutMinutes).block();
 			if (serverResponse != null) {
 				response.setProcessCd(serverResponse.getProcessCd());
 				response.setProcessMsg(serverResponse.getProcessMsg());
@@ -143,14 +160,35 @@ public class InterfaceCallService {
 		return sendTotalCount;
 	}
 
-	// 생성한 파일 수신 ESB 프로세스로 전송
-	private Mono<ResponseMessage> sendFile(RequestMessage request, File file) {
+	// 📌 생성한 파일 수신 ESB 프로세스로 전송 (타임아웃 동적 제어 추가)
+	private Mono<ResponseMessage> sendFile(RequestMessage request, File file, int customTimeoutMinutes) {
+		
+		WebClient currentWebClient = this.interfaceWebClient;
+
+		// 📌 커스텀 타임아웃이 설정되어 있다면 (예: 30분), 일회용 WebClient로 복제(mutate)
+		if (customTimeoutMinutes > 0) {
+			log.info("[{}] ⏳ 커스텀 타임아웃 감지: 해당 요청의 통신 대기 시간을 {}분으로 연장합니다.", request.getTransactionId(), customTimeoutMinutes);
+			
+			HttpClient httpClient = HttpClient.create()
+				.responseTimeout(Duration.ofMinutes(customTimeoutMinutes)) // 전체 응답 대기 시간
+				.doOnConnected(conn -> conn
+					.addHandlerLast(new ReadTimeoutHandler(customTimeoutMinutes, TimeUnit.MINUTES))
+					.addHandlerLast(new WriteTimeoutHandler(customTimeoutMinutes, TimeUnit.MINUTES))
+				);
+
+			// 기존 설정(토큰, 헤더 등)은 100% 유지한 채 커넥터만 교체 (Zero-Impact)
+			currentWebClient = this.interfaceWebClient.mutate()
+				.clientConnector(new ReactorClientHttpConnector(httpClient))
+				.build();
+		}
+
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
 		// RequestMessage 객체 자체를 "message"라는 이름의 JSON 파트로 추가
 		builder.part("message", request, MediaType.APPLICATION_JSON);
 		// 실제 파일 추가
 		builder.part("file", new FileSystemResource(file));
-		return this.interfaceWebClient.post().uri(InterfaceApiPathConstants.RECEIVE_FILE_PATH)
+		
+		return currentWebClient.post().uri(InterfaceApiPathConstants.RECEIVE_FILE_PATH) // 📌 복제된 WebClient 사용
 				.contentType(MediaType.MULTIPART_FORM_DATA).body(BodyInserters.fromMultipartData(builder.build()))
 				.retrieve().onStatus(status -> status.isError(), clientResponse -> {
 					return clientResponse.bodyToMono(ResponseMessage.class) // 에러 바디를 ResponseMessage로 파싱

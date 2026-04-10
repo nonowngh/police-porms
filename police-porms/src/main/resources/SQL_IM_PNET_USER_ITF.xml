@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="IF_EX_API_PON_01">
+
+    <delete id="delete">
+        DELETE FROM IM_PNET_USER_ITF
+    </delete>
+
+    <insert id="insert" parameterType="java.util.List">
+        INSERT INTO IM_PNET_USER_ITF (
+            USER_ID,               /* 사용자아이디 (PK) */
+            USER_NO,               /* 사용자번호 */
+            USER_ENPSWD,           /* 암호화 사용자 비밀번호 */
+            USER_NM,               /* 사용자명 */
+            USER_IDNTF_CD,         /* 디지털 식별코드 */
+            BRDT,                  /* 생년월일 */
+            GNDR_CD,               /* 성별 (M/F) */
+            USER_JBPS_CD,          /* 직위코드 */
+            USER_ECHLN_CD,         /* 직급코드 */
+            PNET_TKCG_TASK_NM,     /* 담당업무 */
+            WRC_TELNO,             /* 직장전화번호1 */
+            WRC_TELNO2,            /* 직장전화번호2 (경비전화) */
+            USER_MBL_TELNO,        /* 핸드폰번호 */
+            USER_STTS_CD,          /* 사용자상태코드 */
+            PSWD_CHG_DT,           /* 비밀번호 변경날짜 */
+            HRES_DATA_SE_CD,       /* 인사자료 일치여부 */
+            MBL_TEL_RLS_YN,        /* 핸드폰공개여부 */
+            TPDR_OGDP_DTL_NM,      /* 전화번호부용 소속명 */
+            GVMNFC_CD,             /* 新사용자조직코드 */
+            ESRM_INST_CD,          /* e-사람 기관코드 */
+            FRST_RGTR_ID,          /* 최초등록자ID */
+            FRST_REG_DT,           /* 최초등록일시 */
+            LAST_MDFR_ID,          /* 최종수정자ID */
+            LAST_MDFCN_DT          /* 최종수정일시 */
+        ) VALUES 
+        <foreach collection="list" item="item" separator=",">
+        (
+            #{item.USER_ID},
+            #{item.USER_NO},
+            #{item.USER_PWD},
+            #{item.USER_NM},
+            #{item.DGTL_DSC_CD},
+            #{item.USER_BTHD},
+            #{item.GND_CL_CD},
+            #{item.USER_OPOS_CD},
+            #{item.USER_CPOS_CD},
+            #{item.USER_CHRG_JOB_CTNT},
+            #{item.WRC_TELNO1},
+            #{item.WRC_TELNO2},
+            #{item.USER_MPNO},
+            #{item.USER_STAT_CD},
+            NULLIF(#{item.PWD_CHG_DTTM}, '')::timestamp, /* 빈 문자열 방지 및 형변환 */
+            #{item.HR_INFO_MTCH_CL_CD},
+            #{item.MPNO_OTTP_YN},
+            #{item.PLBK_BLG_NM},
+            #{item.USER_GVOF_CD},
+            #{item.ESRM_GVOF_CD},
+            'SYS_BAT_PN02',        /* 배치 시스템 식별 ID */
+            NOW(),
+            'SYS_BAT_PN02',
+            NOW()
+        )
+        </foreach>
+    </insert>
+
+</mapper>

@@ -32,11 +32,20 @@ public enum ApiResponseKeys {
 	V_WORLD_RESULT_EXCEPTIONS_CODE("code"),
 	V_WORLD_RESULT_EXCEPTIONS_TEXT("text"),
 	
-	//v-world 응답 정보
+	//관할경계 응답 정보
 	JURISD_FEATURES("features"),
 	JURISD_FEATURE_PROPERTIES("properties"),
 	JURISD_FEATURE_GEOMETRY("geometry"),
 	JURISD_FEATURE_EXCEPTIONS("exceptions"),
+	
+	//POLNET 응답 정보
+	POLNET_DATA("DATA"), 
+	POLNET_RESP_CD("RESP_CD"), 
+	POLNET_LOOP("LOOP"), 
+	POLNET_RECORD("RECORD"),
+	POLNET_RESP_SUCCESS("00"), // 정상 (다음자료 없음)
+	POLNET_RESP_NO_DATA("01"), // 자료 없음
+	POLNET_RESP_HAS_NEXT("02"), // 다음 자료 있음
 	
 	//its-center 응답 정보
 	ITS_CENTER_HEADER("header"),
@@ -49,7 +58,6 @@ public enum ApiResponseKeys {
 	
 	//utic 응답정보
 	UTIC_RECORD("record");
-
 
 
     private final String value;

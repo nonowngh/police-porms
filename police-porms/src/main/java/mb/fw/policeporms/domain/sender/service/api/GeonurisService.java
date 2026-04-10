@@ -62,7 +62,7 @@ public class GeonurisService extends AbstractApiService {
             JsonNode root = fetchApiWithRetry(spec);
 
             if (root == null || !root.has(ApiResponseKeys.JURISD_FEATURES.getValue())) {
-                log.warn("[{}] 응답에 features 데이터가 없거나 비어있습니다.", spec.getInterfaceId());
+                log.warn("[{}] 응답에 features 데이터가 없거나 비어있음", spec.getInterfaceId());
                 return totalSaved;
             }
 
@@ -103,7 +103,7 @@ public class GeonurisService extends AbstractApiService {
                 attempt++;
                 log.warn("⚠️ [{}] API 호출 실패 (재시도 {}/{}). 원인: {}", spec.getInterfaceId(), attempt, MAX_RETRY_COUNT, e.getMessage());
                 if (attempt >= MAX_RETRY_COUNT) {
-                    log.error("❌ [{}] 최대 재시도 횟수 초과. 배치를 중단합니다.", spec.getInterfaceId());
+                    log.error("❌ [{}] 최대 재시도 횟수 초과. 배치를 중단", spec.getInterfaceId());
                     throw e;
                 }
                 try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
