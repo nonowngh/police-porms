@@ -1,5 +1,39 @@
 [
 	{
+		"interfaceId": "IF_EX_API_TIS_01",
+		"interfaceDescription": "[TIS]지능형교통체계(ITS)-도로소통",
+		"apiUrl": "https://openapi.its.go.kr:9443",
+		"apiRequestTimeoutSeconds": 60,
+		"apiType": "its-center",
+		"apiServiceId": "trafficInfo",
+		"additionalParams": {
+			"type": "all",
+			"getType": "json",
+			"coordinateList": [
+		        { "minX": "126.0", "minY": "37.0", "maxX": "127.0", "maxY": "38.0" },
+		        { "minX": "127.0", "minY": "37.0", "maxX": "128.0", "maxY": "38.0" },
+		        { "minX": "128.0", "minY": "37.0", "maxX": "129.0", "maxY": "38.0" },
+		        { "minX": "129.0", "minY": "37.0", "maxX": "130.0", "maxY": "38.0" },
+		        { "minX": "126.0", "minY": "36.0", "maxX": "127.0", "maxY": "37.0" },
+		        { "minX": "127.0", "minY": "36.0", "maxX": "128.0", "maxY": "37.0" },
+		        { "minX": "128.0", "minY": "36.0", "maxX": "129.0", "maxY": "37.0" },
+		        { "minX": "129.0", "minY": "36.0", "maxX": "130.0", "maxY": "37.0" },
+		        { "minX": "126.0", "minY": "35.0", "maxX": "127.0", "maxY": "36.0" },
+		        { "minX": "127.0", "minY": "35.0", "maxX": "128.0", "maxY": "36.0" },
+		        { "minX": "128.0", "minY": "35.0", "maxX": "129.0", "maxY": "36.0" },
+		        { "minX": "129.0", "minY": "35.0", "maxX": "130.0", "maxY": "36.0" },
+		        { "minX": "126.0", "minY": "34.0", "maxX": "127.0", "maxY": "35.0" },
+		        { "minX": "127.0", "minY": "34.0", "maxX": "128.0", "maxY": "35.0" },
+		        { "minX": "128.0", "minY": "34.0", "maxX": "129.0", "maxY": "35.0" },
+		        { "minX": "129.0", "minY": "34.0", "maxX": "130.0", "maxY": "35.0" }
+			]
+		},
+		"apiKey": "858e4d5890b64d58a9bba7bce5b3eac2",
+		"batchSchedulerCron": "0 * * * * ?",
+		"enabled": false,
+		"dataEncrypt": true
+	},
+	{
 		"interfaceId": "IF_EX_API_WEA_01",
 		"interfaceDescription": "[GIS]공공데이터포털 (기상청_단기예보 ((구)_동네예보) 조회서비스)-1.초단기실황조회",
 		"apiUrl": "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0",
@@ -434,5 +468,26 @@
 		"batchSchedulerCron": "0 3 14 * * ?",
 		"loopCall": true,
 		"enabled": true
+	},
+	{
+	    "interfaceId": "IF_EX_API_KTPOP_01",
+	    "interfaceDescription": "[KT] 서울 실시간 인구 (SFTP)",
+	    "apiUrl": "14.63.143.72",
+	    "apiRequestTimeoutSeconds": 60,
+	    "apiType": "ktpop",
+	    "apiServiceId": "download",
+		"receiverProcessType": "FILE",
+	    "additionalParams": {
+	        "host": "14.63.143.72",
+	        "port": "2222",
+	        "username": "seouluser01",
+	        "password": "ENC(암호화된_비밀번호_문자열)",
+	        "remoteDir": "/data_seoul/seouluser01/fpip_user/rtime_police3",
+	        "fileNamePattern": "dp_rtime_ftppl_50_cell_police3_sum_YYYYmmddHHMM.zip"
+	    },
+	    "apiRequestFetchSize": 1,
+	    "batchSchedulerCron": "0 * * * * ?",
+	    "loopCall": false,
+	    "enabled": true
 	}
 ]

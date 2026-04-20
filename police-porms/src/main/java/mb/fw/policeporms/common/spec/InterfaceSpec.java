@@ -36,4 +36,6 @@ public class InterfaceSpec {
 	private boolean enabled = true;
 	// 전송 데이터 암호화 적용 여부
 	private boolean dataEncrypt = false;
+	// 수신 처리 방식 (예: "FILE", "DB"(기본값))
+    private String receiverProcessType = "DB";
 }

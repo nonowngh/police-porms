@@ -89,12 +89,18 @@ public class InterfaceProcessService {
 				// GZIP 및 문자열 Reader 버퍼 사이즈도 64KB로 확장, GC 스래싱 및 메모리 부하 방지
 				try (GZIPInputStream gzis = new GZIPInputStream(finalIn, 65536);
 					 BufferedReader reader = new BufferedReader(new InputStreamReader(gzis, StandardCharsets.UTF_8), 65536)) {
+					
 					int currentCount = processInsert(reader, insertSqlId, transactionId, request.getSendDataCount());
 
-					log.info("[{}] 최종 적재 완료: 총 {}건", transactionId, String.format("%,d", currentCount));
+					// 📌 수정된 로깅: 송신 수신 건수와 DB 적재 건수를 직관적으로 비교 출력
+					log.info("[{}] 최종 처리 완료: 송신 수신 {}건 / 실제 DB 적재 {}건", 
+							transactionId, 
+							String.format("%,d", request.getSendDataCount()), 
+							String.format("%,d", currentCount));
+					
 					response.setProcessCd(InterfaceStatus.SUCCESS);
 					response.setProcessMsg("처리완료");
-					response.setResultCount(currentCount);
+					response.setResultCount(currentCount); // 송신 측으로도 실제 적재 건수를 반환
 				}
 			}
 		} catch (Exception e) {
@@ -151,14 +157,16 @@ public class InterfaceProcessService {
 //		}
 	
 	/**
-	 * 데이터를 읽어 Chunk 단위로 DB에 Insert 합니다. (트랜잭션 안전 보장형 병렬 파이프라인)
-	 * 📌 다른 인터페이스에 영향이 없도록 트랜잭션은 메인 쓰레드가 유지하고 파싱만 분리합니다.
+	 * 데이터를 읽어 Chunk 단위로 DB에 Insert (트랜잭션 안전 보장형 병렬 파이프라인)
+	 * 다른 인터페이스에 영향이 없도록 트랜잭션은 메인 쓰레드가 유지하고 파싱만 분리
 	 */
 	private int processInsert(BufferedReader reader, String insertSqlId, String transactionId, int totalCount)
 			throws IOException {
 		
 		int chunkSize = mybatisConfig.getChunkSize(); 
 		BlockingQueue<List<Map<String, Object>>> queue = new ArrayBlockingQueue<>(10);
+		
+		// 실제 DB에 적재된 총 건수 (응답용)
 		AtomicInteger totalInserted = new AtomicInteger(0);
 		AtomicBoolean hasError = new AtomicBoolean(false);
 		AtomicReference<Exception> producerException = new AtomicReference<>();
@@ -205,6 +213,8 @@ public class InterfaceProcessService {
 		// 🧑‍🏭 2. 소비자(Consumer) 메인 쓰레드 : @Transactional 유지하며 DB Insert 전담
 		// -------------------------------------------------------------------
 		try {
+			int processedCount = 0; // 진행률 표기를 위해 '읽어들인(파싱한)' 총 건수 추적용
+
 			while (true) {
 				// 백그라운드 쓰레드가 파싱해둔 데이터를 꺼냄 (없으면 대기)
 				List<Map<String, Object>> chunkList = queue.take();
@@ -217,15 +227,20 @@ public class InterfaceProcessService {
 					break; 
 				}
 
-				// 📌 기존과 동일한 Map<String, Object> 구조 조립 (다른 XML에 100% 호환)
+				// 기존과 동일한 Map<String, Object> 구조 조립 (다른 XML에 100% 호환)
 				Map<String, Object> params = new HashMap<>();
 				params.put(MybatisConstants.Param.LIST, chunkList);
 				
-				// 📌 메인 쓰레드이므로 Spring @Transactional이 완벽하게 작동함!
-				sqlSessionTemplate.insert(insertSqlId, params);
+				// insert 쿼리 실행 후 리턴되는 '실제 반영된 건수(affected rows)'를 받습니다.
+				// PostgreSQL의 ON CONFLICT DO NOTHING 동작 시, 무시된 중복 건수는 제외된 순수 insert 건수만 반환됩니다.
+				int actualInsertedCount = sqlSessionTemplate.insert(insertSqlId, params);
 
-				int inserted = totalInserted.addAndGet(chunkList.size());
-				LoggingUtils.printInsertProgress(transactionId, totalCount, inserted);
+				// 송신 측에 보낼 '실제 적재 건수' 누적
+				totalInserted.addAndGet(actualInsertedCount);
+				
+				// 콘솔에 찍히는 진행률은 '파일에서 처리한 건수' 기준으로 유지하여 %가 정상적으로 올라가게 함
+				processedCount += chunkList.size();
+				LoggingUtils.printInsertProgress(transactionId, totalCount, processedCount);
 			}
 		} catch (Exception e) {
 			hasError.set(true); // 파싱 쓰레드에게 중단하라고 플래그 전송
@@ -233,6 +248,7 @@ public class InterfaceProcessService {
 			throw new IOException("DB 적재 과정에서 치명적 오류가 발생했습니다.", e);
 		}
 
+		// 최종적으로 중복이 제거된 순수 insert 건수만 리턴됨
 		return totalInserted.get();
 	}
 

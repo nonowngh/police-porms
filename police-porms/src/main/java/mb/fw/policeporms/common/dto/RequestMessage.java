@@ -19,5 +19,7 @@ public class RequestMessage {
 	private long sendFileSize;
 	// 총 데이터 건수
 	private int sendDataCount;
+	// 수신 측 처리 방식을 결정하는 구분값 (예: FILE, DB)
+    private String receiverProcessType;
 
 }

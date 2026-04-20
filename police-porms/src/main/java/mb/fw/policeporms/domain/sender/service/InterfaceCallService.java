@@ -63,7 +63,7 @@ public class InterfaceCallService {
 			}
 		};
 
-		// 📌 JSON 설정(additionalParams)에서 커스텀 타임아웃 값 추출
+		// JSON 설정(additionalParams)에서 커스텀 타임아웃 값 추출
 		int customTimeoutMinutes = 0;
 		if (spec.getAdditionalParams() != null && spec.getAdditionalParams().containsKey("customTimeoutMinutes")) {
 			try {
@@ -109,15 +109,31 @@ public class InterfaceCallService {
 			}
 
 			response.setResultCount(totalCount);
+			
+			String processType = "DB";
+			if (spec.getReceiverProcessType() != null) {
+			    processType = spec.getReceiverProcessType();
+			} else if (spec.getAdditionalParams() != null && spec.getAdditionalParams().containsKey("receiverProcessType")) {
+			    processType = String.valueOf(spec.getAdditionalParams().get("receiverProcessType"));
+			}
+			
+			String originalFileName = null;
+			if (spec.getAdditionalParams() != null && spec.getAdditionalParams().containsKey("ORIGINAL_FILE_NAME")) {
+			    originalFileName = String.valueOf(spec.getAdditionalParams().get("ORIGINAL_FILE_NAME"));
+			}
 
+			// RequestMessage 생성 시 추출한 processType 주입
 			RequestMessage request = RequestMessage.builder().interfaceId(interfaceId).transactionId(transactionId)
-					.sendDataCount(totalCount).sendFileName(fileName).sendFileSize(Files.size(sendFile)).build();
+			        .sendDataCount(totalCount).sendFileName(originalFileName != null ? originalFileName : fileName)
+			        .sendFileSize(Files.size(sendFile))
+			        .receiverProcessType(processType).build();
 
-			// 📌 sendFile 메서드에 customTimeoutMinutes 파라미터 전달
+			// sendFile 메서드에 customTimeoutMinutes 파라미터 전달
 			ResponseMessage serverResponse = sendFile(request, sendFile.toFile(), customTimeoutMinutes).block();
 			if (serverResponse != null) {
 				response.setProcessCd(serverResponse.getProcessCd());
 				response.setProcessMsg(serverResponse.getProcessMsg());
+				response.setResultCount(serverResponse.getResultCount());
 			}
 
 		} catch (Exception e) {
@@ -176,7 +192,7 @@ public class InterfaceCallService {
 					.addHandlerLast(new WriteTimeoutHandler(customTimeoutMinutes, TimeUnit.MINUTES))
 				);
 
-			// 기존 설정(토큰, 헤더 등)은 100% 유지한 채 커넥터만 교체 (Zero-Impact)
+			// 기존 설정(토큰, 헤더 등)은 100% 유지한 채 커넥터만 교체
 			currentWebClient = this.interfaceWebClient.mutate()
 				.clientConnector(new ReactorClientHttpConnector(httpClient))
 				.build();
@@ -188,7 +204,7 @@ public class InterfaceCallService {
 		// 실제 파일 추가
 		builder.part("file", new FileSystemResource(file));
 		
-		return currentWebClient.post().uri(InterfaceApiPathConstants.RECEIVE_FILE_PATH) // 📌 복제된 WebClient 사용
+		return currentWebClient.post().uri(InterfaceApiPathConstants.RECEIVE_FILE_PATH) // 복제된 WebClient 사용
 				.contentType(MediaType.MULTIPART_FORM_DATA).body(BodyInserters.fromMultipartData(builder.build()))
 				.retrieve().onStatus(status -> status.isError(), clientResponse -> {
 					return clientResponse.bodyToMono(ResponseMessage.class) // 에러 바디를 ResponseMessage로 파싱

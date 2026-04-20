@@ -30,6 +30,20 @@ public class InterfaceLogging {
 			log.error("interface start logging error!", e.getMessage());
 		}
 	}
+	
+	// 새로 추가: 실제 DB 적재가 끝난 뒤에 호출하더라도 '원래 시작 시간'을 유지할 수 있도록 startTime 파라미터 추가
+	@Async("loggingExecutor")
+	public void asyncStartLogging(String interfaceId, String transactionId, String sendSystemdCode,
+			String receiveSystemCode, int totalCount, String startTime) {
+		log.debug("jms start logging with fixed time [{}]", transactionId);
+		try {
+			// 파라미터로 받은 startTime을 ATBUtil에 전달
+			ATBUtil.startLogging(jmsTemplate, interfaceId, transactionId, null, totalCount, sendSystemdCode,
+					receiveSystemCode, startTime, null);
+		} catch (Exception e) {
+			log.error("interface start logging error!", e.getMessage());
+		}
+	}
 
 	@Async("loggingExecutor")
 	public void asyncEndLogging(String interfaceId, String transactionId, int errorCount, InterfaceStatus statusCode,
